@@ -1,0 +1,26 @@
+# Compilação
+bin/
+obj/
+publish/
+installer/
+*.exe
+*.dll
+*.pdb
+TestResults/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Dados locais da aplicação
+settings.json
+queue.json
+ui.json
+logs/
+*.log
+
+# Chave de aplicação do ClubLog (entra na compilação; nunca versionar)
+clublog.key

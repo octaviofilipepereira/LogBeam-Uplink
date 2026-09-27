@@ -1,0 +1,132 @@
+// Code & Powered by: Octávio Filipe Pereira Gonçalves / CT7BFV
+// © 2026 Octávio Filipe Pereira Gonçalves
+// Licença GPL v3 (https://www.gnu.org/licenses/gpl-3.0.pt-br.html | https://www.gnu.org/licenses/gpl-3.0.html.en)
+
+using LogBeam.Core.Models;
+using LogBeam.Core.N1MM;
+using LogBeam.Service.Services;
+using LogBeam.Service.Settings;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using ServiceAppSettings = LogBeam.Service.Models.AppSettings;
+
+namespace LogBeam.UI;
+
+/// <summary>
+/// Arranca e para o host do LogBeam Service dentro do processo da UI.
+/// </summary>
+public class ServiceRunner : IDisposable
+{
+    private IHost?            _host;
+    private CancellationTokenSource _cts = new();
+    private Task?             _runTask;
+
+    public bool IsRunning => _host is not null && !(_cts.IsCancellationRequested);
+
+    public event Action<string>? StatusChanged;
+    public event Action<QsoRecord, bool>? QsoResult;
+    public event Action<QsoRecord>? QsoConfirmedByLogbeam;
+
+    public void Start()
+    {
+        if (IsRunning) return;
+
+        _cts = new CancellationTokenSource();
+
+        var settingsManager = new SettingsManager();
+        var appSettings     = settingsManager.Load();
+
+        ConfigureSerilog(appSettings);
+
+        _host = Host.CreateDefaultBuilder()
+            .UseSerilog()
+            .ConfigureServices((_, services) =>
+            {
+                services.AddSingleton<Microsoft.Extensions.Options.IOptions<ServiceAppSettings>>(
+                    Microsoft.Extensions.Options.Options.Create(appSettings));
+                services.AddSingleton(settingsManager);
+
+                services.AddHttpClient<HamQthLookupService>()
+                    .ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(appSettings.Api.TimeoutSeconds));
+                services.AddHttpClient<ApiClientService>()
+                    .ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(appSettings.Api.TimeoutSeconds));
+                services.AddHttpClient("clublog")
+                    .ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+
+                services.AddSingleton(sp => new N1MMUdpListener(
+                    sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<N1MMUdpListener>>(),
+                    appSettings.N1mm.UdpPort,
+                    appSettings.N1mm.ListenAddress));
+                services.AddSingleton(sp => new LogBeam.Core.Wsjtx.WsjtxUdpListener(
+                    sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<LogBeam.Core.Wsjtx.WsjtxUdpListener>>(),
+                    appSettings.Wsjtx.UdpPort,
+                    appSettings.Wsjtx.ListenAddress));
+                services.AddSingleton<HamQthLookupService>();
+                services.AddSingleton<ApiClientService>();
+                services.AddSingleton<QsoQueueService>();
+                services.AddSingleton<SessionLogService>();
+                services.AddSingleton<QsoProcessor>();
+                services.AddHostedService(sp => sp.GetRequiredService<QsoProcessor>());
+                services.AddHostedService<ClubLogUploadService>();
+            })
+            .Build();
+
+        var processor = _host.Services.GetRequiredService<QsoProcessor>();
+        processor.QsoResult += (qso, success) => QsoResult?.Invoke(qso, success);
+        processor.QsoConfirmedByLogbeam += qso => QsoConfirmedByLogbeam?.Invoke(qso);
+
+        _runTask = Task.Run(async () =>
+        {
+            try
+            {
+                StatusChanged?.Invoke("running");
+                await _host.RunAsync(_cts.Token);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Erro no ServiceRunner");
+                StatusChanged?.Invoke("error");
+                return;
+            }
+            StatusChanged?.Invoke("stopped");
+        });
+    }
+
+    /// <summary>QSOs enviados com sucesso desde que o serviço arrancou (vazio se parado).</summary>
+    public List<QsoRecord> GetSessionLog() =>
+        _host?.Services.GetRequiredService<SessionLogService>().Snapshot() ?? new List<QsoRecord>();
+
+    public void Stop()
+    {
+        if (_host is null) return;
+        _cts.Cancel();
+        _runTask?.Wait(TimeSpan.FromSeconds(5));
+        _host.Dispose();
+        _host    = null;
+        _runTask = null;
+    }
+
+    private static void ConfigureSerilog(ServiceAppSettings settings)
+    {
+        var exeDir  = AppContext.BaseDirectory;
+        var logPath = Path.IsPathRooted(settings.LogPath)
+            ? settings.LogPath
+            : Path.Combine(exeDir, settings.LogPath);
+
+        var level = Enum.TryParse<Serilog.Events.LogEventLevel>(
+            settings.LogLevel, ignoreCase: true, out var parsed)
+            ? parsed : Serilog.Events.LogEventLevel.Information;
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Is(level)
+            .WriteTo.File(logPath,
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 30,
+                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
+    }
+
+    public void Dispose() => Stop();
+}
