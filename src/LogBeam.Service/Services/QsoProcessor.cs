@@ -2,6 +2,7 @@
 // © 2026 Octávio Filipe Pereira Gonçalves
 // Licença GPL v3 (https://www.gnu.org/licenses/gpl-3.0.pt-br.html | https://www.gnu.org/licenses/gpl-3.0.html.en)
 
+using LogBeam.Core.Adif;
 using LogBeam.Core.N1MM;
 using LogBeam.Core.Wsjtx;
 using LogBeam.Service.Models;
@@ -14,7 +15,7 @@ namespace LogBeam.Service.Services;
 
 /// <summary>
 /// Orquestra o processamento de QSOs:
-/// 1. Recebe eventos do N1MMUdpListener (e, se activo, do WsjtxUdpListener)
+/// 1. Recebe eventos do N1MMUdpListener (e, se activos, do WsjtxUdpListener e do AdifUdpListener/Log4OM)
 /// 2. Envia para cada logbook LogBeam activo (HamQTH/DXCC são resolvidos pelo servidor)
 /// 3. Em caso de falha num perfil, coloca esse QSO na fila offline e tenta reenviar periodicamente
 /// </summary>
@@ -24,6 +25,7 @@ public class QsoProcessor : BackgroundService
 
     private readonly N1MMUdpListener _listener;
     private readonly WsjtxUdpListener _wsjtxListener;
+    private readonly AdifUdpListener _adifListener;
     private readonly ApiClientService _apiClient;
     private readonly QsoQueueService _queue;
     private readonly SessionLogService _sessionLog;
@@ -39,6 +41,7 @@ public class QsoProcessor : BackgroundService
     public QsoProcessor(
         N1MMUdpListener listener,
         WsjtxUdpListener wsjtxListener,
+        AdifUdpListener adifListener,
         ApiClientService apiClient,
         QsoQueueService queue,
         SessionLogService sessionLog,
@@ -47,6 +50,7 @@ public class QsoProcessor : BackgroundService
     {
         _listener       = listener;
         _wsjtxListener  = wsjtxListener;
+        _adifListener   = adifListener;
         _apiClient      = apiClient;
         _queue          = queue;
         _sessionLog     = sessionLog;
@@ -89,6 +93,19 @@ public class QsoProcessor : BackgroundService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Não foi possível iniciar o listener WSJT-X (porta ocupada?). Este listener fica desactivado.");
+                }
+            }
+
+            if (_settings.Value.Log4om.Enabled)
+            {
+                _adifListener.QsoReceived += (_, qso) => _ = ProcessQsoAsync(qso, stoppingToken);
+                try
+                {
+                    _adifListener.Start();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Não foi possível iniciar o receptor ADIF do Log4OM (porta ocupada?). Este receptor fica desactivado.");
                 }
             }
 
@@ -227,6 +244,7 @@ public class QsoProcessor : BackgroundService
         _logger.LogInformation("QsoProcessor a desligar");
         _listener.Stop();
         _wsjtxListener.Stop();
+        _adifListener.Stop();
         await base.StopAsync(cancellationToken);
     }
 }

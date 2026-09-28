@@ -4,7 +4,7 @@
 
 using System.Net;
 using System.Net.Sockets;
-using System.Text.RegularExpressions;
+using LogBeam.Core.Adif;
 using LogBeam.Core.Models;
 using LogBeam.Core.Net;
 using Microsoft.Extensions.Logging;
@@ -22,9 +22,6 @@ public class WsjtxUdpListener : IDisposable
 {
     private const uint MagicNumber = 0xadbccbda;
     private const uint LoggedAdifMessageType = 12;
-
-    private static readonly Regex AdifFieldRegex =
-        new(@"<(\w+):(\d+)(?::[^>]*)?>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private readonly ILogger<WsjtxUdpListener> _logger;
     private readonly int _port;
@@ -87,7 +84,7 @@ public class WsjtxUdpListener : IDisposable
         }
     }
 
-    private void ProcessDatagram(byte[] buffer)
+    internal void ProcessDatagram(byte[] buffer)
     {
         try
         {
@@ -103,8 +100,9 @@ public class WsjtxUdpListener : IDisposable
             var adif = reader.ReadUtf8String();
             if (string.IsNullOrWhiteSpace(adif)) return;
 
-            var qso = ParseAdifRecord(adif);
-            if (qso == null || string.IsNullOrWhiteSpace(qso.Call))
+            // A mensagem traz um cabeçalho ADIF (até <EOH>) e um registo.
+            var qso = AdifRecordParser.SplitRecords(adif).Select(AdifRecordParser.Parse).FirstOrDefault(q => q != null);
+            if (qso == null)
             {
                 _logger.LogDebug("WSJT-X Logged ADIF sem callsign — ignorado.");
                 return;
@@ -117,43 +115,6 @@ public class WsjtxUdpListener : IDisposable
         {
             _logger.LogWarning(ex, "Falha ao processar datagrama WSJT-X.");
         }
-    }
-
-    /// <summary>
-    /// Extrai os campos de um único registo ADIF (formato "&lt;TAG:len&gt;valor") para QsoRecord.
-    /// </summary>
-    internal static QsoRecord? ParseAdifRecord(string adif)
-    {
-        var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (Match m in AdifFieldRegex.Matches(adif))
-        {
-            var name  = m.Groups[1].Value;
-            if (!int.TryParse(m.Groups[2].Value, out var len)) continue;
-            var start = m.Index + m.Length;
-            if (start + len > adif.Length) continue;
-            fields[name] = adif.Substring(start, len);
-        }
-
-        if (!fields.TryGetValue("CALL", out var call) || string.IsNullOrWhiteSpace(call))
-            return null;
-
-        return new QsoRecord
-        {
-            Call        = call,
-            MyCall      = fields.GetValueOrDefault("STATION_CALLSIGN", string.Empty),
-            Band        = fields.GetValueOrDefault("BAND", string.Empty).ToLowerInvariant(),
-            Mode        = fields.GetValueOrDefault("MODE", string.Empty).ToUpperInvariant(),
-            Freq        = fields.GetValueOrDefault("FREQ", string.Empty),
-            QsoDate     = fields.GetValueOrDefault("QSO_DATE", string.Empty),
-            TimeOn      = fields.GetValueOrDefault("TIME_ON", string.Empty),
-            RstSent     = fields.GetValueOrDefault("RST_SENT", string.Empty),
-            RstRcvd     = fields.GetValueOrDefault("RST_RCVD", string.Empty),
-            GridSquare  = fields.GetValueOrDefault("GRIDSQUARE", string.Empty),
-            Name        = fields.GetValueOrDefault("NAME", string.Empty),
-            Comment     = fields.GetValueOrDefault("COMMENT", string.Empty),
-            EventType   = N1mmEventType.Add
-        };
     }
 
     public void Dispose()

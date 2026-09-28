@@ -62,6 +62,10 @@ public class ServiceRunner : IDisposable
                     sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<LogBeam.Core.Wsjtx.WsjtxUdpListener>>(),
                     appSettings.Wsjtx.UdpPort,
                     appSettings.Wsjtx.ListenAddress));
+                services.AddSingleton(sp => new LogBeam.Core.Adif.AdifUdpListener(
+                    sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<LogBeam.Core.Adif.AdifUdpListener>>(),
+                    appSettings.Log4om.UdpPort,
+                    appSettings.Log4om.ListenAddress));
                 services.AddSingleton<HamQthLookupService>();
                 services.AddSingleton<ApiClientService>();
                 services.AddSingleton<QsoQueueService>();

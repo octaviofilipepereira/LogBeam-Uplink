@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contactinfo>
+	<app>N1MM</app>
+	<contestname>DX</contestname>
+	<dbname>CS7BFV.s3db</dbname>
+	<contestnr>1</contestnr>
+	<timestamp>2026-09-28 21:21:09</timestamp>
+	<mycall>CT7BFV</mycall>
+	<band>14</band>
+	<rxfreq>1403800</rxfreq>
+	<txfreq>1403800</txfreq>
+	<operator>CT7BFV</operator>
+	<mode>CW</mode>
+	<call>CT1ABC</call>
+	<countryprefix>CT</countryprefix>
+	<wpxprefix>CT1</wpxprefix>
+	<stationprefix>CT7BFV</stationprefix>
+	<continent>EU</continent>
+	<snt>599</snt>
+	<sntnr>1248</sntnr>
+	<rcv>599</rcv>
+	<rcvnr>0</rcvnr>
+	<gridsquare></gridsquare>
+	<exchange1></exchange1>
+	<section></section>
+	<comment></comment>
+	<qth></qth>
+	<name>Test Contact</name>
+	<power></power>
+	<misctext></misctext>
+	<zone>14</zone>
+	<prec></prec>
+	<ck>0</ck>
+	<ismultiplier1>0</ismultiplier1>
+	<ismultiplier2>0</ismultiplier2>
+	<ismultiplier3>0</ismultiplier3>
+	<points>0</points>
+	<radionr>1</radionr>
+	<run1run2>1</run1run2>
+	<RoverLocation></RoverLocation>
+	<RadioInterfaced>0</RadioInterfaced>
+	<NetworkedCompNr>0</NetworkedCompNr>
+	<IsOriginal>True</IsOriginal>
+	<NetBiosName>SHACK-PC</NetBiosName>
+	<IsRunQSO>0</IsRunQSO>
+	<StationName>SHACK-PC</StationName>
+	<ID>4e2c7a4273c640caa9bd50c6d3d1c359</ID>
+	<IsClaimedQso>1</IsClaimedQso>
+	<oldtimestamp>2026-09-28 21:21:09</oldtimestamp>
+	<oldcall>CT1ABC</oldcall>
+	<SentExchange></SentExchange>
+	<CabrilloString>QSO:   14038 CW 2026-09-28 2121 CT7BFV        599  CT1ABC        599  Test Conta                                          </CabrilloString>
+</contactinfo>

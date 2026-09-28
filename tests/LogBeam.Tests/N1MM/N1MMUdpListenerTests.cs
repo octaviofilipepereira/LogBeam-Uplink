@@ -3,6 +3,7 @@
 // Licença GPL v3 (https://www.gnu.org/licenses/gpl-3.0.pt-br.html | https://www.gnu.org/licenses/gpl-3.0.html.en)
 
 using System.Xml.Linq;
+using LogBeam.Core.Models;
 using LogBeam.Core.N1MM;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -90,36 +91,64 @@ public class N1MMUdpListenerTests
         Assert.Equal(string.Empty, result);
     }
 
-    // ─── NormalizeBand ─────────────────────────────────────────────────────
+    // ─── Pacotes reais (Fixtures/N1MM) ─────────────────────────────────────
 
-    [Theory]
-    [InlineData("20m", "20m")]
-    [InlineData("40M", "40m")]
-    [InlineData("20", "20m")]
-    [InlineData("14", "20m")]
-    [InlineData("144", "2m")]
-    [InlineData(null, "")]
-    [InlineData("", "")]
-    public void NormalizeBand_MapsN1mmValues_ToAdifFormat(string? input, string expected)
+    private static List<QsoRecord> Receive(string fixture)
     {
-        var result = N1MMUdpListener.NormalizeBand(input);
-
-        Assert.Equal(expected, result);
+        var listener = MakeListener();
+        var received = new List<QsoRecord>();
+        listener.QsoReceived += (_, qso) => received.Add(qso);
+        listener.ProcessXml(Fixture.Text(fixture));
+        return received;
     }
 
-    // ─── NormalizeMode ─────────────────────────────────────────────────────
+    [Fact]
+    public void ContactInfo_Ssb_ReadsTimestampRstAndBand()
+    {
+        var qso = Assert.Single(Receive("N1MM/contactinfo_ssb.xml"));
+
+        Assert.Equal("EA1ABC", qso.Call);
+        Assert.Equal("CT7BFV", qso.MyCall);
+        Assert.Equal("20m", qso.Band);
+        Assert.Equal("SSB", qso.Mode);
+        Assert.Equal("14.2", qso.Freq);
+        Assert.Equal("20260928", qso.QsoDate);
+        Assert.Equal("211958", qso.TimeOn);
+        Assert.Equal("59", qso.RstSent);
+        Assert.Equal("59", qso.RstRcvd);
+        Assert.Equal(new DateTime(2026, 9, 28, 21, 19, 58, DateTimeKind.Utc), qso.QsoTimeUtc());
+    }
+
+    [Fact]
+    public void ContactInfo_Cw_ReadsThreeDigitRst()
+    {
+        var qso = Assert.Single(Receive("N1MM/contactinfo_cw.xml"));
+
+        Assert.Equal("CT1ABC", qso.Call);
+        Assert.Equal("CW", qso.Mode);
+        Assert.Equal("14.038", qso.Freq);
+        Assert.Equal("599", qso.RstSent);
+        Assert.Equal("599", qso.RstRcvd);
+    }
 
     [Theory]
-    [InlineData("USB", "SSB")]
-    [InlineData("LSB", "SSB")]
-    [InlineData("CW", "CW")]
-    [InlineData("ft8", "FT8")]
-    [InlineData("PSK63", "PSK")]
-    [InlineData(null, "")]
-    public void NormalizeMode_MapsN1mmValues_ToAdifFormat(string? input, string expected)
+    [InlineData("N1MM/contactreplace.xml")]
+    [InlineData("N1MM/contactdelete.xml")]
+    public void EditedOrDeletedQso_IsNotSent(string fixture)
     {
-        var result = N1MMUdpListener.NormalizeMode(input);
+        Assert.Empty(Receive(fixture));
+    }
 
-        Assert.Equal(expected, result);
+    [Theory]
+    [InlineData("2026-09-28 21:19:58", "20260928", "211958")]
+    [InlineData("", "", "")]
+    [InlineData(null, "", "")]
+    [InlineData("28/09/2026 21:19", "", "")]
+    public void ParseTimestamp_ConvertsN1mmUtcTimestamp(string? raw, string expectedDate, string expectedTime)
+    {
+        var (date, time) = N1MMUdpListener.ParseTimestamp(raw);
+
+        Assert.Equal(expectedDate, date);
+        Assert.Equal(expectedTime, time);
     }
 }

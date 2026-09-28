@@ -26,4 +26,9 @@
     <ProjectReference Include="..\..\src\LogBeam.Core\LogBeam.Core.csproj" />
   </ItemGroup>
 
+  <!-- Pacotes UDP reais (anonimizados) dos programas de logging — ver Fixtures/README.md -->
+  <ItemGroup>
+    <None Include="Fixtures\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

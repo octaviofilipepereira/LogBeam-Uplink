@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contactreplace>
+	<app>N1MM</app>
+	<contestname>DX</contestname>
+	<dbname>CS7BFV.s3db</dbname>
+	<contestnr>1</contestnr>
+	<timestamp>2026-09-28 21:23:46</timestamp>
+	<mycall>CT7BFV</mycall>
+	<band>14</band>
+	<rxfreq>1403800</rxfreq>
+	<txfreq>1403800</txfreq>
+	<operator>CT7BFV</operator>
+	<mode>CW</mode>
+	<call>EA1ABC</call>
+	<countryprefix>EA</countryprefix>
+	<wpxprefix>EA1</wpxprefix>
+	<stationprefix>CT7BFV</stationprefix>
+	<continent>EU</continent>
+	<snt>599</snt>
+	<sntnr>1247</sntnr>
+	<rcv>555</rcv>
+	<rcvnr>0</rcvnr>
+	<gridsquare></gridsquare>
+	<exchange1></exchange1>
+	<section></section>
+	<comment></comment>
+	<qth></qth>
+	<name></name>
+	<power></power>
+	<misctext></misctext>
+	<zone>14</zone>
+	<prec></prec>
+	<ck>0</ck>
+	<ismultiplier1>0</ismultiplier1>
+	<ismultiplier2>0</ismultiplier2>
+	<ismultiplier3>0</ismultiplier3>
+	<points>1</points>
+	<radionr>1</radionr>
+	<run1run2>1</run1run2>
+	<RoverLocation></RoverLocation>
+	<RadioInterfaced>0</RadioInterfaced>
+	<NetworkedCompNr>0</NetworkedCompNr>
+	<IsOriginal>True</IsOriginal>
+	<NetBiosName>SHACK-PC</NetBiosName>
+	<IsRunQSO>0</IsRunQSO>
+	<StationName>SHACK-PC</StationName>
+	<ID>dc1312b31e284d3b961da19eb07a29dc</ID>
+	<IsClaimedQso>1</IsClaimedQso>
+	<oldtimestamp>1900-01-01 00:00:00</oldtimestamp>
+	<oldcall></oldcall>
+	<SentExchange></SentExchange>
+	<CabrilloString>QSO:   14038 CW 2026-09-28 2123 CT7BFV        599  EA1ABC        555                                                      </CabrilloString>
+</contactreplace>

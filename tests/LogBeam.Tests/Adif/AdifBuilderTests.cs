@@ -41,7 +41,7 @@ public class AdifBuilderTests
     [InlineData("CWU", "CW")]
     [InlineData("CWL", "CW")]
     [InlineData("FT8", "FT8")]
-    [InlineData("PSK63", "PSK31")]
+    [InlineData("PSK63", "PSK63")]
     public void Build_NormalisesMode(string inputMode, string expectedAdifMode)
     {
         var adif = AdifBuilder.Build(MakeQso(mode: inputMode));

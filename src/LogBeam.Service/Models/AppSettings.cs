@@ -18,6 +18,7 @@ public class AppSettings
     public ApiSettings Api { get; set; } = new();
     public N1mmSettings N1mm { get; set; } = new();
     public WsjtxSettings Wsjtx { get; set; } = new();
+    public Log4omSettings Log4om { get; set; } = new();
     public ClubLogSettings ClubLog { get; set; } = new();
     public string LogLevel { get; set; } = "Information";
     public string LogPath { get; set; } = "logs/logbeam.log";
@@ -41,6 +42,19 @@ public class WsjtxSettings
 {
     public bool Enabled { get; set; } = false;
     public int  UdpPort { get; set; } = 2237;
+
+    /// <summary>127.0.0.1 = só este computador; 0.0.0.0 = toda a rede local.</summary>
+    public string ListenAddress { get; set; } = UdpListenAddress.Default;
+}
+
+/// <summary>
+/// Configurações do receptor de ADIF em texto por UDP, usado pelo Log4OM
+/// (ligação UDP OUTBOUND, mensagem ADIF_MESSAGE, "Broadcast" desligado, destino 127.0.0.1).
+/// </summary>
+public class Log4omSettings
+{
+    public bool Enabled { get; set; } = false;
+    public int  UdpPort { get; set; } = 2333;
 
     /// <summary>127.0.0.1 = só este computador; 0.0.0.0 = toda a rede local.</summary>
     public string ListenAddress { get; set; } = UdpListenAddress.Default;

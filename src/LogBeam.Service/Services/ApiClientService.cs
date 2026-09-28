@@ -78,7 +78,9 @@ public class ApiClientService
                 band = qso.Band,
                 mode = qso.Mode,
                 freq = string.IsNullOrEmpty(qso.Freq) ? (double?)null : double.TryParse(qso.Freq, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var f) ? f : (double?)null,
-                date_time = qso.ReceivedAt.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                // Hora do próprio QSO, em UTC: a confirmação LogBeam-a-LogBeam compara horas e os
+                // duplicados são detectados ao minuto. InvariantCulture garante ":" como separador.
+                date_time = qso.QsoTimeUtc().ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
                 rst_sent = qso.RstSent,
                 rst_received = qso.RstRcvd
             };

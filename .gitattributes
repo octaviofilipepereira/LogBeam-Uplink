@@ -1,0 +1,4 @@
+# Pacotes reais usados nos testes: bytes exactos, sem conversão de fins de linha
+tests/LogBeam.Tests/Fixtures/N1MM/* -text
+tests/LogBeam.Tests/Fixtures/Wsjtx/* -text
+tests/LogBeam.Tests/Fixtures/Log4OM/* -text
