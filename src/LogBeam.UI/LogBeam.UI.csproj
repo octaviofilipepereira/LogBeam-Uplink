@@ -39,6 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="LogBeam.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Resources\*" Exclude="Resources\*.ico" />
     <None Include="Resources\logbeam.ico" />
   </ItemGroup>

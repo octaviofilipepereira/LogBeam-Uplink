@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
+    <UseWindowsForms>true</UseWindowsForms>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -24,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\LogBeam.Core\LogBeam.Core.csproj" />
+    <ProjectReference Include="..\..\src\LogBeam.UI\LogBeam.UI.csproj" />
   </ItemGroup>
 
   <!-- Pacotes UDP reais (anonimizados) dos programas de logging — ver Fixtures/README.md -->

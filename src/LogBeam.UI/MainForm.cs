@@ -33,7 +33,7 @@ public class MainForm : Form
     // Top panel
     private Panel  _pnlTop  = null!;
     private Label  _lblTitle = null!;
-    private Button _btnPT = null!, _btnEN = null!;
+    private readonly Dictionary<string, Button> _langButtons = new();
 
     // Tabs
     private TabControl _tabs      = null!;
@@ -466,14 +466,14 @@ public class MainForm : Form
             Location  = new Point(12, 11)
         };
 
-        _btnPT = MakeLangButton("PT");
-        _btnEN = MakeLangButton("EN");
-        _btnPT.Click += (_, _) => ChangeLanguage("PT");
-        _btnEN.Click += (_, _) => ChangeLanguage("EN");
-
         _pnlTop.Controls.Add(_lblTitle);
-        _pnlTop.Controls.Add(_btnPT);
-        _pnlTop.Controls.Add(_btnEN);
+        foreach (var lang in L.Languages)
+        {
+            var btn = MakeLangButton(lang);
+            btn.Click += (_, _) => ChangeLanguage(lang);
+            _langButtons[lang] = btn;
+            _pnlTop.Controls.Add(btn);
+        }
         _pnlTop.Resize += (_, _) => PositionLangButtons();
 
         Controls.Add(_pnlTop);
@@ -495,8 +495,15 @@ public class MainForm : Form
 
     private void PositionLangButtons()
     {
-        _btnEN.Left = _pnlTop.Width - _btnEN.Width - 12;
-        _btnPT.Left = _btnEN.Left - _btnPT.Width - 4;
+        // Da direita para a esquerda, pela ordem inversa: PT EN ES FR fica alinhado à direita.
+        var left = _pnlTop.Width - 12;
+        foreach (var lang in L.Languages.Reverse())
+        {
+            var btn = _langButtons[lang];
+            left -= btn.Width;
+            btn.Left = left;
+            left -= 4;
+        }
     }
 
     // ─── Bottom Panel ──────────────────────────────────────────────────────
@@ -958,8 +965,8 @@ public class MainForm : Form
         _btnCancel.Text  = L.Get("btn_cancel");
         _btnExit.Text    = L.Get("btn_exit");
 
-        _btnPT.BackColor = L.Lang == "PT" ? Color.FromArgb(0, 102, 204) : Color.FromArgb(55, 55, 55);
-        _btnEN.BackColor = L.Lang == "EN" ? Color.FromArgb(0, 102, 204) : Color.FromArgb(55, 55, 55);
+        foreach (var (lang, btn) in _langButtons)
+            btn.BackColor = L.Lang == lang ? Color.FromArgb(0, 102, 204) : Color.FromArgb(55, 55, 55);
 
         _miFile.Text       = L.Get("menu_file");
         _miExportAdif.Text = L.Get("menu_export_adif");
