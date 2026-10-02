@@ -79,6 +79,7 @@ public class MainForm : Form
     // Advanced tab
     private Label    _lLogLevel = null!, _lLogPath = null!;
     private ComboBox _cboLogLevel = null!;
+    private CheckBox _chkNotifyEachQso = null!;
     private TextBox  _txtLogPath = null!;
 
     // Bottom panel
@@ -138,6 +139,7 @@ public class MainForm : Form
     private void BuildTrayIcon()
     {
         _iconBrand = LoadBrandIcon();
+        Icon       = _iconBrand;   // barra de título e barra de tarefas (sem isto, a janela fica com o ícone genérico)
 
         _trayMenu = new ContextMenuStrip { Font = new Font("Segoe UI", 9f) };
 
@@ -194,6 +196,8 @@ public class MainForm : Form
         {
             if (success) _qsoCount++;
             UpdateTray();
+            // Por omissão só as falhas geram aviso; o aviso por QSO enviado é opcional (separador Avançado).
+            if (success && !_prefs.NotifyEachQso) return;
             _tray.BalloonTipIcon = success ? ToolTipIcon.Info : ToolTipIcon.Warning;
             _tray.BalloonTipTitle = success ? L.Get("balloon_qso_sent") : L.Get("balloon_qso_failed");
             _tray.BalloonTipText  = $"{qso.Call} — {qso.Band} {qso.Mode}";
@@ -802,7 +806,7 @@ public class MainForm : Form
     {
         var t = MakeTable(_pgWsjtx, 4);
 
-        _chkWsjtxEnabled = new CheckBox { Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 6) };
+        _chkWsjtxEnabled = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 6) };
         t.Controls.Add(new Label(), 0, 0);
         t.Controls.Add(_chkWsjtxEnabled, 1, 0);
 
@@ -870,6 +874,7 @@ public class MainForm : Form
 
         _chkClEnabled = new CheckBox
         {
+            AutoSize = true,
             Anchor = AnchorStyles.Left | AnchorStyles.Top,
             Margin = new Padding(0, 6, 0, 6)
         };
@@ -897,6 +902,10 @@ public class MainForm : Form
 
         _txtLogPath = new TextBox();
         _lLogPath   = AddRow(t, 1, _txtLogPath);
+
+        _chkNotifyEachQso = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 6) };
+        t.Controls.Add(new Label(), 0, 2);
+        t.Controls.Add(_chkNotifyEachQso, 1, 2);
     }
 
     // ─── Idioma ────────────────────────────────────────────────────────────
@@ -958,6 +967,7 @@ public class MainForm : Form
 
         _lLogLevel.Text  = L.Get("lbl_log_level");
         _lLogPath.Text   = L.Get("lbl_log_path");
+        _chkNotifyEachQso.Text = L.Get("lbl_notify_each_qso");
 
         _miN1mmHelp.Text = L.Get("menu_n1mm_help");
 
@@ -1016,6 +1026,7 @@ public class MainForm : Form
         var idx = _cboLogLevel.Items.IndexOf(_settings.LogLevel);
         _cboLogLevel.SelectedIndex = idx >= 0 ? idx : 1;
         _txtLogPath.Text  = _settings.LogPath;
+        _chkNotifyEachQso.Checked = _prefs.NotifyEachQso;
     }
 
     private void CollectForm()
@@ -1065,6 +1076,9 @@ public class MainForm : Form
 
         _settings.LogLevel = _cboLogLevel.SelectedItem?.ToString() ?? "Information";
         _settings.LogPath  = _txtLogPath.Text.Trim();
+
+        _prefs.NotifyEachQso = _chkNotifyEachQso.Checked;
+        _prefsMgr.SavePrefs(_prefs);
     }
 
     // ─── Eventos ───────────────────────────────────────────────────────────

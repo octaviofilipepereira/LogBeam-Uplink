@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace LogBeam.Core.Wsjtx;
 
 /// <summary>
-/// Escuta os broadcasts UDP do WSJT-X (e compatíveis: JTDX, GridTracker, etc).
+/// Escuta os broadcasts UDP do WSJT-X (e de programas compatíveis, como o JTDX).
 /// Usa apenas a mensagem "Logged ADIF" (tipo 12) do protocolo — o WSJT-X envia-a
 /// automaticamente sempre que regista um QSO, já com o registo ADIF completo e
 /// normalizado, evitando ter de decifrar manualmente os restantes tipos de mensagem

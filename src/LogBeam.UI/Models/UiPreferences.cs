@@ -10,4 +10,7 @@ namespace LogBeam.UI.Models;
 public class UiPreferences
 {
     public string Language { get; set; } = "PT";
+
+    /// <summary>Aviso no tabuleiro a cada QSO enviado. Desligado: só falhas e confirmações LogBeam.</summary>
+    public bool NotifyEachQso { get; set; } = false;
 }

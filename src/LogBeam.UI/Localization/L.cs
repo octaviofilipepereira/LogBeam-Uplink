@@ -131,7 +131,7 @@ public static class L
         ["tab_hamqth"]           = ("HamQTH", "HamQTH", "HamQTH", "HamQTH"),
         ["tab_advanced"]         = ("Avançado", "Advanced", "Avanzado", "Avancé"),
         ["tab_n1mm"]             = ("N1MM+", "N1MM+", "N1MM+", "N1MM+"),
-        ["tab_wsjtx"]            = ("WSJT-X", "WSJT-X", "WSJT-X", "WSJT-X"),
+        ["tab_wsjtx"]            = ("WSJT-X / JTDX", "WSJT-X / JTDX", "WSJT-X / JTDX", "WSJT-X / JTDX"),
 
         // N1MM tab
         ["lbl_n1mm_port"]        = ("Porta UDP:", "UDP Port:", "Puerto UDP:", "Port UDP :"),
@@ -176,13 +176,13 @@ public static class L
                                     "N1MM+ is currently open. Changing the configuration now may get overwritten if N1MM+ saves its own settings. It's recommended to close N1MM+ first.\n\nContinue anyway?",
                                     "N1MM+ está abierto. Si guarda su propia configuración, puede sobrescribir este cambio. Se recomienda cerrar N1MM+ primero.\n\n¿Continuar de todos modos?",
                                     "N1MM+ est ouvert. S'il enregistre ses propres paramètres, il peut écraser cette modification. Il est recommandé de fermer N1MM+ d'abord.\n\nContinuer quand même ?"),
-        ["lbl_wsjtx_enabled"]   = ("Activar recepção do WSJT-X", "Enable WSJT-X reception",
-                                   "Activar recepción de WSJT-X", "Activer la réception de WSJT-X"),
-        ["lbl_wsjtx_port"]      = ("Porta UDP do WSJT-X:", "WSJT-X UDP Port:", "Puerto UDP de WSJT-X:", "Port UDP WSJT-X :"),
-        ["hint_wsjtx"]          = ("No WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, porta 2237 (valores por omissão). Compatível com o JTDX e outros programas que usem o mesmo protocolo.",
-                                   "In WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, port 2237 (the defaults). Compatible with JTDX and other programs using the same protocol.",
-                                   "En WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, puerto 2237 (valores por defecto). Compatible con JTDX y otros programas que usen el mismo protocolo.",
-                                   "Dans WSJT-X : File → Settings → Reporting → UDP Server : 127.0.0.1, port 2237 (valeurs par défaut). Compatible avec JTDX et les autres programmes utilisant le même protocole."),
+        ["lbl_wsjtx_enabled"]   = ("Activar recepção do WSJT-X / JTDX", "Enable WSJT-X / JTDX reception",
+                                   "Activar recepción de WSJT-X / JTDX", "Activer la réception de WSJT-X / JTDX"),
+        ["lbl_wsjtx_port"]      = ("Porta UDP:", "UDP Port:", "Puerto UDP:", "Port UDP :"),
+        ["hint_wsjtx"]          = ("No WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, porta 2237 (valores por omissão). No JTDX: a mesma configuração e, além disso, marcar \"Enable sending logged QSO ADIF data\".",
+                                   "In WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, port 2237 (the defaults). In JTDX: the same settings, and also tick \"Enable sending logged QSO ADIF data\".",
+                                   "En WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, puerto 2237 (valores por defecto). En JTDX: la misma configuración y, además, marcar \"Enable sending logged QSO ADIF data\".",
+                                   "Dans WSJT-X : File → Settings → Reporting → UDP Server : 127.0.0.1, port 2237 (valeurs par défaut). Dans JTDX : les mêmes réglages, en cochant aussi « Enable sending logged QSO ADIF data »."),
 
         // N1MM help submenu
         ["menu_n1mm_help"]       = ("Configurar o N1MM+...", "Configure N1MM+...", "Configurar N1MM+...", "Configurer N1MM+..."),
@@ -302,6 +302,8 @@ public static class L
         // Advanced
         ["lbl_log_level"]        = ("Nível de log:", "Log Level:", "Nivel de log:", "Niveau de journal :"),
         ["lbl_log_path"]         = ("Ficheiro de log:", "Log File:", "Archivo de log:", "Fichier journal :"),
+        ["lbl_notify_each_qso"]  = ("Avisar a cada QSO enviado", "Notify for every QSO sent",
+                                    "Avisar de cada QSO enviado", "Notifier chaque QSO envoyé"),
 
         // Buttons
         ["btn_save"]             = ("Guardar", "Save", "Guardar", "Enregistrer"),
