@@ -44,9 +44,13 @@ public class MainForm : Form
     private NumericUpDown _nN1mmPort = null!;
     private TextBox       _txtN1mmAddr = null!;
     private Button         _btnN1mmDetect = null!, _btnN1mmAutoConfig = null!;
-    private readonly LogBeam.Core.N1MM.N1MMConfigManager _n1mmConfig =
-        new(Microsoft.Extensions.Logging.Abstractions.NullLogger<LogBeam.Core.N1MM.N1MMConfigManager>.Instance);
     private string? _n1mmFolder;
+
+    // Criado a cada uso com o logger global do Serilog (configurado pelo ServiceRunner e
+    // substituído quando o serviço reinicia), para os erros do N1MM+ ficarem no log.
+    private static LogBeam.Core.N1MM.N1MMConfigManager N1mmConfig() =>
+        new(Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger<LogBeam.Core.N1MM.N1MMConfigManager>(
+            new Serilog.Extensions.Logging.SerilogLoggerFactory(Serilog.Log.Logger)));
 
     // WSJT-X tab
     private CheckBox       _chkWsjtxEnabled = null!;
@@ -829,14 +833,15 @@ public class MainForm : Form
 
     private void OnN1mmDetect(object? s, EventArgs e)
     {
-        _n1mmFolder = _n1mmConfig.FindN1MMFolder();
+        var n1mmConfig = N1mmConfig();
+        _n1mmFolder = n1mmConfig.FindN1MMFolder();
         if (_n1mmFolder is null)
         {
             _lN1mmStatus.Text = L.Get("n1mm_status_not_found");
             return;
         }
 
-        var status = _n1mmConfig.ReadStatus(_n1mmFolder, (int)_nN1mmPort.Value);
+        var status = n1mmConfig.ReadStatus(_n1mmFolder, (int)_nN1mmPort.Value);
         _lN1mmStatus.Text = status switch
         {
             LogBeam.Core.N1MM.N1MMBroadcastStatus.ConfiguredCorrectly    => L.Get("n1mm_status_ok"),
@@ -848,22 +853,29 @@ public class MainForm : Form
 
     private void OnN1mmAutoConfig(object? s, EventArgs e)
     {
-        _n1mmFolder ??= _n1mmConfig.FindN1MMFolder();
+        var n1mmConfig = N1mmConfig();
+        _n1mmFolder ??= n1mmConfig.FindN1MMFolder();
         if (_n1mmFolder is null)
         {
             _lN1mmStatus.Text = L.Get("n1mm_status_not_found");
             return;
         }
 
-        if (_n1mmConfig.IsN1MMRunning())
+        var port = (int)_nN1mmPort.Value;
+        if (n1mmConfig.ReadStatus(_n1mmFolder, port) != LogBeam.Core.N1MM.N1MMBroadcastStatus.ConfiguredCorrectly
+            && n1mmConfig.IsN1MMRunning())
         {
             var confirm = MessageBox.Show(L.Get("n1mm_confirm_running"), L.Get("n1mm_confirm_title"),
                 MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm != DialogResult.Yes) return;
         }
 
-        var ok = _n1mmConfig.ApplyConfiguration(_n1mmFolder, "127.0.0.1", (int)_nN1mmPort.Value);
-        _lN1mmStatus.Text = ok ? L.Get("n1mm_status_configured") : L.Get("n1mm_status_config_failed");
+        _lN1mmStatus.Text = n1mmConfig.ApplyConfiguration(_n1mmFolder, "127.0.0.1", port) switch
+        {
+            LogBeam.Core.N1MM.N1MMApplyResult.AlreadyConfigured => L.Get("n1mm_status_ok"),
+            LogBeam.Core.N1MM.N1MMApplyResult.Applied           => L.Get("n1mm_status_configured"),
+            _                                                    => L.Get("n1mm_status_config_failed")
+        };
     }
 
     private void BuildClubLogTab()
