@@ -3,7 +3,9 @@
 // Licença GPL v3 (https://www.gnu.org/licenses/gpl-3.0.pt-br.html | https://www.gnu.org/licenses/gpl-3.0.html.en)
 
 using System.Drawing;
+using System.Text.Json;
 using System.Windows.Forms;
+using LogBeam.Core.Api;
 using LogBeam.Core.Models;
 using LogBeam.Service.Models;
 using LogBeam.Service.Settings;
@@ -25,6 +27,7 @@ public class MainForm : Form
     private NotifyIcon  _tray     = null!;
     private ContextMenuStrip _trayMenu = null!;
     private ToolStripMenuItem _tmiStart = null!, _tmiStop = null!;
+    private ToolStripMenuItem _tmiOpen = null!, _tmiSendTo = null!, _tmiExit = null!;
     private int _qsoCount;
     private Icon? _iconBrand;
     // Menu
@@ -90,6 +93,7 @@ public class MainForm : Form
     private Panel  _pnlBottom = null!;
     private Button _btnSave = null!, _btnCancel = null!, _btnExit = null!;
     private Label  _lblStatus = null!;
+    private readonly ToolTip _statusTip = new();
 
     // ──────────────────────────────────────────────────────────────────────
     public MainForm()
@@ -147,8 +151,11 @@ public class MainForm : Form
 
         _trayMenu = new ContextMenuStrip { Font = new Font("Segoe UI", 9f) };
 
-        var tmiOpen = new ToolStripMenuItem();
-        tmiOpen.Click += (_, _) => ShowWindow();
+        _tmiOpen = new ToolStripMenuItem();
+        _tmiOpen.Click += (_, _) => ShowWindow();
+
+        // Logbooks de destino: um clique liga/desliga e grava logo (ex. passar ao logbook de um concurso).
+        _tmiSendTo = new ToolStripMenuItem();
 
         _tmiStart = new ToolStripMenuItem();
         _tmiStart.Click += (_, _) => { _qsoCount = 0; _runner.Start(); UpdateTray(); };
@@ -156,15 +163,17 @@ public class MainForm : Form
         _tmiStop = new ToolStripMenuItem();
         _tmiStop.Click += (_, _) => { _runner.Stop(); UpdateTray(); };
 
-        _trayMenu.Items.Add(tmiOpen);
+        _trayMenu.Items.Add(_tmiOpen);
+        _trayMenu.Items.Add(new ToolStripSeparator());
+        _trayMenu.Items.Add(_tmiSendTo);
         _trayMenu.Items.Add(new ToolStripSeparator());
         _trayMenu.Items.Add(_tmiStart);
         _trayMenu.Items.Add(_tmiStop);
         _trayMenu.Items.Add(new ToolStripSeparator());
 
-        var tmiExit = new ToolStripMenuItem();
-        tmiExit.Click += (_, _) => ExitApp();
-        _trayMenu.Items.Add(tmiExit);
+        _tmiExit = new ToolStripMenuItem();
+        _tmiExit.Click += (_, _) => ExitApp();
+        _trayMenu.Items.Add(_tmiExit);
 
         _tray = new NotifyIcon
         {
@@ -174,10 +183,8 @@ public class MainForm : Form
         };
         _tray.DoubleClick += (_, _) => ShowWindow();
 
-        // textos iniciais
-        tmiOpen.Text  = L.Get("tray_open");
-        tmiExit.Text  = L.Get("tray_exit");
         UpdateTray();
+        RefreshTrayProfiles();
     }
 
     private void UpdateTray()
@@ -189,8 +196,59 @@ public class MainForm : Form
 
         _tmiStart.Enabled    = !running;
         _tmiStop.Enabled     = running;
+        _tmiOpen.Text        = L.Get("tray_open");
+        _tmiSendTo.Text      = L.Get("tray_send_to");
         _tmiStart.Text       = L.Get("tray_start");
         _tmiStop.Text        = L.Get("tray_stop");
+        _tmiExit.Text        = L.Get("tray_exit");
+    }
+
+    /// <summary>Submenu "Enviar para": um item por logbook, marcado se estiver activo.</summary>
+    private void RefreshTrayProfiles()
+    {
+        _tmiSendTo.DropDownItems.Clear();
+        foreach (var p in _settings.Api.Profiles)
+        {
+            var item = new ToolStripMenuItem(string.IsNullOrWhiteSpace(p.Name) ? p.InstanceId : p.Name)
+            {
+                Checked = p.Enabled,
+                Tag     = p.Id
+            };
+            item.Click += OnTrayToggleProfile;
+            _tmiSendTo.DropDownItems.Add(item);
+        }
+
+        if (_tmiSendTo.DropDownItems.Count == 0)
+            _tmiSendTo.DropDownItems.Add(new ToolStripMenuItem(L.Get("tray_no_logbooks")) { Enabled = false });
+    }
+
+    /// <summary>Liga/desliga um logbook a partir do tabuleiro: grava logo e reinicia o serviço.</summary>
+    private void OnTrayToggleProfile(object? s, EventArgs e)
+    {
+        if (s is not ToolStripMenuItem { Tag: string id }) return;
+        var profile = _settings.Api.Profiles.FirstOrDefault(p => p.Id == id);
+        if (profile is null) return;
+
+        profile.Enabled = !profile.Enabled;
+        try
+        {
+            _mgr.Save(_settings);
+            _runner.Stop();
+            _runner.Start();
+        }
+        catch (Exception ex)
+        {
+            profile.Enabled = !profile.Enabled;
+            SetStatus("err", $"{L.Get("status_error")}: {ex.Message}");
+        }
+
+        // A janela pode ter alterações por gravar: muda-se só a caixa deste logbook.
+        foreach (DataGridViewRow row in _gridProfiles.Rows)
+            if (row.Tag is ApiProfile rp && rp.Id == id)
+                row.Cells["Enabled"].Value = profile.Enabled;
+
+        RefreshTrayProfiles();
+        UpdateTray();
     }
 
     private void OnQsoResult(QsoRecord qso, bool success)
@@ -524,12 +582,17 @@ public class MainForm : Form
             BackColor = Color.FromArgb(242, 242, 242)
         };
 
+        // Largura limitada ao espaço à esquerda dos botões; o texto que não couber termina em "…"
+        // e aparece completo ao passar o rato.
         _lblStatus = new Label
         {
-            AutoSize  = true,
-            Location  = new Point(12, 17),
-            ForeColor = Color.DimGray,
-            Font      = new Font("Segoe UI", 8.5f)
+            AutoSize     = false,
+            AutoEllipsis = true,
+            TextAlign    = ContentAlignment.MiddleLeft,
+            Location     = new Point(12, 9),
+            Height       = 34,
+            ForeColor    = Color.DimGray,
+            Font         = new Font("Segoe UI", 8.5f)
         };
 
         _btnSave   = MakeActionButton("", Color.FromArgb(0, 102, 204), Color.White);
@@ -566,6 +629,7 @@ public class MainForm : Form
         _btnExit.Left   = _pnlBottom.Width - _btnExit.Width - 12;
         _btnCancel.Left = _btnExit.Left - _btnCancel.Width - 8;
         _btnSave.Left   = _btnCancel.Left - _btnSave.Width - 8;
+        _lblStatus.Width = Math.Max(0, _btnSave.Left - _lblStatus.Left - 12);
     }
 
     // ─── Tabs ──────────────────────────────────────────────────────────────
@@ -685,10 +749,11 @@ public class MainForm : Form
             Margin                  = new Padding(0, 4, 0, 4),
             Font                    = new Font("Segoe UI", 8.5f)
         };
-        _gridProfiles.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Enabled",    HeaderText = "",  FillWeight = 8  });
+        _gridProfiles.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Enabled",    FillWeight = 18 });
         _gridProfiles.Columns.Add(new DataGridViewTextBoxColumn { Name = "Name",       FillWeight = 22 });
-        _gridProfiles.Columns.Add(new DataGridViewTextBoxColumn { Name = "InstanceId", FillWeight = 25 });
-        _gridProfiles.Columns.Add(new DataGridViewTextBoxColumn { Name = "ApiKey",     FillWeight = 45 });
+        _gridProfiles.Columns.Add(new DataGridViewTextBoxColumn { Name = "InstanceId", FillWeight = 22 });
+        _gridProfiles.Columns.Add(new DataGridViewTextBoxColumn { Name = "ApiKey",     FillWeight = 38 });
+        _gridProfiles.CellEndEdit += OnProfileCellEndEdit;
         t.Controls.Add(new Label(), 0, 1);
         t.Controls.Add(_gridProfiles, 1, 1);
 
@@ -746,6 +811,68 @@ public class MainForm : Form
     {
         var idx = _gridProfiles.Rows.Add(true, "", "", "");
         _gridProfiles.Rows[idx].Tag = new ApiProfile();
+    }
+
+    /// <summary>Ao sair da célula: o link do logbook passa a Instance ID; a API Key fica sem espaços e em minúsculas.</summary>
+    private void OnProfileCellEndEdit(object? s, DataGridViewCellEventArgs e)
+    {
+        var cell = _gridProfiles.Rows[e.RowIndex].Cells[e.ColumnIndex];
+        var text = cell.Value?.ToString() ?? string.Empty;
+
+        switch (_gridProfiles.Columns[e.ColumnIndex].Name)
+        {
+            case "InstanceId":
+                if (LogbookCredentials.ExtractInstanceId(text) is { } id) { cell.Value = id; cell.ErrorText = string.Empty; }
+                break;
+            case "ApiKey":
+                cell.Value = LogbookCredentials.NormalizeApiKey(text);
+                if (LogbookCredentials.IsApiKey(text)) cell.ErrorText = string.Empty;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Verifica o formato do Instance ID e da API Key de cada perfil. As células erradas ficam
+    /// com o ícone de erro (a explicação completa aparece ao passar o rato) e o cursor vai para a
+    /// primeira. Devolve uma mensagem curta para a barra de estado, ou null se estiver tudo bem.
+    /// As linhas vazias são ignoradas (não são gravadas).
+    /// </summary>
+    private string? ProfileFormatError()
+    {
+        string? first = null;
+        foreach (DataGridViewRow row in _gridProfiles.Rows)
+        {
+            if (row.IsNewRow) continue;
+            var idCell  = row.Cells["InstanceId"];
+            var keyCell = row.Cells["ApiKey"];
+            idCell.ErrorText = keyCell.ErrorText = string.Empty;
+
+            var name = row.Cells["Name"].Value?.ToString()?.Trim() ?? string.Empty;
+            var iid  = idCell.Value?.ToString() ?? string.Empty;
+            var key  = keyCell.Value?.ToString() ?? string.Empty;
+            if (name.Length == 0 && string.IsNullOrWhiteSpace(iid) && string.IsNullOrWhiteSpace(key)) continue;
+
+            var label = name.Length > 0 ? name : iid.Trim();
+            if (LogbookCredentials.ExtractInstanceId(iid) is null)
+            {
+                idCell.ErrorText = L.Get("status_bad_instance");
+                first ??= MarkError(idCell, $"{label}: {L.Get("status_bad_instance_short")}");
+            }
+            if (!LogbookCredentials.IsApiKey(key))
+            {
+                keyCell.ErrorText = L.Get("status_bad_api_key");
+                first ??= MarkError(keyCell, $"{label}: {L.Get("status_bad_api_key_short")}");
+            }
+        }
+        return first;
+    }
+
+    private string MarkError(DataGridViewCell cell, string message)
+    {
+        _tabs.SelectedTab = _pgApi;
+        _gridProfiles.CurrentCell = cell;
+        _gridProfiles.Focus();
+        return message;
     }
 
     private void OnRemoveProfile(object? s, EventArgs e)
@@ -927,6 +1054,8 @@ public class MainForm : Form
         _prefs.Language   = lang;
         _prefsMgr.SavePrefs(_prefs);
         UpdateAllText();
+        UpdateTray();
+        RefreshTrayProfiles();
     }
 
     private void UpdateAllText()
@@ -950,6 +1079,7 @@ public class MainForm : Form
         _btnTestApi.Text     = L.Get("btn_test_api");
         _btnProfileAdd.Text    = L.Get("btn_profile_add");
         _btnProfileRemove.Text = L.Get("btn_profile_remove");
+        _gridProfiles.Columns["Enabled"].HeaderText    = L.Get("col_profile_enabled");
         _gridProfiles.Columns["Name"].HeaderText       = L.Get("col_profile_name");
         _gridProfiles.Columns["InstanceId"].HeaderText = L.Get("col_profile_instance");
         _gridProfiles.Columns["ApiKey"].HeaderText     = L.Get("col_profile_key");
@@ -1047,7 +1177,8 @@ public class MainForm : Form
         _settings.MyLatitude  = _nLat.Value;
         _settings.MyLongitude = _nLon.Value;
 
-        _settings.Api.BaseUrl           = _txtApiUrl.Text.Trim().TrimEnd('/');
+        var baseUrl                     = _txtApiUrl.Text.Trim().TrimEnd('/');
+        _settings.Api.BaseUrl           = baseUrl.Length > 0 ? baseUrl : ApiSettings.DefaultBaseUrl;
         _settings.Api.TimeoutSeconds    = (int)_nTimeout.Value;
         _settings.Api.RetryCount        = (int)_nRetry.Value;
         _settings.Api.RetryDelaySeconds = (int)_nDelay.Value;
@@ -1058,13 +1189,14 @@ public class MainForm : Form
         {
             if (row.IsNewRow) continue;
             var existing = row.Tag as ApiProfile;
+            var rawId    = row.Cells["InstanceId"].Value?.ToString()?.Trim() ?? string.Empty;
             var profile = new ApiProfile
             {
                 Id         = existing?.Id ?? Guid.NewGuid().ToString("N"),
                 Enabled    = row.Cells["Enabled"].Value is bool b && b,
                 Name       = row.Cells["Name"].Value?.ToString()?.Trim() ?? string.Empty,
-                InstanceId = row.Cells["InstanceId"].Value?.ToString()?.Trim() ?? string.Empty,
-                ApiKey     = row.Cells["ApiKey"].Value?.ToString()?.Trim() ?? string.Empty
+                InstanceId = LogbookCredentials.ExtractInstanceId(rawId) ?? rawId,
+                ApiKey     = LogbookCredentials.NormalizeApiKey(row.Cells["ApiKey"].Value?.ToString())
             };
             if (!string.IsNullOrEmpty(profile.Name) || !string.IsNullOrEmpty(profile.InstanceId) || !string.IsNullOrEmpty(profile.ApiKey))
                 profiles.Add(profile);
@@ -1096,6 +1228,11 @@ public class MainForm : Form
     // ─── Eventos ───────────────────────────────────────────────────────────
     private void OnSave(object? s, EventArgs e)
     {
+        // Uma chave ou Instance ID inválidos fariam a API recusar todos os QSOs (401/404), que
+        // seriam descartados: não se grava até estarem certos.
+        _gridProfiles.EndEdit();
+        if (ProfileFormatError() is { } formatError) { SetStatus("err", formatError); return; }
+
         CollectForm();
         try
         {
@@ -1109,12 +1246,14 @@ public class MainForm : Form
         {
             SetStatus("err", $"{L.Get("status_error")}: {ex.Message}");
         }
+        RefreshTrayProfiles();
     }
 
     private void OnCancel(object? s, EventArgs e)
     {
         _settings = _mgr.Load();
         PopulateForm();
+        RefreshTrayProfiles();
         SetStatus("", "");
     }
 
@@ -1123,6 +1262,7 @@ public class MainForm : Form
         _gridProfiles.EndEdit();
         var url = _txtApiUrl.Text.Trim().TrimEnd('/');
         if (string.IsNullOrEmpty(url)) { SetStatus("err", L.Get("status_no_url")); return; }
+        if (ProfileFormatError() is { } formatError) { SetStatus("err", formatError); return; }
 
         var profiles = new List<(string Name, string InstanceId, string ApiKey)>();
         foreach (DataGridViewRow row in _gridProfiles.Rows)
@@ -1130,9 +1270,9 @@ public class MainForm : Form
             if (row.IsNewRow) continue;
             if (row.Cells["Enabled"].Value is not bool enabled || !enabled) continue;
             var name = row.Cells["Name"].Value?.ToString() ?? "";
-            var iid  = row.Cells["InstanceId"].Value?.ToString()?.Trim() ?? "";
-            var key  = row.Cells["ApiKey"].Value?.ToString()?.Trim() ?? "";
-            if (!string.IsNullOrEmpty(iid) && !string.IsNullOrEmpty(key))
+            var iid  = LogbookCredentials.ExtractInstanceId(row.Cells["InstanceId"].Value?.ToString());
+            var key  = LogbookCredentials.NormalizeApiKey(row.Cells["ApiKey"].Value?.ToString());
+            if (iid is not null && key.Length > 0)
                 profiles.Add((string.IsNullOrEmpty(name) ? iid : name, iid, key));
         }
 
@@ -1140,7 +1280,7 @@ public class MainForm : Form
 
         _btnTestApi.Enabled = false;
         SetStatus("", L.Get("status_testing"));
-        var results = new List<string>();
+        var results = new List<(bool Ok, string Text)>();
         try
         {
             using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
@@ -1148,25 +1288,37 @@ public class MainForm : Form
             {
                 try
                 {
-                    var request = new HttpRequestMessage(HttpMethod.Get, $"{url}/api/instance/{p.InstanceId}");
+                    // /apikey/verify exige a chave (GET /instance/{id} é público e aceitava qualquer chave).
+                    var request = new HttpRequestMessage(HttpMethod.Get, $"{url}/api/instance/{p.InstanceId}/apikey/verify");
                     request.Headers.Add("X-API-Key", p.ApiKey);
                     var r = await http.SendAsync(request);
 
-                    results.Add(r.IsSuccessStatusCode ? $"{p.Name}: {L.Get("status_api_ok")}"
-                        : r.StatusCode == System.Net.HttpStatusCode.Unauthorized ? $"{p.Name}: {L.Get("status_api_unauthorized")}"
-                        : r.StatusCode == System.Net.HttpStatusCode.NotFound     ? $"{p.Name}: {L.Get("status_api_not_found")}"
-                        : $"{p.Name}: HTTP {(int)r.StatusCode}");
+                    results.Add(r.IsSuccessStatusCode
+                        ? (true, $"{p.Name}: {string.Format(L.Get("status_api_ok"), ReadCallsign(await r.Content.ReadAsStringAsync()))}")
+                        : r.StatusCode == System.Net.HttpStatusCode.Unauthorized ? (false, $"{p.Name}: {L.Get("status_api_unauthorized")}")
+                        : r.StatusCode == System.Net.HttpStatusCode.NotFound     ? (false, $"{p.Name}: {L.Get("status_api_not_found")}")
+                        : (false, $"{p.Name}: HTTP {(int)r.StatusCode}"));
                 }
                 catch (Exception ex)
                 {
-                    results.Add($"{p.Name}: {ex.Message}");
+                    results.Add((false, $"{p.Name}: {ex.Message}"));
                 }
             }
 
-            var allOk = results.TrueForAll(r => r.EndsWith(L.Get("status_api_ok")));
-            SetStatus(allOk ? "ok" : "err", string.Join("   ", results));
+            SetStatus(results.TrueForAll(r => r.Ok) ? "ok" : "err", string.Join("   ", results.Select(r => r.Text)));
         }
         finally { _btnTestApi.Enabled = true; }
+    }
+
+    /// <summary>Indicativo do logbook na resposta de /apikey/verify ({"data":{"valid":true,"callsign":"…"}}).</summary>
+    private static string ReadCallsign(string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement.GetProperty("data").GetProperty("callsign").GetString() ?? "?";
+        }
+        catch { return "?"; }
     }
 
     private void SetStatus(string type, string msg)
@@ -1174,6 +1326,7 @@ public class MainForm : Form
         _lblStatus.Text      = msg;
         _lblStatus.ForeColor = type == "ok"  ? Color.FromArgb(0, 128, 0) :
                                type == "err" ? Color.Crimson : Color.DimGray;
+        _statusTip.SetToolTip(_lblStatus, msg);
     }
 }
 

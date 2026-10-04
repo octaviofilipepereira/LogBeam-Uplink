@@ -86,7 +86,9 @@ public class HamQthSettings
 /// </summary>
 public class ApiSettings
 {
-    public string BaseUrl { get; set; } = string.Empty;
+    public const string DefaultBaseUrl = "https://api.logbeam.org";
+
+    public string BaseUrl { get; set; } = DefaultBaseUrl;
 
     /// <summary>
     /// Logbooks LogBeam para onde enviar cada QSO. Cada perfil activo recebe uma

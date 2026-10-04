@@ -135,6 +135,10 @@ public class SettingsManager
                 catch { /* mantém o valor original — provavelmente já em texto simples */ }
             }
 
+            // Instalações antigas gravaram o endereço da API vazio.
+            if (string.IsNullOrWhiteSpace(settings.Api.BaseUrl))
+                settings.Api.BaseUrl = ApiSettings.DefaultBaseUrl;
+
             _logger?.LogInformation("Configurações carregadas de {Path}", _configPath);
             return settings;
         }
