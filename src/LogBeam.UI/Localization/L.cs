@@ -30,6 +30,8 @@ public static class L
                                     "Ningún logbook configurado", "Aucun logbook configuré"),
         ["svc_started"]          = ("Serviço iniciado.", "Service started.", "Servicio iniciado.", "Service démarré."),
         ["svc_stopped"]          = ("Serviço parado.", "Service stopped.", "Servicio detenido.", "Service arrêté."),
+        ["busy_stopping"]        = ("A parar o serviço…", "Stopping the service…", "Deteniendo el servicio…", "Arrêt du service…"),
+        ["busy_restarting"]      = ("A reiniciar o serviço…", "Restarting the service…", "Reiniciando el servicio…", "Redémarrage du service…"),
         ["svc_error"]            = ("Erro no serviço.", "Service error.", "Error en el servicio.", "Erreur du service."),
         ["balloon_qso_sent"]     = ("QSO enviado", "QSO sent", "QSO enviado", "QSO envoyé"),
         ["balloon_qso_failed"]   = ("Falha ao enviar o QSO", "Failed to send QSO",

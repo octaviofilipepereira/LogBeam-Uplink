@@ -94,6 +94,8 @@ public class MainForm : Form
     private Button _btnSave = null!, _btnCancel = null!, _btnExit = null!;
     private Label  _lblStatus = null!;
     private readonly ToolTip _statusTip = new();
+    private Panel? _pnlBusy;
+    private bool   _exiting;
 
     // ──────────────────────────────────────────────────────────────────────
     public MainForm()
@@ -161,7 +163,7 @@ public class MainForm : Form
         _tmiStart.Click += (_, _) => { _qsoCount = 0; _runner.Start(); UpdateTray(); };
 
         _tmiStop = new ToolStripMenuItem();
-        _tmiStop.Click += (_, _) => { _runner.Stop(); UpdateTray(); };
+        _tmiStop.Click += async (_, _) => { await Task.Run(_runner.Stop); UpdateTray(); };
 
         _trayMenu.Items.Add(_tmiOpen);
         _trayMenu.Items.Add(new ToolStripSeparator());
@@ -223,7 +225,7 @@ public class MainForm : Form
     }
 
     /// <summary>Liga/desliga um logbook a partir do tabuleiro: grava logo e reinicia o serviço.</summary>
-    private void OnTrayToggleProfile(object? s, EventArgs e)
+    private async void OnTrayToggleProfile(object? s, EventArgs e)
     {
         if (s is not ToolStripMenuItem { Tag: string id }) return;
         var profile = _settings.Api.Profiles.FirstOrDefault(p => p.Id == id);
@@ -233,8 +235,7 @@ public class MainForm : Form
         try
         {
             _mgr.Save(_settings);
-            _runner.Stop();
-            _runner.Start();
+            await RestartServiceAsync();
         }
         catch (Exception ex)
         {
@@ -254,7 +255,7 @@ public class MainForm : Form
     private void OnQsoResult(QsoRecord qso, bool success)
     {
         if (IsDisposed || !IsHandleCreated) return;
-        Invoke(() =>
+        BeginInvoke(() =>
         {
             if (success) _qsoCount++;
             UpdateTray();
@@ -270,7 +271,7 @@ public class MainForm : Form
     private void OnQsoConfirmedByLogbeam(QsoRecord qso)
     {
         if (IsDisposed || !IsHandleCreated) return;
-        Invoke(() =>
+        BeginInvoke(() =>
         {
             _tray.BalloonTipIcon  = ToolTipIcon.Info;
             _tray.BalloonTipTitle = L.Get("balloon_confirmed_title");
@@ -301,9 +302,46 @@ public class MainForm : Form
         }
     }
 
-    private void ExitApp()
+    /// <summary>
+    /// Pára o serviço fora da thread da janela, para ela continuar a responder; o serviço avisa
+    /// a janela com BeginInvoke, por isso esperar por ele aqui não cria um bloqueio mútuo.
+    /// </summary>
+    private async Task RestartServiceAsync()
     {
-        _runner.Stop();
+        await Task.Run(_runner.Stop);
+        _runner.Start();
+    }
+
+    private void ShowBusy(string message)
+    {
+        if (_pnlBusy is null)
+        {
+            _pnlBusy = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(24, 24, 24) };
+            _pnlBusy.Controls.Add(new Label
+            {
+                Name      = "msg",
+                Dock      = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                ForeColor = Color.White,
+                Font      = new Font("Segoe UI", 13f, FontStyle.Bold)
+            });
+            Controls.Add(_pnlBusy);
+        }
+        _pnlBusy.Controls["msg"]!.Text = message;
+        _pnlBusy.Visible = true;
+        _pnlBusy.BringToFront();
+        _pnlBusy.Refresh();
+    }
+
+    private async void ExitApp()
+    {
+        if (_exiting) return;
+        _exiting = true;
+
+        ShowBusy(L.Get("busy_stopping"));
+        _tray.Text = L.Get("busy_stopping");
+        await Task.Run(_runner.Stop);
+
         _tray.Visible = false;
         _tray.Dispose();
         if (_iconBrand is not null && !ReferenceEquals(_iconBrand, SystemIcons.Application))
@@ -314,7 +352,7 @@ public class MainForm : Form
     private void OnServiceStatusChanged(string status)
     {
         if (IsDisposed || !IsHandleCreated) return;
-        Invoke(() =>
+        BeginInvoke(() =>
         {
             UpdateTray();
             SetStatus(status == "running" ? "ok" :
@@ -1226,7 +1264,7 @@ public class MainForm : Form
     }
 
     // ─── Eventos ───────────────────────────────────────────────────────────
-    private void OnSave(object? s, EventArgs e)
+    private async void OnSave(object? s, EventArgs e)
     {
         // Uma chave ou Instance ID inválidos fariam a API recusar todos os QSOs (401/404), que
         // seriam descartados: não se grava até estarem certos.
@@ -1234,18 +1272,20 @@ public class MainForm : Form
         if (ProfileFormatError() is { } formatError) { SetStatus("err", formatError); return; }
 
         CollectForm();
+        _btnSave.Enabled = false;
         try
         {
             _mgr.Save(_settings);
-            _runner.Stop();
+            SetStatus("", L.Get("busy_restarting"));
             _qsoCount = 0;
-            _runner.Start();
+            await RestartServiceAsync();
             SetStatus("ok", L.Get("status_saved"));
         }
         catch (Exception ex)
         {
             SetStatus("err", $"{L.Get("status_error")}: {ex.Message}");
         }
+        finally { _btnSave.Enabled = true; }
         RefreshTrayProfiles();
     }
 
