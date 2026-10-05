@@ -48,6 +48,7 @@ The first time, Uplink asks whether it may send **installation data** and **erro
 | QSO was already in the logbook | The QSO was already there (the server detects duplicates to the minute). Only with the same option |
 | ✓ Confirmed by another LogBeam | The other station also has the QSO in a LogBeam logbook |
 | Port in use | A logging program cannot be received because another program is using the port (see [section 8](#8-troubleshooting)) |
+| ClubLog: credentials rejected | ClubLog rejected the email, App Password or callsign (see [ClubLog](#clublog)). Shown only once |
 
 ## 4. Tabs
 
@@ -109,7 +110,7 @@ To configure it by hand, see **Help → Configure N1MM+...**
 2. **ClubLog Email** and **App Password**: an "Application Password" created on ClubLog, not your website login password.
 3. **Callsign (optional):** if blank, the one in the Station tab is used; if that is blank too, the logging program's.
 
-It receives QSOs from every program (N1MM+, WSJT-X, JTDX and Log4OM) and uses the same offline queue as the logbooks. If ClubLog rejects the credentials, Uplink stops uploading until they are fixed and saved: ClubLog blocks the IP address of anyone who keeps trying with wrong credentials.
+It receives QSOs from every program (N1MM+, WSJT-X, JTDX and Log4OM) and uses the same offline queue as the logbooks. If ClubLog rejects the email, App Password or callsign, Uplink warns you once (a Windows notification and a red message in this tab) and stops uploading to ClubLog, because ClubLog blocks the IP address of anyone who keeps trying with wrong credentials. QSOs stay in the queue and are sent once the details are corrected and saved.
 
 ### Advanced
 

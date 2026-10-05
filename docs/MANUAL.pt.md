@@ -48,6 +48,7 @@ Na primeira vez, o Uplink pergunta se pode enviar ao LogBeam os **dados da insta
 | QSO já existia no logbook | O QSO já lá estava (o servidor detecta duplicados ao minuto). Só com a mesma opção |
 | ✓ Confirmado por outro LogBeam | O correspondente também tem o QSO num logbook LogBeam |
 | Porta ocupada | Um programa de log não pode ser recebido, porque outro programa ocupa a porta (ver a [secção 8](#8-resolução-de-problemas)) |
+| ClubLog: credenciais recusadas | O ClubLog recusou o e-mail, a App Password ou o indicativo (ver [ClubLog](#clublog)). Aparece uma só vez |
 
 ## 4. Separadores
 
@@ -109,7 +110,7 @@ Para configurar à mão, ver o menu **Ajuda → Configurar o N1MM+...**
 2. **E-mail do ClubLog** e **App Password**: uma "Application Password" criada no ClubLog, não a password de acesso ao site.
 3. **Indicativo (opcional):** em branco usa o do separador Estação; se também estiver em branco, o do programa de log.
 
-Recebe os QSOs de todos os programas (N1MM+, WSJT-X, JTDX e Log4OM) e usa a mesma fila sem internet dos logbooks. Se o ClubLog recusar as credenciais, o Uplink deixa de enviar até as corrigir e guardar: o ClubLog bloqueia o IP a quem insiste com credenciais erradas.
+Recebe os QSOs de todos os programas (N1MM+, WSJT-X, JTDX e Log4OM) e usa a mesma fila sem internet dos logbooks. Se o ClubLog recusar o e-mail, a App Password ou o indicativo, o Uplink avisa uma vez (notificação do Windows e mensagem a vermelho neste separador) e pára o envio para o ClubLog, porque o ClubLog bloqueia o IP a quem insiste com credenciais erradas. Os QSOs ficam na fila e são enviados depois de corrigir os dados e carregar em Guardar.
 
 ### Avançado
 

@@ -38,6 +38,7 @@ public class ServiceRunner : IDisposable
     public event Action<QsoRecord>? QsoConfirmedByLogbeam;
     public event Action<QsoRecord>? QsoAlreadyLogged;
     public event Action<string, int>? ListenerFailed;
+    public event Action? ClubLogCredentialsRejected;
 
     public void Start()
     {
@@ -101,6 +102,7 @@ public class ServiceRunner : IDisposable
         processor.QsoConfirmedByLogbeam += qso => QsoConfirmedByLogbeam?.Invoke(qso);
         processor.QsoAlreadyLogged      += qso => QsoAlreadyLogged?.Invoke(qso);
         processor.ListenerFailed        += (program, port) => ListenerFailed?.Invoke(program, port);
+        processor.ClubLogCredentialsRejected += () => ClubLogCredentialsRejected?.Invoke();
 
         _runTask = Task.Run(async () =>
         {

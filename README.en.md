@@ -36,7 +36,7 @@ LogBeam Uplink is a Windows application that receives each QSO as soon as it is 
 |---|---|---|
 | Several LogBeam logbooks | Each QSO is sent to every active logbook, for example an expedition's logbook and your own. Each logbook is turned on or off with one click in the icon menu | [LogBeam API](docs/MANUAL.en.md#logbeam-api) |
 | Test Connection | Checks the API key and shows whose logbook it is | [LogBeam API](docs/MANUAL.en.md#logbeam-api) |
-| Real-time ClubLog | Upload with a ClubLog Application Password. If ClubLog rejects the credentials, uploading stops until they are fixed, so that the IP address is not blocked | [ClubLog](docs/MANUAL.en.md#clublog) |
+| Real-time ClubLog | Upload with a ClubLog Application Password. If ClubLog rejects the credentials, Uplink warns you and stops uploading until they are fixed, so that the IP address is not blocked; QSOs stay in the queue | [ClubLog](docs/MANUAL.en.md#clublog) |
 
 ### Reliability
 
@@ -53,7 +53,7 @@ LogBeam Uplink is a Windows application that receives each QSO as soon as it is 
 | Feature | Description | Manual |
 |---|---|---|
 | Notification area | Closing the window does not end the program. The icon menu turns the service and each logbook on or off | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
-| Notifications | Send failures, QSOs sent (optional), duplicates and ports in use | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
+| Notifications | Send failures, QSOs sent (optional), duplicates, ports in use and rejected ClubLog credentials | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
 | ✓ Confirmed by another LogBeam | Notification when the other station also has the QSO in a LogBeam logbook | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
 | Start with Windows | Uplink starts with Windows, without opening the window | [Advanced](docs/MANUAL.en.md#advanced) |
 | Single instance | Starting Uplink again brings the window that is already open to the front | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |

@@ -91,6 +91,20 @@ public class ClubLogClientTests
     }
 
     [Fact]
+    public async Task ForbiddenReportsRejectedCredentialsOnlyOnce()
+    {
+        _server.Respond = _ => new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = new StringContent("Invalid login") };
+        var client = Client(Settings());
+        var reported = 0;
+        client.CredentialsRejected += () => reported++;
+
+        await client.UploadAsync(Qso(), CancellationToken.None);
+        await client.UploadAsync(Qso(), CancellationToken.None);
+
+        Assert.Equal(1, reported);
+    }
+
+    [Fact]
     public async Task InactiveWithoutAppKeyCredentialsOrWhenDisabled()
     {
         Assert.False(Client(Settings(), key: "").IsActive);

@@ -51,6 +51,10 @@ public class ClubLogClient
 
     // 403 recebido: não voltar a enviar até o serviço reiniciar (ex. depois de corrigir as credenciais).
     private volatile bool _suspended;
+    private int _rejectionReported;
+
+    /// <summary>O ClubLog recusou as credenciais (403). Disparado uma só vez: o envio fica suspenso.</summary>
+    public event Action? CredentialsRejected;
 
     /// <param name="appApiKey">Chave de aplicação; por omissão, a da compilação (os testes passam a sua).</param>
     public ClubLogClient(HttpClient http, IOptions<ServiceAppSettings> options, ILogger<ClubLogClient> logger,
@@ -124,6 +128,8 @@ public class ClubLogClient
                     _suspended = true;
                     _logger.LogError("ClubLog 403: credenciais recusadas. Envios suspensos para o ClubLog não bloquear o IP. " +
                                      "Verifique o e-mail, a App Password e o indicativo no separador ClubLog. Resposta: {Msg}", body);
+                    if (Interlocked.Exchange(ref _rejectionReported, 1) == 0)
+                        CredentialsRejected?.Invoke();
                     return ClubLogResult.Suspended;
 
                 case >= 400 and < 500:

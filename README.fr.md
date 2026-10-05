@@ -36,7 +36,7 @@ LogBeam Uplink est une application pour Windows qui reçoit chaque QSO dès qu'i
 |---|---|---|
 | Plusieurs logbooks LogBeam | Chaque QSO est envoyé à tous les logbooks actifs, par exemple celui d'une expédition et le vôtre. Chaque logbook s'active ou se désactive d'un clic dans le menu de l'icône | [API LogBeam](docs/MANUAL.fr.md#api-logbeam) |
 | Tester la connexion | Vérifie l'API Key et indique à qui appartient le logbook | [API LogBeam](docs/MANUAL.fr.md#api-logbeam) |
-| ClubLog en temps réel | Envoi avec un Application Password de ClubLog. Si ClubLog refuse les identifiants, l'envoi s'arrête jusqu'à leur correction, pour que l'adresse IP ne soit pas bloquée | [ClubLog](docs/MANUAL.fr.md#clublog) |
+| ClubLog en temps réel | Envoi avec un Application Password de ClubLog. Si ClubLog refuse les identifiants, Uplink prévient et arrête l'envoi jusqu'à leur correction, pour que l'adresse IP ne soit pas bloquée ; les QSO restent en file d'attente | [ClubLog](docs/MANUAL.fr.md#clublog) |
 
 ### Fiabilité
 
@@ -53,7 +53,7 @@ LogBeam Uplink est une application pour Windows qui reçoit chaque QSO dès qu'i
 | Fonctionnalité | Description | Manuel |
 |---|---|---|
 | Zone de notification | Fermer la fenêtre ne quitte pas le programme. Le menu de l'icône active ou désactive le service et chaque logbook | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |
-| Notifications | Échecs d'envoi, QSO envoyés (facultatif), doublons et ports occupés | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |
+| Notifications | Échecs d'envoi, QSO envoyés (facultatif), doublons, ports occupés et identifiants ClubLog refusés | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |
 | ✓ Confirmé par un autre LogBeam | Notification quand le correspondant a aussi le QSO dans un logbook LogBeam | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |
 | Démarrer avec Windows | Uplink démarre avec Windows, sans ouvrir la fenêtre | [Avancé](docs/MANUAL.fr.md#avancé) |
 | Une seule instance | Relancer Uplink ramène au premier plan la fenêtre déjà ouverte | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |

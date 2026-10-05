@@ -48,6 +48,7 @@ La première fois, Uplink demande s'il peut envoyer à LogBeam les **données d'
 | Le QSO existait déjà dans le logbook | Le QSO y était déjà (le serveur détecte les doublons à la minute près). Seulement avec la même option |
 | ✓ Confirmé par un autre LogBeam | Le correspondant a aussi le QSO dans un logbook LogBeam |
 | Port occupé | Un logiciel de log ne peut pas être reçu, car un autre logiciel occupe le port (voir la [section 8](#8-dépannage)) |
+| ClubLog : identifiants refusés | ClubLog a refusé l'e-mail, l'App Password ou l'indicatif (voir [ClubLog](#clublog)). Affichée une seule fois |
 
 ## 4. Onglets
 
@@ -109,7 +110,7 @@ Pour le configurer manuellement, voir le menu **Aide → Configurer N1MM+...**
 2. **E-mail ClubLog** et **App Password** : un « Application Password » créé sur ClubLog, pas le mot de passe de connexion au site.
 3. **Indicatif (facultatif) :** vide, c'est celui de l'onglet Station qui est utilisé ; s'il est vide lui aussi, celui du logiciel de log.
 
-ClubLog reçoit les QSO de tous les logiciels (N1MM+, WSJT-X, JTDX et Log4OM) et utilise la même file d'attente hors ligne que les logbooks. Si ClubLog refuse les identifiants, Uplink cesse d'envoyer jusqu'à ce qu'ils soient corrigés et enregistrés : ClubLog bloque l'adresse IP de quiconque insiste avec des identifiants erronés.
+ClubLog reçoit les QSO de tous les logiciels (N1MM+, WSJT-X, JTDX et Log4OM) et utilise la même file d'attente hors ligne que les logbooks. Si ClubLog refuse l'e-mail, l'App Password ou l'indicatif, Uplink vous prévient une fois (notification Windows et message en rouge dans cet onglet) et arrête l'envoi vers ClubLog, car ClubLog bloque l'adresse IP de quiconque insiste avec des identifiants erronés. Les QSO restent en file d'attente et sont envoyés une fois les données corrigées et enregistrées.
 
 ### Avancé
 

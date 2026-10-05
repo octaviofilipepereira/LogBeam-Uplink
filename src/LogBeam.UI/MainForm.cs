@@ -67,7 +67,8 @@ public class MainForm : Form
     private NumericUpDown  _nLog4omPort = null!;
 
     // ClubLog tab
-    private Label    _lClHint = null!, _lClEmail = null!, _lClPass = null!, _lClCall = null!;
+    private Label    _lClHint = null!, _lClEmail = null!, _lClPass = null!, _lClCall = null!, _lClError = null!;
+    private bool     _clubLogRejected;
     private CheckBox _chkClEnabled = null!;
     private TextBox  _txtClEmail = null!, _txtClPass = null!, _txtClCall = null!;
 
@@ -118,6 +119,7 @@ public class MainForm : Form
         _runner.QsoConfirmedByLogbeam   += OnQsoConfirmedByLogbeam;
         _runner.QsoAlreadyLogged        += OnQsoAlreadyLogged;
         _runner.ListenerFailed          += OnListenerFailed;
+        _runner.ClubLogCredentialsRejected += OnClubLogCredentialsRejected;
 
         // Primeiro arranque: dados da instalação e relatórios de erros só com autorização explícita.
         if (_settings.Telemetry.Consent is null) AskTelemetryConsent();
@@ -275,6 +277,7 @@ public class MainForm : Form
             UpdateTray();
             // Por omissão só as falhas geram aviso; o aviso por QSO enviado é opcional (separador Avançado).
             if (success && !_prefs.NotifyEachQso) return;
+            if (ImportantBalloonShowing) return;
             _tray.BalloonTipIcon = success ? ToolTipIcon.Info : ToolTipIcon.Warning;
             _tray.BalloonTipTitle = success ? L.Get("balloon_qso_sent") : L.Get("balloon_qso_failed");
             _tray.BalloonTipText  = $"{qso.Call} — {qso.Band} {qso.Mode}";
@@ -297,13 +300,36 @@ public class MainForm : Form
         });
     }
 
+    /// <summary>
+    /// O ClubLog recusou as credenciais: uma notificação (o serviço só a dispara uma vez) e a mensagem
+    /// de erro no separador ClubLog, que fica até as definições serem gravadas de novo.
+    /// </summary>
+    private void OnClubLogCredentialsRejected()
+    {
+        if (IsDisposed || !IsHandleCreated) return;
+        BeginInvoke(() =>
+        {
+            _clubLogRejected = true;
+            _lClError.Text   = L.Get("status_clublog_rejected");
+            _tray.BalloonTipIcon  = ToolTipIcon.Warning;
+            _tray.BalloonTipTitle = L.Get("balloon_clublog_rejected");
+            _tray.BalloonTipText  = L.Get("balloon_clublog_rejected_text");
+            _tray.ShowBalloonTip(10000);
+            _importantBalloonUntil = DateTime.UtcNow.AddSeconds(10);
+        });
+    }
+
+    // Os avisos de cada QSO chegam logo a seguir e substituiriam a notificação do ClubLog, que só aparece uma vez.
+    private DateTime _importantBalloonUntil;
+    private bool ImportantBalloonShowing => DateTime.UtcNow < _importantBalloonUntil;
+
     /// <summary>O QSO já existia em todos os logbooks: não conta como enviado; aviso só com "Avisar a cada QSO".</summary>
     private void OnQsoAlreadyLogged(QsoRecord qso)
     {
         if (IsDisposed || !IsHandleCreated) return;
         BeginInvoke(() =>
         {
-            if (!_prefs.NotifyEachQso) return;
+            if (!_prefs.NotifyEachQso || ImportantBalloonShowing) return;
             _tray.BalloonTipIcon  = ToolTipIcon.Info;
             _tray.BalloonTipTitle = L.Get("balloon_qso_duplicate");
             _tray.BalloonTipText  = $"{qso.Call} — {qso.Band} {qso.Mode}";
@@ -1164,6 +1190,10 @@ public class MainForm : Form
 
         _txtClCall  = new TextBox { CharacterCasing = CharacterCasing.Upper };
         _lClCall    = AddRow(t, 4, _txtClCall);
+
+        _lClError = AddHint(t, 5, 60);
+        _lClError.ForeColor = Color.Crimson;
+        _lClError.Font      = new Font("Segoe UI", 9f, FontStyle.Bold);
     }
 
     private void BuildAdvancedTab()
@@ -1288,6 +1318,7 @@ public class MainForm : Form
         _lLog4omHint.Text       = L.Get("hint_log4om");
 
         _lClHint.Text       = L.Get("hint_cl");
+        _lClError.Text      = _clubLogRejected ? L.Get("status_clublog_rejected") : "";
         _chkClEnabled.Text  = L.Get("lbl_cl_enabled");
         _lClEmail.Text      = L.Get("lbl_cl_email");
         _lClPass.Text       = L.Get("lbl_cl_pass");
@@ -1430,6 +1461,9 @@ public class MainForm : Form
             _mgr.Save(_settings);
             SetStatus("", L.Get("busy_restarting"));
             _qsoCount = 0;
+            // O serviço novo volta a tentar o ClubLog com as definições gravadas; se forem recusadas, avisa de novo.
+            _clubLogRejected = false;
+            _lClError.Text   = "";
             await RestartServiceAsync(revoked);
             SetStatus("ok", L.Get("status_saved"));
         }

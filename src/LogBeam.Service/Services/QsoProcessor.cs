@@ -49,6 +49,9 @@ public class QsoProcessor : BackgroundService
     /// <summary>Um receptor não arrancou (porta ocupada por outro programa): programa e porta.</summary>
     public event Action<string, int>? ListenerFailed;
 
+    /// <summary>O ClubLog recusou as credenciais: envio suspenso até as definições serem gravadas de novo.</summary>
+    public event Action? ClubLogCredentialsRejected;
+
     public QsoProcessor(
         N1MMUdpListener listener,
         WsjtxUdpListener wsjtxListener,
@@ -69,6 +72,8 @@ public class QsoProcessor : BackgroundService
         _sessionLog     = sessionLog;
         _settings       = settings;
         _logger         = logger;
+
+        _clubLog.CredentialsRejected += () => ClubLogCredentialsRejected?.Invoke();
     }
 
     /// <summary>
@@ -168,7 +173,9 @@ public class QsoProcessor : BackgroundService
                 switch (await _clubLog.UploadAsync(qso, ct))
                 {
                     case ClubLogResult.Ok:         anySuccess = true; break;
-                    case ClubLogResult.RetryLater: _queue.Enqueue(qso, ClubLogClient.QueueId); break;
+                    // Sem ligação, ou credenciais recusadas: o QSO espera na fila (no 2.º caso, até serem corrigidas).
+                    case ClubLogResult.RetryLater or ClubLogResult.Suspended:
+                        _queue.Enqueue(qso, ClubLogClient.QueueId); break;
                 }
             }
 

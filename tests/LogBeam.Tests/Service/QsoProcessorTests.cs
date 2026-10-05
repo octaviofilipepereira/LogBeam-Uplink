@@ -104,6 +104,31 @@ public sealed class QsoProcessorTests : IDisposable
     }
 
     [Fact]
+    public async Task ClubLogRejectedCredentialsWarnOnceAndKeepQsosUntilFixed()
+    {
+        _clubLogStatus = HttpStatusCode.Forbidden;
+        var (processor, queue) = Build(Settings());
+        var warnings = 0;
+        processor.ClubLogCredentialsRejected += () => warnings++;
+
+        await processor.ProcessQsoAsync(Qso(), CancellationToken.None);
+        await processor.ProcessQsoAsync(Qso(), CancellationToken.None);
+        await processor.FlushQueueAsync(CancellationToken.None);
+
+        Assert.Equal(1, warnings);
+        Assert.Equal(1, Sent("clublog.org"));   // depois do 403 não volta a tentar
+        Assert.Equal(2, queue.Snapshot().Count(q => q.ProfileId == ClubLogClient.QueueId));
+
+        // Credenciais corrigidas e gravadas: o serviço reinicia e envia o que ficou à espera.
+        _clubLogStatus = HttpStatusCode.OK;
+        var (afterSave, sameQueue) = Build(Settings());
+        await afterSave.FlushQueueAsync(CancellationToken.None);
+
+        Assert.Equal(0, sameQueue.Count);
+        Assert.Equal(3, Sent("clublog.org"));
+    }
+
+    [Fact]
     public async Task PendingClubLogEntriesAreDroppedWhenClubLogIsTurnedOff()
     {
         _clubLogStatus = HttpStatusCode.ServiceUnavailable;

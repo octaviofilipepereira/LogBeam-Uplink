@@ -36,7 +36,7 @@ LogBeam Uplink es una aplicación para Windows que recibe cada QSO en el momento
 |---|---|---|
 | Varios logbooks de LogBeam | Cada QSO se envía a todos los logbooks activos, por ejemplo el de una expedición y el personal. Cada logbook se activa o desactiva con un clic en el menú del icono | [API LogBeam](docs/MANUAL.es.md#api-logbeam) |
 | Probar conexión | Comprueba la API key y muestra de quién es el logbook | [API LogBeam](docs/MANUAL.es.md#api-logbeam) |
-| ClubLog en tiempo real | Envío con una Application Password de ClubLog. Si ClubLog rechaza las credenciales, el envío se detiene hasta que se corrijan, para que no se bloquee la IP | [ClubLog](docs/MANUAL.es.md#clublog) |
+| ClubLog en tiempo real | Envío con una Application Password de ClubLog. Si ClubLog rechaza las credenciales, Uplink avisa y detiene el envío hasta que se corrijan, para que no se bloquee la IP; los QSOs quedan en la cola | [ClubLog](docs/MANUAL.es.md#clublog) |
 
 ### Fiabilidad
 
@@ -53,7 +53,7 @@ LogBeam Uplink es una aplicación para Windows que recibe cada QSO en el momento
 | Funcionalidad | Descripción | Manual |
 |---|---|---|
 | Área de notificación | Cerrar la ventana no cierra el programa. El menú del icono activa y desactiva el servicio y cada logbook | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
-| Avisos | Errores de envío, QSOs enviados (opcional), duplicados y puertos ocupados | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
+| Avisos | Errores de envío, QSOs enviados (opcional), duplicados, puertos ocupados y credenciales de ClubLog rechazadas | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
 | ✓ Confirmado por otro LogBeam | Aviso cuando el corresponsal también tiene el QSO en un logbook de LogBeam | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
 | Iniciar con Windows | Uplink arranca con Windows, sin abrir la ventana | [Avanzado](docs/MANUAL.es.md#avanzado) |
 | Una sola instancia | Abrir Uplink de nuevo trae al frente la ventana que ya estaba abierta | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |

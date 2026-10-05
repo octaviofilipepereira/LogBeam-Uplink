@@ -36,7 +36,7 @@ O LogBeam Uplink é uma aplicação para Windows que recebe cada QSO no momento 
 |---|---|---|
 | Vários logbooks LogBeam | Cada QSO é enviado para todos os logbooks activos, por exemplo o de uma expedição e o pessoal. Cada logbook liga-se e desliga-se com um clique no menu do ícone | [API LogBeam](docs/MANUAL.pt.md#api-logbeam) |
 | Testar ligação | Confirma a API key e mostra de quem é o logbook | [API LogBeam](docs/MANUAL.pt.md#api-logbeam) |
-| ClubLog em tempo real | Envio com uma Application Password do ClubLog. Se o ClubLog recusar as credenciais, o envio pára até serem corrigidas, para o IP não ser bloqueado | [ClubLog](docs/MANUAL.pt.md#clublog) |
+| ClubLog em tempo real | Envio com uma Application Password do ClubLog. Se o ClubLog recusar as credenciais, o Uplink avisa e pára o envio até serem corrigidas, para o IP não ser bloqueado; os QSOs ficam na fila | [ClubLog](docs/MANUAL.pt.md#clublog) |
 
 ### Fiabilidade
 
@@ -53,7 +53,7 @@ O LogBeam Uplink é uma aplicação para Windows que recebe cada QSO no momento 
 | Funcionalidade | Descrição | Manual |
 |---|---|---|
 | Área de notificação | Fechar a janela não termina o programa. O menu do ícone liga e desliga o serviço e cada logbook | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
-| Avisos | Falhas de envio, QSOs enviados (opcional), duplicados e portas ocupadas | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
+| Avisos | Falhas de envio, QSOs enviados (opcional), duplicados, portas ocupadas e credenciais do ClubLog recusadas | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
 | ✓ Confirmado por outro LogBeam | Aviso quando o correspondente também tem o QSO num logbook LogBeam | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
 | Iniciar com o Windows | O Uplink arranca com o Windows, sem abrir a janela | [Avançado](docs/MANUAL.pt.md#avançado) |
 | Uma só instância | Abrir o Uplink outra vez traz para a frente a janela que já está aberta | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
