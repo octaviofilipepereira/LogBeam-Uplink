@@ -18,7 +18,7 @@ LogBeam Uplink is a Windows application that receives each QSO as soon as it is 
 
 <p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-en.png" width="720" alt="LogBeam 3D globe with QSOs"></a></p>
 
-**Contents:** [Features](#features) · [Screenshots](#screenshots) · [Download and install](#download-and-install) · [Getting started](#getting-started) · [Manual](#manual) · [Limitations](#limitations-of-version-250) · [Privacy](#privacy) · [Building](#building) · [Contributing](#contributing-and-security) · [Licence](#licence)
+**Contents:** [Features](#features) · [Screenshots](#screenshots) · [Download and install](#download-and-install) · [Getting started](#getting-started) · [Manual](#manual) · [Limitations](#limitations-of-version-25) · [Privacy](#privacy) · [Building](#building) · [Contributing](#contributing-and-security) · [Licence](#licence)
 
 ## Features
 
@@ -120,7 +120,7 @@ The manual covers each tab, the notifications, the offline queue and troubleshoo
 | Español | [docs/MANUAL.es.md](docs/MANUAL.es.md) |
 | Français | [docs/MANUAL.fr.md](docs/MANUAL.fr.md) |
 
-## Limitations of version 2.5.0
+## Limitations of version 2.5
 
 - A QSO edited or deleted in the logging program after it was sent stays in LogBeam and ClubLog as it was sent. Propagating edits and deletions is planned for version 2.6.
 - Windows only.

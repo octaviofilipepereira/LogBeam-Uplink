@@ -18,7 +18,7 @@ LogBeam Uplink es una aplicación para Windows que recibe cada QSO en el momento
 
 <p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-en.png" width="720" alt="Globo 3D de LogBeam con los QSOs"></a></p>
 
-**Índice:** [Funcionalidades](#funcionalidades) · [Capturas de pantalla](#capturas-de-pantalla) · [Descargar e instalar](#descargar-e-instalar) · [Primeros pasos](#primeros-pasos) · [Manual](#manual) · [Limitaciones](#limitaciones-de-la-versión-250) · [Privacidad](#privacidad) · [Compilar](#compilar) · [Contribuir](#contribuir-y-seguridad) · [Licencia](#licencia)
+**Índice:** [Funcionalidades](#funcionalidades) · [Capturas de pantalla](#capturas-de-pantalla) · [Descargar e instalar](#descargar-e-instalar) · [Primeros pasos](#primeros-pasos) · [Manual](#manual) · [Limitaciones](#limitaciones-de-la-versión-25) · [Privacidad](#privacidad) · [Compilar](#compilar) · [Contribuir](#contribuir-y-seguridad) · [Licencia](#licencia)
 
 ## Funcionalidades
 
@@ -120,7 +120,7 @@ El manual explica cada pestaña, los avisos, la cola sin internet y la solución
 | Español | [docs/MANUAL.es.md](docs/MANUAL.es.md) |
 | Français | [docs/MANUAL.fr.md](docs/MANUAL.fr.md) |
 
-## Limitaciones de la versión 2.5.0
+## Limitaciones de la versión 2.5
 
 - Un QSO editado o borrado en el programa de log después de enviado sigue en LogBeam y en ClubLog tal como se envió. La propagación de ediciones y borrados está prevista para la versión 2.6.
 - Solo para Windows.

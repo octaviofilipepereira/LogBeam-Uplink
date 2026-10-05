@@ -10,7 +10,7 @@ LogBeam Uplink es una aplicación para Windows que recibe los QSOs de **N1MM+**,
 
 ## 1. Instalar
 
-1. Descargue el instalador en **https://logbeam.org/uplink/** y compruebe la huella digital SHA-256 publicada en la página. En PowerShell, en la carpeta del archivo: `Get-FileHash .\LogBeamUplink-Setup-2.5.0.exe`.
+1. Descargue el instalador en **https://logbeam.org/uplink/** y compruebe la huella digital SHA-256 publicada en la página. En PowerShell, en la carpeta del archivo: `Get-FileHash .\LogBeamUplink-Setup-X.Y.Z.exe`.
 2. Ejecute el instalador. No necesita privilegios de administrador ni .NET: se instala en `%LOCALAPPDATA%\Programs\LogBeam Uplink` y crea un acceso directo en el menú Inicio.
 
 > ⚠️ El programa es gratuito y de código abierto, y se distribuye **sin firma digital**. Por eso:
@@ -145,7 +145,7 @@ Uplink comprueba al arrancar si hay una versión nueva y avisa. También puede c
 | «Puerto ocupado» | Otro programa usa el mismo puerto. WSJT-X/JTDX: use multicast ([sección 4](#wsjt-x--jtdx)). N1MM+: use otro puerto y «Configurar automáticamente» |
 | «API Key no válida» o «Instance ID no válido» al guardar | Compruebe la clave (64 caracteres) y el enlace del logbook; use «Probar conexión» |
 | Los QSOs no llegan | Compruebe la configuración del programa de log ([sección 4](#4-pestañas)) y que el servicio está iniciado (menú del icono). Ponga el nivel de log en «Debug», haga un QSO y mire el archivo de log |
-| Un QSO se corrigió o se borró en el programa de log | En la versión 2.5.0, las ediciones y los borrados no llegan a LogBeam ni a ClubLog. Está previsto para la 2.6 |
+| Un QSO se corrigió o se borró en el programa de log | En la versión 2.5, las ediciones y los borrados no llegan a LogBeam ni a ClubLog. Está previsto para la 2.6 |
 | Windows bloquea el instalador o el programa | Ver los avisos sobre SmartScreen y el Control inteligente de aplicaciones ([sección 1](#1-instalar)) |
 
 **Archivos**, en la carpeta de instalación (`%LOCALAPPDATA%\Programs\LogBeam Uplink`):

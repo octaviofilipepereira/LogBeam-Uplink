@@ -10,7 +10,7 @@ LogBeam Uplink est une application pour Windows qui reçoit les QSO de **N1MM+**
 
 ## 1. Installer
 
-1. Téléchargez l'installateur sur **https://logbeam.org/uplink/** et vérifiez l'empreinte SHA-256 publiée sur la page. Dans PowerShell, dans le dossier du fichier : `Get-FileHash .\LogBeamUplink-Setup-2.5.0.exe`.
+1. Téléchargez l'installateur sur **https://logbeam.org/uplink/** et vérifiez l'empreinte SHA-256 publiée sur la page. Dans PowerShell, dans le dossier du fichier : `Get-FileHash .\LogBeamUplink-Setup-X.Y.Z.exe`.
 2. Lancez l'installateur. Il ne demande ni droits d'administrateur ni .NET : il s'installe dans `%LOCALAPPDATA%\Programs\LogBeam Uplink` et crée un raccourci dans le menu Démarrer.
 
 > ⚠️ Le programme est gratuit et open source, et il est distribué **sans signature numérique**. C'est pourquoi :
@@ -145,7 +145,7 @@ Uplink vérifie au démarrage si une nouvelle version est disponible et vous pr�
 | « Port occupé » | Un autre logiciel utilise le même port. WSJT-X/JTDX : utilisez le multicast ([section 4](#wsjt-x--jtdx)). N1MM+ : utilisez un autre port et « Configurer automatiquement » |
 | « API Key invalide » ou « Instance ID invalide » à l'enregistrement | Vérifiez la clé (64 caractères) et le lien du logbook ; utilisez « Tester la connexion » |
 | Les QSO n'arrivent pas | Vérifiez les réglages du logiciel de log ([section 4](#4-onglets)) et que le service est démarré (menu de l'icône). Réglez le niveau de journal sur « Debug », faites un QSO et consultez le fichier journal |
-| Un QSO a été corrigé ou supprimé dans le logiciel de log | Dans la version 2.5.0, les modifications et suppressions n'arrivent ni à LogBeam ni à ClubLog. C'est prévu pour la 2.6 |
+| Un QSO a été corrigé ou supprimé dans le logiciel de log | Dans la version 2.5, les modifications et suppressions n'arrivent ni à LogBeam ni à ClubLog. C'est prévu pour la 2.6 |
 | Windows bloque l'installateur ou le programme | Voir les avertissements sur SmartScreen et le Contrôle intelligent des applications ([section 1](#1-installer)) |
 
 **Fichiers**, dans le dossier d'installation (`%LOCALAPPDATA%\Programs\LogBeam Uplink`) :

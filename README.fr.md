@@ -18,7 +18,7 @@ LogBeam Uplink est une application pour Windows qui reçoit chaque QSO dès qu'i
 
 <p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-en.png" width="720" alt="Globe 3D de LogBeam avec les QSO"></a></p>
 
-**Sommaire :** [Fonctionnalités](#fonctionnalités) · [Captures d'écran](#captures-décran) · [Télécharger et installer](#télécharger-et-installer) · [Premiers pas](#premiers-pas) · [Manuel](#manuel) · [Limites](#limites-de-la-version-250) · [Confidentialité](#confidentialité) · [Compiler](#compiler) · [Contribuer](#contribuer-et-sécurité) · [Licence](#licence)
+**Sommaire :** [Fonctionnalités](#fonctionnalités) · [Captures d'écran](#captures-décran) · [Télécharger et installer](#télécharger-et-installer) · [Premiers pas](#premiers-pas) · [Manuel](#manuel) · [Limites](#limites-de-la-version-25) · [Confidentialité](#confidentialité) · [Compiler](#compiler) · [Contribuer](#contribuer-et-sécurité) · [Licence](#licence)
 
 ## Fonctionnalités
 
@@ -120,7 +120,7 @@ Le manuel décrit chaque onglet, les notifications, la file d'attente hors ligne
 | Español | [docs/MANUAL.es.md](docs/MANUAL.es.md) |
 | Français | [docs/MANUAL.fr.md](docs/MANUAL.fr.md) |
 
-## Limites de la version 2.5.0
+## Limites de la version 2.5
 
 - Un QSO modifié ou supprimé dans le logiciel de log après son envoi reste dans LogBeam et ClubLog tel qu'il a été envoyé. La propagation des modifications et suppressions est prévue pour la version 2.6.
 - Windows uniquement.

@@ -18,7 +18,7 @@ O LogBeam Uplink é uma aplicação para Windows que recebe cada QSO no momento 
 
 <p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-pt.png" width="720" alt="Globo 3D do LogBeam com os QSOs"></a></p>
 
-**Índice:** [Funcionalidades](#funcionalidades) · [Capturas de ecrã](#capturas-de-ecrã) · [Descarregar e instalar](#descarregar-e-instalar) · [Começar](#começar) · [Manual](#manual) · [Limitações](#limitações-da-versão-250) · [Privacidade](#privacidade) · [Compilar](#compilar) · [Contribuir](#contribuir-e-segurança) · [Licença](#licença)
+**Índice:** [Funcionalidades](#funcionalidades) · [Capturas de ecrã](#capturas-de-ecrã) · [Descarregar e instalar](#descarregar-e-instalar) · [Começar](#começar) · [Manual](#manual) · [Limitações](#limitações-da-versão-25) · [Privacidade](#privacidade) · [Compilar](#compilar) · [Contribuir](#contribuir-e-segurança) · [Licença](#licença)
 
 ## Funcionalidades
 
@@ -120,7 +120,7 @@ O manual explica cada separador, os avisos, a fila sem internet e a resolução 
 | Español | [docs/MANUAL.es.md](docs/MANUAL.es.md) |
 | Français | [docs/MANUAL.fr.md](docs/MANUAL.fr.md) |
 
-## Limitações da versão 2.5.0
+## Limitações da versão 2.5
 
 - Um QSO editado ou apagado no programa de log depois de enviado continua no LogBeam e no ClubLog tal como foi enviado. A propagação de edições e eliminações está prevista para a versão 2.6.
 - Só para Windows.

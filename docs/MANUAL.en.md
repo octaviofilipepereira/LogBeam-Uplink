@@ -10,7 +10,7 @@ LogBeam Uplink is a Windows application that receives QSOs from **N1MM+**, **WSJ
 
 ## 1. Installing
 
-1. Download the installer from **https://logbeam.org/uplink/** and check the SHA-256 fingerprint published on that page. In PowerShell, in the file's folder: `Get-FileHash .\LogBeamUplink-Setup-2.5.0.exe`.
+1. Download the installer from **https://logbeam.org/uplink/** and check the SHA-256 fingerprint published on that page. In PowerShell, in the file's folder: `Get-FileHash .\LogBeamUplink-Setup-X.Y.Z.exe`.
 2. Run the installer. It needs neither administrator rights nor .NET: it installs to `%LOCALAPPDATA%\Programs\LogBeam Uplink` and adds a Start menu shortcut.
 
 > ⚠️ The program is free and open source, and is distributed **without a digital signature**. Because of this:
@@ -145,7 +145,7 @@ Uplink checks at start-up whether a new version is available and tells you. You 
 | "Port in use" | Another program uses the same port. WSJT-X/JTDX: use multicast ([section 4](#wsjt-x--jtdx)). N1MM+: use another port and "Configure automatically" |
 | "Invalid API Key" or "Invalid Instance ID" when saving | Check the key (64 characters) and the logbook link; use "Test Connection" |
 | QSOs do not arrive | Check the logging program's settings ([section 4](#4-tabs)) and that the service is started (icon menu). Set the log level to "Debug", make a QSO and look at the log file |
-| A QSO was corrected or deleted in the logging program | In version 2.5.0, edits and deletions do not reach LogBeam or ClubLog. This is planned for 2.6 |
+| A QSO was corrected or deleted in the logging program | In version 2.5, edits and deletions do not reach LogBeam or ClubLog. This is planned for 2.6 |
 | Windows blocks the installer or the program | See the notes on SmartScreen and Smart App Control ([section 1](#1-installing)) |
 
 **Files**, in the installation folder (`%LOCALAPPDATA%\Programs\LogBeam Uplink`):
