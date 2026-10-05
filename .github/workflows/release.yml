@@ -82,19 +82,23 @@ jobs:
           body: |
             ## LogBeam Uplink ${{ github.ref_name }}
 
-            **PT** — Instalador para Windows 10 ou superior (64 bits). Não precisa de privilégios de administrador nem de instalar o .NET.
+            **PT** — Instalador para Windows 10 ou 11 (64 bits), sem privilégios de administrador nem .NET. Não tem assinatura digital: o Windows pode avisar antes de o executar (ver o [manual](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/MANUAL.pt.md#1-instalar)).
 
-            **EN** — Installer for Windows 10 or later (64-bit). No administrator rights or separate .NET install needed.
+            **EN** — Installer for Windows 10 or 11 (64-bit), with no administrator rights or .NET needed. It has no digital signature: Windows may warn you before running it (see the [manual](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/MANUAL.en.md#1-installing)).
 
-            Versão oficial / Official release: https://logbeam.org/uplink/
+            **ES** — Instalador para Windows 10 u 11 (64 bits), sin privilegios de administrador ni .NET. No tiene firma digital: Windows puede avisar antes de ejecutarlo (vea el [manual](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/MANUAL.es.md#1-instalar)).
 
-            **SHA-256** de / of `${{ steps.hash.outputs.file }}`:
+            **FR** — Installateur pour Windows 10 ou 11 (64 bits), sans droits d'administrateur ni .NET. Il n'a pas de signature numérique : Windows peut afficher un avertissement avant de l'exécuter (voir le [manuel](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/MANUAL.fr.md#1-installer)).
+
+            Versão oficial · Official release · Versión oficial · Version officielle: https://logbeam.org/uplink/
+
+            **SHA-256** — `${{ steps.hash.outputs.file }}`:
             `${{ steps.hash.outputs.sha256 }}`
 
-            Para confirmar / To check (PowerShell): `Get-FileHash .\${{ steps.hash.outputs.file }}`
+            PowerShell: `Get-FileHash .\${{ steps.hash.outputs.file }}`
 
             ---
-            © 2026 Octávio Filipe Pereira Gonçalves (CT7BFV) — GPL v3
+            © 2026 Octávio Filipe Pereira Gonçalves (CT7BFV) · [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
           files: |
             installer/LogBeamUplink-Setup-*.exe
             installer/LogBeamUplink-Setup-*.exe.sha256
