@@ -4,7 +4,11 @@
 // Ficheiro em UTF-8 com BOM: sem ele, o Inno Setup lê os acentos como ANSI.
 
 #define AppName "LogBeam Uplink"
-#define AppVersion "2.5.0"
+; Versão lida do LogBeam.exe publicado (origem única: Directory.Build.props). Publicar antes de compilar.
+#define AppVersion GetStringFileInfo(SourcePath + "publish\LogBeam.exe", "ProductVersion")
+#if AppVersion == ""
+  #error Falta publish\LogBeam.exe: correr primeiro o dotnet publish.
+#endif
 #define AppPublisher "Octávio Filipe Pereira Gonçalves (CT7BFV)"
 #define AppExeName "LogBeam.exe"
 
@@ -36,7 +40,8 @@ ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 
 [Languages]
-Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
+; Português: cópia da tradução do Inno Setup com a grafia anterior ao AO90
+Name: "portuguese"; MessagesFile: "setup\Portuguese.isl"
 Name: "english";    MessagesFile: "compiler:Default.isl"
 Name: "spanish";    MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "french";     MessagesFile: "compiler:Languages\French.isl"

@@ -132,7 +132,7 @@ public class MainForm : Form
     private void InitializeComponent()
     {
         SuspendLayout();
-        Text            = "LogBeam Uplink v2.5 by CT7BFV";
+        Text            = AppVersion.Title;
         Size            = new Size(760, 760);
         MinimumSize     = new Size(700, 680);
         StartPosition   = FormStartPosition.CenterScreen;
@@ -509,7 +509,7 @@ public class MainForm : Form
         try
         {
             var sb = new System.Text.StringBuilder();
-            sb.Append("LogBeam Uplink 2.5 — exportação de sessão\n");
+            sb.Append($"LogBeam Uplink {AppVersion.Current} — exportação de sessão\n");
             sb.Append($"<ADIF_VER:5>3.1.4<PROGRAMID:8>LogBeam<EOH>\n");
             foreach (var qso in qsos)
                 sb.Append(LogBeam.Core.Adif.AdifBuilder.Build(qso)).Append('\n');
@@ -527,7 +527,7 @@ public class MainForm : Form
     {
         using var dlg = new Form
         {
-            Text            = L.Get("about_title"),
+            Text            = string.Format(L.Get("about_title"), AppVersion.Current),
             Size            = new Size(480, 360),
             StartPosition   = FormStartPosition.CenterParent,
             FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -539,7 +539,7 @@ public class MainForm : Form
 
         var logo = new Label
         {
-            Text      = "📡  LogBeam Uplink v2.5 by CT7BFV",
+            Text      = "📡  " + AppVersion.Title,
             Font      = new Font("Segoe UI", 12f, FontStyle.Bold),
             ForeColor = Color.FromArgb(0, 102, 204),
             Dock      = DockStyle.Top,
@@ -549,7 +549,7 @@ public class MainForm : Form
 
         var txt = new RichTextBox
         {
-            Text        = L.Get("about_body"),
+            Text        = string.Format(L.Get("about_body"), AppVersion.Current),
             ReadOnly    = true,
             BorderStyle = BorderStyle.None,
             BackColor   = Color.White,
@@ -629,7 +629,7 @@ public class MainForm : Form
 
         _lblTitle = new Label
         {
-            Text      = "📡  LogBeam Uplink v2.5 by CT7BFV",
+            Text      = "📡  " + AppVersion.Title,
             ForeColor = Color.White,
             Font      = new Font("Segoe UI", 12f, FontStyle.Bold),
             AutoSize  = true,

@@ -1,0 +1,16 @@
+<!--
+  Code & Powered by: Octávio Filipe Pereira Gonçalves / CT7BFV
+  © 2026 Octávio Filipe Pereira Gonçalves
+  Licença GPL v3 (https://www.gnu.org/licenses/gpl-3.0.pt-br.html | https://www.gnu.org/licenses/gpl-3.0.html.en)
+-->
+<Project>
+  <!--
+    Versão única do LogBeam Uplink: vale para todos os projectos e chega ao título da janela
+    (AppVersion), aos dados da instalação, ao instalador (lida do LogBeam.exe) e à etiqueta da
+    release (o release.yml recusa uma etiqueta vX.Y.Z diferente).
+  -->
+  <PropertyGroup>
+    <Version>2.5.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+</Project>

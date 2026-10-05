@@ -19,6 +19,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Confirmar que a etiqueta corresponde à versão
+        shell: pwsh
+        run: |
+          $version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version
+          if ("v$version" -ne "${{ github.ref_name }}") {
+            throw "A etiqueta ${{ github.ref_name }} não corresponde à versão $version do Directory.Build.props"
+          }
+
       - name: Configurar .NET 8
         uses: actions/setup-dotnet@v4
         with:
@@ -54,6 +62,19 @@ jobs:
           New-Item -ItemType Directory -Force -Path installer | Out-Null
           & $iscc /O"installer" LogBeam.iss
 
+      # O SHA-256 não pode ir dentro do instalador (mudaria o próprio ficheiro): vai na Release,
+      # num ficheiro .sha256 ao lado do instalador e na página https://logbeam.org/uplink/.
+      - name: SHA-256 do instalador
+        id: hash
+        shell: pwsh
+        run: |
+          $f = Get-ChildItem installer/LogBeamUplink-Setup-*.exe | Select-Object -First 1
+          $h = (Get-FileHash $f.FullName -Algorithm SHA256).Hash
+          "$h  $($f.Name)" | Out-File -Encoding ascii "$($f.FullName).sha256"
+          "sha256=$h"       >> $env:GITHUB_OUTPUT
+          "file=$($f.Name)" >> $env:GITHUB_OUTPUT
+          Write-Host "SHA-256 de $($f.Name): $h"
+
       - name: Criar Release no GitHub
         uses: softprops/action-gh-release@v2
         with:
@@ -67,9 +88,15 @@ jobs:
 
             Versão oficial / Official release: https://logbeam.org/uplink/
 
+            **SHA-256** de / of `${{ steps.hash.outputs.file }}`:
+            `${{ steps.hash.outputs.sha256 }}`
+
+            Para confirmar / To check (PowerShell): `Get-FileHash .\${{ steps.hash.outputs.file }}`
+
             ---
             © 2026 Octávio Filipe Pereira Gonçalves (CT7BFV) — GPL v3
           files: |
             installer/LogBeamUplink-Setup-*.exe
+            installer/LogBeamUplink-Setup-*.exe.sha256
           draft: false
           prerelease: false

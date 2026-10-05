@@ -74,10 +74,10 @@ public static class L
         ["menu_help"]            = ("Ajuda", "Help", "Ayuda", "Aide"),
         ["menu_about"]           = ("Sobre o LogBeam Uplink...", "About LogBeam Uplink...",
                                     "Acerca de LogBeam Uplink...", "À propos de LogBeam Uplink..."),
-        ["about_title"]          = ("Sobre o LogBeam Uplink 2.5", "About LogBeam Uplink 2.5",
-                                    "Acerca de LogBeam Uplink 2.5", "À propos de LogBeam Uplink 2.5"),
+        ["about_title"]          = ("Sobre o LogBeam Uplink {0}", "About LogBeam Uplink {0}",
+                                    "Acerca de LogBeam Uplink {0}", "À propos de LogBeam Uplink {0}"),
         ["about_body"]           = (
-"LogBeam Uplink 2.5\n" +
+"LogBeam Uplink {0}\n" +
 "N1MM+ · WSJT-X · Log4OM → globo 3D em tempo real\n\n" +
 "Desenvolvido por:\n" +
 "  Octávio Filipe Pereira — CT7BFV\n\n" +
@@ -91,7 +91,7 @@ public static class L
 "implícita de COMERCIALIZAÇÃO ou ADEQUAÇÃO A UM FIM ESPECÍFICO.\n\n" +
 "Detalhes: https://www.gnu.org/licenses/gpl-3.0.html"
 ,
-"LogBeam Uplink 2.5\n" +
+"LogBeam Uplink {0}\n" +
 "N1MM+ · WSJT-X · Log4OM → real-time 3D globe\n\n" +
 "Developed by:\n" +
 "  Octávio Filipe Pereira — CT7BFV\n\n" +
@@ -107,7 +107,7 @@ public static class L
 "PARTICULAR PURPOSE.\n\n" +
 "Details: https://www.gnu.org/licenses/gpl-3.0.html"
 ,
-"LogBeam Uplink 2.5\n" +
+"LogBeam Uplink {0}\n" +
 "N1MM+ · WSJT-X · Log4OM → globo 3D en tiempo real\n\n" +
 "Desarrollado por:\n" +
 "  Octávio Filipe Pereira — CT7BFV\n\n" +
@@ -121,7 +121,7 @@ public static class L
 "implícita de COMERCIABILIDAD o IDONEIDAD PARA UN FIN DETERMINADO.\n\n" +
 "Detalles: https://www.gnu.org/licenses/gpl-3.0.html"
 ,
-"LogBeam Uplink 2.5\n" +
+"LogBeam Uplink {0}\n" +
 "N1MM+ · WSJT-X · Log4OM → globe 3D en temps réel\n\n" +
 "Développé par :\n" +
 "  Octávio Filipe Pereira — CT7BFV\n\n" +
