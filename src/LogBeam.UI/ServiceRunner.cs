@@ -77,8 +77,11 @@ public class ServiceRunner : IDisposable
                 services.AddSingleton<QsoQueueService>();
                 services.AddSingleton<SessionLogService>();
                 services.AddSingleton<QsoProcessor>();
+                services.AddSingleton(sp => new ClubLogClient(
+                    sp.GetRequiredService<IHttpClientFactory>().CreateClient("clublog"),
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ServiceAppSettings>>(),
+                    sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<ClubLogClient>>()));
                 services.AddHostedService(sp => sp.GetRequiredService<QsoProcessor>());
-                services.AddHostedService<ClubLogUploadService>();
 
                 // Dados da instalação e relatórios de erros (4.26, 4.27): só actuam com consentimento.
                 services.AddSingleton(_telemetryStore);

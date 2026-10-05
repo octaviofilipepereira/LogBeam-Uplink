@@ -36,10 +36,11 @@ public class QsoQueueService
         Converters = { new JsonStringEnumConverter() }
     };
 
-    public QsoQueueService(ILogger<QsoQueueService> logger)
+    /// <param name="queuePath">Ficheiro da fila; por omissão, queue.json junto do executável (os testes usam outro).</param>
+    public QsoQueueService(ILogger<QsoQueueService> logger, string? queuePath = null)
     {
         _logger     = logger;
-        _queuePath  = Path.Combine(AppContext.BaseDirectory, "queue.json");
+        _queuePath  = queuePath ?? Path.Combine(AppContext.BaseDirectory, "queue.json");
         Load();
     }
 

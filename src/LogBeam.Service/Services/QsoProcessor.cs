@@ -16,8 +16,9 @@ namespace LogBeam.Service.Services;
 /// <summary>
 /// Orquestra o processamento de QSOs:
 /// 1. Recebe eventos do N1MMUdpListener (e, se activos, do WsjtxUdpListener e do AdifUdpListener/Log4OM)
-/// 2. Envia para cada logbook LogBeam activo (HamQTH/DXCC são resolvidos pelo servidor)
-/// 3. Em caso de falha num perfil, coloca esse QSO na fila offline e tenta reenviar periodicamente
+/// 2. Envia para cada logbook LogBeam activo (localização e DXCC são resolvidos pelo servidor) e,
+///    se estiver activo, para o ClubLog
+/// 3. Em caso de falha num destino, coloca esse QSO na fila offline e tenta reenviar periodicamente
 /// </summary>
 public class QsoProcessor : BackgroundService
 {
@@ -27,6 +28,7 @@ public class QsoProcessor : BackgroundService
     private readonly WsjtxUdpListener _wsjtxListener;
     private readonly AdifUdpListener _adifListener;
     private readonly ApiClientService _apiClient;
+    private readonly ClubLogClient _clubLog;
     private readonly QsoQueueService _queue;
     private readonly SessionLogService _sessionLog;
     private readonly IOptions<AppSettings> _settings;
@@ -43,6 +45,7 @@ public class QsoProcessor : BackgroundService
         WsjtxUdpListener wsjtxListener,
         AdifUdpListener adifListener,
         ApiClientService apiClient,
+        ClubLogClient clubLog,
         QsoQueueService queue,
         SessionLogService sessionLog,
         IOptions<AppSettings> settings,
@@ -52,6 +55,7 @@ public class QsoProcessor : BackgroundService
         _wsjtxListener  = wsjtxListener;
         _adifListener   = adifListener;
         _apiClient      = apiClient;
+        _clubLog        = clubLog;
         _queue          = queue;
         _sessionLog     = sessionLog;
         _settings       = settings;
@@ -64,6 +68,7 @@ public class QsoProcessor : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("QsoProcessor iniciado");
+        _clubLog.LogStatus();
 
         try
         {
@@ -128,7 +133,7 @@ public class QsoProcessor : BackgroundService
     /// <summary>
     /// Processa um QSO: envia para todos os perfis (logbooks) activos; em falha por perfil, guarda na fila offline.
     /// </summary>
-    private async Task ProcessQsoAsync(Core.Models.QsoRecord qso, CancellationToken ct)
+    internal async Task ProcessQsoAsync(Core.Models.QsoRecord qso, CancellationToken ct)
     {
         try
         {
@@ -136,7 +141,7 @@ public class QsoProcessor : BackgroundService
                 qso.Call, qso.Band, qso.Mode, string.IsNullOrEmpty(qso.Freq) ? "(vazio)" : qso.Freq + " MHz");
 
             var profiles = _settings.Value.Api.Profiles.Where(p => p.Enabled).ToList();
-            if (profiles.Count == 0)
+            if (profiles.Count == 0 && !_clubLog.IsActive)
             {
                 _logger.LogWarning("Nenhum logbook LogBeam configurado/activo — QSO {Callsign} não enviado.", qso.Call);
                 QsoResult?.Invoke(qso, false);
@@ -145,6 +150,15 @@ public class QsoProcessor : BackgroundService
 
             var anySuccess = false;
             var anyConfirmed = false;
+
+            if (_clubLog.IsActive)
+            {
+                switch (await _clubLog.UploadAsync(qso, ct))
+                {
+                    case ClubLogResult.Ok:         anySuccess = true; break;
+                    case ClubLogResult.RetryLater: _queue.Enqueue(qso, ClubLogClient.QueueId); break;
+                }
+            }
 
             foreach (var profile in profiles)
             {
@@ -189,7 +203,7 @@ public class QsoProcessor : BackgroundService
     /// Tenta reenviar os QSOs pendentes na fila offline, agrupados por perfil e pela ordem de chegada.
     /// Pára, por perfil, ao primeiro que continue a falhar — esse logbook provavelmente ainda está inacessível.
     /// </summary>
-    private async Task FlushQueueAsync(CancellationToken ct)
+    internal async Task FlushQueueAsync(CancellationToken ct)
     {
         var pending = _queue.Snapshot();
         if (pending.Count == 0) return;
@@ -200,6 +214,12 @@ public class QsoProcessor : BackgroundService
 
         foreach (var group in pending.GroupBy(item => item.ProfileId))
         {
+            if (group.Key == ClubLogClient.QueueId)
+            {
+                await FlushClubLogAsync(group, ct);
+                continue;
+            }
+
             if (!profilesById.TryGetValue(group.Key, out var profile))
             {
                 // Perfil já não existe (foi removido) — descarta os QSOs pendentes para ele
@@ -233,6 +253,29 @@ public class QsoProcessor : BackgroundService
                 if (result.ConfirmedLogbeam)
                     QsoConfirmedByLogbeam?.Invoke(item.Qso);
             }
+        }
+    }
+
+    /// <summary>
+    /// Reenvio para o ClubLog pela ordem de chegada. Com o ClubLog desligado nas definições, as
+    /// entradas pendentes são descartadas; com as credenciais recusadas (403), ficam à espera.
+    /// </summary>
+    private async Task FlushClubLogAsync(IEnumerable<QueuedQso> items, CancellationToken ct)
+    {
+        foreach (var item in items)
+        {
+            if (!_settings.Value.ClubLog.Enabled)
+            {
+                _queue.Remove(item);
+                continue;
+            }
+
+            var result = await _clubLog.UploadAsync(item.Qso, ct);
+            if (result is ClubLogResult.RetryLater or ClubLogResult.Suspended or ClubLogResult.NotConfigured) return;
+
+            _queue.Remove(item);   // Ok ou recusado: sai da fila
+            if (result == ClubLogResult.Ok)
+                _logger.LogInformation("QSO reenviado para o ClubLog a partir da fila offline: {Callsign}", item.Qso.Call);
         }
     }
 
