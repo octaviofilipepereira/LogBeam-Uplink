@@ -330,9 +330,9 @@ public static class L
             "• língua da interface e programas de log ligados.\n\n" +
             "Relatórios de erros (guardados 90 dias):\n" +
             "• data e hora, componente, tipo e mensagem do erro, e o ponto do código onde ocorreu;\n" +
-            "• o nome do utilizador do Windows é retirado dos caminhos dos ficheiros.\n\n" +
+            "• o nome do utilizador e o do computador são retirados das mensagens.\n\n" +
             "Nunca são enviados o nome do computador, o nome do utilizador, números de série nem QSOs, e o endereço " +
-            "IP não é guardado.\n\n" +
+            "IP não fica associado a estes dados.\n\n" +
             "Pode mudar esta opção a qualquer momento no separador Avançado. Ao retirar a autorização, os dados já " +
             "enviados são apagados.",
 
@@ -346,9 +346,9 @@ public static class L
             "• interface language and connected logging programs.\n\n" +
             "Error reports (kept for 90 days):\n" +
             "• date and time, component, error type and message, and where in the code it happened;\n" +
-            "• the Windows user name is removed from file paths.\n\n" +
+            "• the user name and the computer name are removed from the messages.\n\n" +
             "The computer name, user name, serial numbers and QSOs are never sent, and the IP address is not " +
-            "stored.\n\n" +
+            "linked to this data.\n\n" +
             "You can change this option at any time in the Advanced tab. If you withdraw your permission, the data " +
             "already sent is deleted.",
 
@@ -362,9 +362,9 @@ public static class L
             "• idioma de la interfaz y programas de log conectados.\n\n" +
             "Informes de errores (se conservan 90 días):\n" +
             "• fecha y hora, componente, tipo y mensaje del error, y el punto del código donde se produjo;\n" +
-            "• el nombre de usuario de Windows se elimina de las rutas de los archivos.\n\n" +
+            "• el nombre de usuario y el del equipo se eliminan de los mensajes.\n\n" +
             "Nunca se envían el nombre del equipo, el nombre de usuario, números de serie ni QSOs, y la dirección " +
-            "IP no se guarda.\n\n" +
+            "IP no queda asociada a estos datos.\n\n" +
             "Puede cambiar esta opción en cualquier momento en la pestaña Avanzado. Si retira la autorización, se " +
             "borran los datos ya enviados.",
 
@@ -378,9 +378,9 @@ public static class L
             "• langue de l'interface et logiciels de log connectés.\n\n" +
             "Rapports d'erreurs (conservés 90 jours) :\n" +
             "• date et heure, composant, type et message de l'erreur, et l'endroit du code où elle s'est produite ;\n" +
-            "• le nom d'utilisateur Windows est retiré des chemins de fichiers.\n\n" +
+            "• le nom d'utilisateur et celui de l'ordinateur sont retirés des messages.\n\n" +
             "Le nom de l'ordinateur, le nom d'utilisateur, les numéros de série et les QSO ne sont jamais envoyés, " +
-            "et l'adresse IP n'est pas conservée.\n\n" +
+            "et l'adresse IP n'est pas associée à ces données.\n\n" +
             "Vous pouvez modifier ce choix à tout moment dans l'onglet Avancé. Si vous retirez votre autorisation, " +
             "les données déjà envoyées sont supprimées."),
         ["consent_allow"]        = ("Autorizar", "Allow", "Autorizar", "Autoriser"),
