@@ -24,7 +24,7 @@ Contribuições são bem-vindas: correcções, melhorias, traduções, testes co
 4. Textos da interface: em `src/LogBeam.UI/Localization/L.cs`, sempre nas quatro línguas (PT, EN, ES, FR). Um teste falha se faltar alguma.
 5. Datas DD/MM/AAAA, horas HH:MM em 24 h e QSOs em UTC.
 6. Não são permitidos segredos no código: chaves, passwords ou endereços internos.
-7. Ficheiros novos levam o mesmo cabeçalho de licença dos restantes.
+7. Cada ficheiro novo começa com o cabeçalho de autoria e licença (GPL v3) que os restantes ficheiros do projecto já têm. Exemplo: as três primeiras linhas de `src/LogBeam.UI/Program.cs`.
 
 ### Licença das contribuições
 
@@ -56,7 +56,7 @@ Contributions are welcome: fixes, improvements, translations, testing with other
 4. Interface texts: in `src/LogBeam.UI/Localization/L.cs`, always in the four languages (PT, EN, ES, FR). A test fails if any is missing.
 5. Dates DD/MM/YYYY, times HH:MM in 24 h and QSOs in UTC.
 6. Secrets are not allowed in the code: keys, passwords or internal addresses.
-7. New files carry the same licence header as the others.
+7. Every new file starts with the authorship and licence header (GPL v3) that the project's other files already have. Example: the first three lines of `src/LogBeam.UI/Program.cs`.
 
 ### Licence of contributions
 
@@ -88,7 +88,7 @@ Las contribuciones son bienvenidas: correcciones, mejoras, traducciones, pruebas
 4. Textos de la interfaz: en `src/LogBeam.UI/Localization/L.cs`, siempre en los cuatro idiomas (PT, EN, ES, FR). Una prueba falla si falta alguno.
 5. Fechas DD/MM/AAAA, horas HH:MM en 24 h y QSOs en UTC.
 6. No se permiten secretos en el código: claves, contraseñas o direcciones internas.
-7. Los archivos nuevos llevan la misma cabecera de licencia que los demás.
+7. Cada archivo nuevo empieza con la cabecera de autoría y licencia (GPL v3) que ya tienen los demás archivos del proyecto. Ejemplo: las tres primeras líneas de `src/LogBeam.UI/Program.cs`.
 
 ### Licencia de las contribuciones
 
@@ -120,7 +120,7 @@ Les contributions sont les bienvenues : corrections, améliorations, traductions
 4. Textes de l'interface : dans `src/LogBeam.UI/Localization/L.cs`, toujours dans les quatre langues (PT, EN, ES, FR). Un test échoue s'il en manque une.
 5. Dates JJ/MM/AAAA, heures HH:MM sur 24 h et QSO en UTC.
 6. Les secrets ne sont pas autorisés dans le code : clés, mots de passe ou adresses internes.
-7. Les nouveaux fichiers portent le même en-tête de licence que les autres.
+7. Chaque nouveau fichier commence par l'en-tête d'auteur et de licence (GPL v3) que les autres fichiers du projet ont déjà. Exemple : les trois premières lignes de `src/LogBeam.UI/Program.cs`.
 
 ### Licence des contributions
 
