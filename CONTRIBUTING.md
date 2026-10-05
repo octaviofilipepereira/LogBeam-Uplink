@@ -26,6 +26,10 @@ Contribuições são bem-vindas: correcções, melhorias, traduções, testes co
 6. Não são permitidos segredos no código: chaves, passwords ou endereços internos.
 7. Cada ficheiro novo começa com o cabeçalho de autoria e licença (GPL v3) que os restantes ficheiros do projecto já têm. Exemplo: as três primeiras linhas de `src/LogBeam.UI/Program.cs`.
 
+### Reconhecimento
+
+Se quiser, o seu indicativo ou nome aparece nas notas da versão que inclui a sua contribuição (código, tradução, testes ou relatório de problema). Basta indicá-lo na *issue* ou no *pull request*.
+
 ### Licença das contribuições
 
 O projecto é distribuído com a [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html). Ao enviar uma contribuição, aceita que seja distribuída com a mesma licença.
@@ -57,6 +61,10 @@ Contributions are welcome: fixes, improvements, translations, testing with other
 5. Dates DD/MM/YYYY, times HH:MM in 24 h and QSOs in UTC.
 6. Secrets are not allowed in the code: keys, passwords or internal addresses.
 7. Every new file starts with the authorship and licence header (GPL v3) that the project's other files already have. Example: the first three lines of `src/LogBeam.UI/Program.cs`.
+
+### Credit
+
+If you wish, your callsign or name appears in the release notes of the version that includes your contribution (code, translation, testing or a bug report). Just say so in the issue or pull request.
 
 ### Licence of contributions
 
@@ -90,6 +98,10 @@ Las contribuciones son bienvenidas: correcciones, mejoras, traducciones, pruebas
 6. No se permiten secretos en el código: claves, contraseñas o direcciones internas.
 7. Cada archivo nuevo empieza con la cabecera de autoría y licencia (GPL v3) que ya tienen los demás archivos del proyecto. Ejemplo: las tres primeras líneas de `src/LogBeam.UI/Program.cs`.
 
+### Reconocimiento
+
+Si lo desea, su indicativo o nombre aparece en las notas de la versión que incluye su contribución (código, traducción, pruebas o informe de problema). Basta con indicarlo en la *issue* o en el *pull request*.
+
 ### Licencia de las contribuciones
 
 El proyecto se distribuye con la [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html). Al enviar una contribución, acepta que se distribuya con la misma licencia.
@@ -121,6 +133,10 @@ Les contributions sont les bienvenues : corrections, améliorations, traductions
 5. Dates JJ/MM/AAAA, heures HH:MM sur 24 h et QSO en UTC.
 6. Les secrets ne sont pas autorisés dans le code : clés, mots de passe ou adresses internes.
 7. Chaque nouveau fichier commence par l'en-tête d'auteur et de licence (GPL v3) que les autres fichiers du projet ont déjà. Exemple : les trois premières lignes de `src/LogBeam.UI/Program.cs`.
+
+### Remerciements
+
+Si vous le souhaitez, votre indicatif ou votre nom figure dans les notes de la version qui inclut votre contribution (code, traduction, tests ou signalement de problème). Il suffit de l'indiquer dans l'*issue* ou la *pull request*.
 
 ### Licence des contributions
 
