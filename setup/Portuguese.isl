@@ -7,6 +7,7 @@
 ; Original translation by Nuno Silva (nars@gmx.net)
 ; Revised and updated to AO90 by BlackSpirits (blackspirits@gmail.com)
 ; Last modified: 22 November 2025 by BlackSpirits
+; Adaptada à grafia anterior ao AO90 para o LogBeam Uplink por Octávio Filipe Pereira Gonçalves (CT7BFV), Outubro de 2026
 
 [LangOptions]
 LanguageName=Português (Portugal)
