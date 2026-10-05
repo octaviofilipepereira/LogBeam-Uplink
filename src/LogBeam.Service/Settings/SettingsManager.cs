@@ -51,28 +51,6 @@ public class SettingsManager
             var json = File.ReadAllText(_configPath);
             var settings = JsonSerializer.Deserialize<AppSettings>(json, JsonOptions) ?? new AppSettings();
 
-            // Migração de settings.json antigos: a secção "qrz" passou a "hamQth"
-            if (string.IsNullOrEmpty(settings.HamQth.Username))
-            {
-                try
-                {
-                    using var doc = JsonDocument.Parse(json);
-                    if (doc.RootElement.TryGetProperty("qrz", out var oldQrz))
-                    {
-                        if (oldQrz.TryGetProperty("username", out var u))
-                            settings.HamQth.Username = u.GetString() ?? string.Empty;
-                        if (oldQrz.TryGetProperty("passwordEncrypted", out var p))
-                            settings.HamQth.PasswordEncrypted = p.GetString() ?? string.Empty;
-                        if (oldQrz.TryGetProperty("cacheTtlMinutes", out var c))
-                            settings.HamQth.CacheTtlMinutes = c.GetInt32();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, "Falha ao migrar secção 'qrz' antiga do settings.json");
-                }
-            }
-
             // Migração de settings.json antigos: InstanceId/ApiKey soltos em "api" passaram a "api.profiles"
             if (settings.Api.Profiles.Count == 0)
             {
@@ -100,19 +78,6 @@ public class SettingsManager
             }
 
             // Decifrar campos encrypted
-            if (!string.IsNullOrEmpty(settings.HamQth.PasswordEncrypted))
-            {
-                try
-                {
-                    settings.HamQth.PasswordEncrypted = CredentialProtector.Unprotect(settings.HamQth.PasswordEncrypted);
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, "Falha ao decifrar password HamQTH. Será solicitado no wizard.");
-                    settings.HamQth.PasswordEncrypted = string.Empty;
-                }
-            }
-
             if (!string.IsNullOrEmpty(settings.ClubLog.PasswordEncrypted))
             {
                 try   { settings.ClubLog.PasswordEncrypted = CredentialProtector.Unprotect(settings.ClubLog.PasswordEncrypted); }
@@ -165,17 +130,6 @@ public class SettingsManager
             var settingsCopy = JsonSerializer.Deserialize<AppSettings>(json, JsonOptions)!;
 
             // Cifrar campos sensíveis
-            if (!string.IsNullOrEmpty(settingsCopy.HamQth.PasswordEncrypted))
-            {
-                try
-                {
-                    settingsCopy.HamQth.PasswordEncrypted = CredentialProtector.Protect(settingsCopy.HamQth.PasswordEncrypted);
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, "Falha ao cifrar password HamQTH. Será guardado em texto claro.");
-                }
-            }
             if (!string.IsNullOrEmpty(settingsCopy.ClubLog.PasswordEncrypted))
             {
                 try   { settingsCopy.ClubLog.PasswordEncrypted = CredentialProtector.Protect(settingsCopy.ClubLog.PasswordEncrypted); }

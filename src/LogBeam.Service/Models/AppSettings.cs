@@ -11,10 +11,10 @@ namespace LogBeam.Service.Models;
 /// </summary>
 public class AppSettings
 {
+    // Indicativo da estação (usado no ClubLog e nos dados da instalação). As coordenadas e a
+    // conta HamQTH saíram na 2.5.0: o servidor trata da localização; settings.json antigos
+    // com esses campos continuam a abrir (os campos desconhecidos são ignorados).
     public string MyCallsign { get; set; } = string.Empty;
-    public decimal MyLatitude { get; set; }
-    public decimal MyLongitude { get; set; }
-    public HamQthSettings HamQth { get; set; } = new();
     public ApiSettings Api { get; set; } = new();
     public N1mmSettings N1mm { get; set; } = new();
     public WsjtxSettings Wsjtx { get; set; } = new();
@@ -75,27 +75,6 @@ public class TelemetrySettings
 
     [System.Text.Json.Serialization.JsonIgnore]
     public bool IsActive => Consent == true && !string.IsNullOrWhiteSpace(InstallationId);
-}
-
-/// <summary>
-/// Configurações para API HamQTH (hamqth.com)
-/// </summary>
-public class HamQthSettings
-{
-    /// <summary>
-    /// Username HamQTH
-    /// </summary>
-    public string Username { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Password HamQTH (será cifrado com DPAPI antes de guardar)
-    /// </summary>
-    public string PasswordEncrypted { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Cache TTL em minutos (quantos minutos guardar dados de QTH em cache)
-    /// </summary>
-    public int CacheTtlMinutes { get; set; } = 1440; // 24 horas
 }
 
 /// <summary>

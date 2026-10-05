@@ -133,10 +133,10 @@ public static class L
         // Tabs
         ["tab_station"]          = ("Estação", "Station", "Estación", "Station"),
         ["tab_api"]              = ("API LogBeam", "LogBeam API", "API LogBeam", "API LogBeam"),
-        ["tab_hamqth"]           = ("HamQTH", "HamQTH", "HamQTH", "HamQTH"),
         ["tab_advanced"]         = ("Avançado", "Advanced", "Avanzado", "Avancé"),
         ["tab_n1mm"]             = ("N1MM+", "N1MM+", "N1MM+", "N1MM+"),
         ["tab_wsjtx"]            = ("WSJT-X / JTDX", "WSJT-X / JTDX", "WSJT-X / JTDX", "WSJT-X / JTDX"),
+        ["tab_log4om"]           = ("Log4OM", "Log4OM", "Log4OM", "Log4OM"),
 
         // N1MM tab
         ["lbl_n1mm_port"]        = ("Porta UDP:", "UDP Port:", "Puerto UDP:", "Port UDP :"),
@@ -188,6 +188,23 @@ public static class L
                                    "In WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, port 2237 (the defaults). In JTDX: the same settings, and also tick \"Enable sending logged QSO ADIF data\".",
                                    "En WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, puerto 2237 (valores por defecto). En JTDX: la misma configuración y, además, marcar \"Enable sending logged QSO ADIF data\".",
                                    "Dans WSJT-X : File → Settings → Reporting → UDP Server : 127.0.0.1, port 2237 (valeurs par défaut). Dans JTDX : les mêmes réglages, en cochant aussi « Enable sending logged QSO ADIF data »."),
+
+        // Log4OM tab
+        ["lbl_log4om_enabled"]  = ("Activar recepção do Log4OM", "Enable Log4OM reception",
+                                   "Activar recepción de Log4OM", "Activer la réception de Log4OM"),
+        ["lbl_log4om_port"]     = ("Porta UDP:", "UDP Port:", "Puerto UDP:", "Port UDP :"),
+        ["hint_log4om"]         = ("No Log4OM: Settings → Program Configuration → Software Integration → Connections. " +
+                                   "Acrescentar uma ligação UDP OUTBOUND com a mensagem ADIF_MESSAGE, destino 127.0.0.1, porta 2333 " +
+                                   "(a mesma indicada acima) e \"Broadcast\" desligado. Gravar e reiniciar o Log4OM.",
+                                   "In Log4OM: Settings → Program Configuration → Software Integration → Connections. " +
+                                   "Add a UDP OUTBOUND connection with the ADIF_MESSAGE message, destination 127.0.0.1, port 2333 " +
+                                   "(the one set above) and \"Broadcast\" turned off. Save and restart Log4OM.",
+                                   "En Log4OM: Settings → Program Configuration → Software Integration → Connections. " +
+                                   "Añada una conexión UDP OUTBOUND con el mensaje ADIF_MESSAGE, destino 127.0.0.1, puerto 2333 " +
+                                   "(el indicado arriba) y \"Broadcast\" desactivado. Guarde y reinicie Log4OM.",
+                                   "Dans Log4OM : Settings → Program Configuration → Software Integration → Connections. " +
+                                   "Ajoutez une connexion UDP OUTBOUND avec le message ADIF_MESSAGE, destination 127.0.0.1, port 2333 " +
+                                   "(celui indiqué ci-dessus) et « Broadcast » désactivé. Enregistrez et redémarrez Log4OM."),
 
         // N1MM help submenu
         ["menu_n1mm_help"]       = ("Configurar o N1MM+...", "Configure N1MM+...", "Configurar N1MM+...", "Configurer N1MM+..."),
@@ -252,12 +269,10 @@ public static class L
 
         // Station
         ["lbl_callsign"]         = ("Indicativo:", "Callsign:", "Indicativo:", "Indicatif :"),
-        ["lbl_lat"]              = ("Latitude:", "Latitude:", "Latitud:", "Latitude :"),
-        ["lbl_lon"]              = ("Longitude:", "Longitude:", "Longitud:", "Longitude :"),
-        ["hint_qth"]             = ("Coordenadas GPS do QTH da estação. Ex.: Lisboa → Lat 38.7167 / Lon -9.1333",
-                                    "GPS coordinates of the station QTH. E.g. Lisbon → Lat 38.7167 / Lon -9.1333",
-                                    "Coordenadas GPS del QTH de la estación. Ej.: Lisboa → Lat 38.7167 / Lon -9.1333",
-                                    "Coordonnées GPS du QTH de la station. Ex. : Lisbonne → Lat 38.7167 / Lon -9.1333"),
+        ["hint_station"]         = ("O indicativo é usado no envio para o ClubLog, se não for indicado outro no separador ClubLog. A localização dos correspondentes é tratada pelo servidor do LogBeam.",
+                                    "The callsign is used for ClubLog uploads, unless another one is set in the ClubLog tab. Correspondent locations are handled by the LogBeam server.",
+                                    "El indicativo se usa en el envío a ClubLog, salvo que se indique otro en la pestaña ClubLog. La ubicación de los corresponsales la gestiona el servidor de LogBeam.",
+                                    "L'indicatif est utilisé pour l'envoi vers ClubLog, sauf si un autre est indiqué dans l'onglet ClubLog. La position des correspondants est gérée par le serveur LogBeam."),
 
         // API
         ["lbl_api_url"]          = ("URL base:", "Base URL:", "URL base:", "URL de base :"),
@@ -271,19 +286,12 @@ public static class L
         ["btn_test_api"]         = ("Testar ligação", "Test Connection", "Probar conexión", "Tester la connexion"),
         ["btn_profile_add"]      = ("Adicionar logbook", "Add Logbook", "Añadir logbook", "Ajouter un logbook"),
         ["btn_profile_remove"]   = ("Remover", "Remove", "Quitar", "Supprimer"),
+        ["btn_show_keys"]        = ("Mostrar chaves", "Show keys", "Mostrar claves", "Afficher les clés"),
+        ["btn_hide_keys"]        = ("Esconder chaves", "Hide keys", "Ocultar claves", "Masquer les clés"),
         ["col_profile_enabled"]  = ("Usar logbook", "Use logbook", "Usar logbook", "Utiliser le logbook"),
         ["col_profile_name"]     = ("Nome", "Name", "Nombre", "Nom"),
         ["col_profile_instance"] = ("Instance ID", "Instance ID", "Instance ID", "Instance ID"),
         ["col_profile_key"]      = ("API Key", "API Key", "API Key", "API Key"),
-
-        // HamQTH
-        ["hint_hamqth"]          = ("Conta HamQTH (hamqth.com) para obter automaticamente a localização dos correspondentes (gratuita).",
-                                    "HamQTH account (hamqth.com) for automatic location lookup of correspondents (free).",
-                                    "Cuenta HamQTH (hamqth.com) para obtener automáticamente la ubicación de los corresponsales (gratuita).",
-                                    "Compte HamQTH (hamqth.com) pour obtenir automatiquement la position des correspondants (gratuit)."),
-        ["lbl_hamqth_user"]      = ("Utilizador:", "Username:", "Usuario:", "Utilisateur :"),
-        ["lbl_hamqth_pass"]      = ("Password:", "Password:", "Contraseña:", "Mot de passe :"),
-        ["lbl_hamqth_cache"]     = ("Cache (min):", "Cache (min):", "Caché (min):", "Cache (min) :"),
 
         // ClubLog
         ["tab_clublog"]          = ("ClubLog", "ClubLog", "ClubLog", "ClubLog"),
@@ -310,6 +318,8 @@ public static class L
         ["lbl_log_path"]         = ("Ficheiro de log:", "Log File:", "Archivo de log:", "Fichier journal :"),
         ["lbl_notify_each_qso"]  = ("Avisar a cada QSO enviado", "Notify for every QSO sent",
                                     "Avisar de cada QSO enviado", "Notifier chaque QSO envoyé"),
+        ["lbl_start_with_windows"] = ("Iniciar com o Windows, sem abrir a janela", "Start with Windows, without opening the window",
+                                      "Iniciar con Windows, sin abrir la ventana", "Démarrer avec Windows, sans ouvrir la fenêtre"),
         ["lbl_telemetry"]        = ("Enviar dados da instalação e relatórios de erros",
                                     "Send installation data and error reports",
                                     "Enviar datos de la instalación e informes de errores",

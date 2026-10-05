@@ -40,7 +40,7 @@ public class MainForm : Form
 
     // Tabs
     private TabControl _tabs      = null!;
-    private TabPage    _pgStation = null!, _pgApi = null!, _pgHamQth = null!, _pgAdvanced = null!, _pgN1mm = null!, _pgWsjtx = null!, _pgClubLog = null!;
+    private TabPage    _pgStation = null!, _pgApi = null!, _pgAdvanced = null!, _pgN1mm = null!, _pgWsjtx = null!, _pgLog4om = null!, _pgClubLog = null!;
 
     // N1MM tab
     private Label         _lN1mmPort = null!, _lN1mmAddr = null!, _lN1mmHint = null!, _lN1mmStatus = null!;
@@ -60,33 +60,34 @@ public class MainForm : Form
     private Label          _lWsjtxPort = null!, _lWsjtxHint = null!;
     private NumericUpDown  _nWsjtxPort = null!;
 
+    // Log4OM tab
+    private CheckBox       _chkLog4omEnabled = null!;
+    private Label          _lLog4omPort = null!, _lLog4omHint = null!;
+    private NumericUpDown  _nLog4omPort = null!;
+
     // ClubLog tab
     private Label    _lClHint = null!, _lClEmail = null!, _lClPass = null!, _lClCall = null!;
     private CheckBox _chkClEnabled = null!;
     private TextBox  _txtClEmail = null!, _txtClPass = null!, _txtClCall = null!;
 
     // Station tab
-    private Label         _lCallsign = null!, _lLat = null!, _lLon = null!, _lQthHint = null!;
+    private Label         _lCallsign = null!, _lStationHint = null!;
     private TextBox       _txtCallsign = null!;
-    private NumericUpDown _nLat = null!, _nLon = null!;
 
     // API tab
     private Label         _lApiUrl = null!, _lApiTimeout = null!,
                           _lApiRetry = null!, _lApiDelay = null!, _lApiHint = null!;
     private TextBox       _txtApiUrl = null!;
     private NumericUpDown _nTimeout = null!, _nRetry = null!, _nDelay = null!;
-    private Button        _btnTestApi = null!, _btnProfileAdd = null!, _btnProfileRemove = null!;
+    private Button        _btnTestApi = null!, _btnProfileAdd = null!, _btnProfileRemove = null!, _btnShowKeys = null!;
     private DataGridView  _gridProfiles = null!;
-
-    // HamQTH tab
-    private Label         _lHamQthInfo = null!, _lHamQthUser = null!, _lHamQthPass = null!, _lHamQthCache = null!;
-    private TextBox       _txtHamQthUser = null!, _txtHamQthPass = null!;
-    private NumericUpDown _nHamQthCache = null!;
+    private bool          _showKeys;          // API keys em claro na grelha (por omissão, mascaradas)
+    private int           _editingKeyRow = -1; // linha cuja API key está a ser editada (mostra-se em claro)
 
     // Advanced tab
     private Label    _lLogLevel = null!, _lLogPath = null!;
     private ComboBox _cboLogLevel = null!;
-    private CheckBox _chkNotifyEachQso = null!, _chkTelemetry = null!;
+    private CheckBox _chkNotifyEachQso = null!, _chkTelemetry = null!, _chkStartWithWindows = null!;
     private LinkLabel _lnkTelemetryWhat = null!;
     private TextBox  _txtLogPath = null!;
 
@@ -98,9 +99,13 @@ public class MainForm : Form
     private Panel? _pnlBusy;
     private bool   _exiting;
 
+    // Arranque com o Windows: a janela não aparece, fica só o ícone no tabuleiro.
+    private bool _startHidden;
+
     // ──────────────────────────────────────────────────────────────────────
-    public MainForm()
+    public MainForm(bool startHidden = false)
     {
+        _startHidden = startHidden;
         _settings = _mgr.Load();
         _prefs    = _prefsMgr.LoadPrefs();
         L.Lang    = _prefs.Language;
@@ -286,11 +291,29 @@ public class MainForm : Form
         });
     }
 
-    private void ShowWindow()
+    /// <summary>Mostra a janela (tabuleiro, ou uma segunda instância que foi aberta).</summary>
+    internal void ShowWindow()
     {
+        _startHidden = false;
         Show();
         WindowState = FormWindowState.Normal;
         Activate();
+    }
+
+    /// <summary>
+    /// Com <see cref="_startHidden"/>, a primeira vez que o Application.Run tenta mostrar a janela
+    /// ela fica escondida. O handle é criado na mesma, porque os avisos do tabuleiro e a segunda
+    /// instância usam BeginInvoke.
+    /// </summary>
+    protected override void SetVisibleCore(bool value)
+    {
+        if (value && _startHidden)
+        {
+            _startHidden = false;
+            if (!IsHandleCreated) CreateHandle();
+            value = false;
+        }
+        base.SetVisibleCore(value);
     }
 
     private void OnFormResize(object? s, EventArgs e)
@@ -693,21 +716,21 @@ public class MainForm : Form
 
         _pgStation  = new TabPage { UseVisualStyleBackColor = true };
         _pgApi      = new TabPage { UseVisualStyleBackColor = true };
-        _pgHamQth   = new TabPage { UseVisualStyleBackColor = true };
         _pgN1mm     = new TabPage { UseVisualStyleBackColor = true };
         _pgWsjtx    = new TabPage { UseVisualStyleBackColor = true };
+        _pgLog4om   = new TabPage { UseVisualStyleBackColor = true };
         _pgClubLog  = new TabPage { UseVisualStyleBackColor = true };
         _pgAdvanced = new TabPage { UseVisualStyleBackColor = true };
 
-        _tabs.TabPages.AddRange(new[] { _pgStation, _pgApi, _pgHamQth, _pgN1mm, _pgWsjtx, _pgClubLog, _pgAdvanced });
+        _tabs.TabPages.AddRange(new[] { _pgStation, _pgApi, _pgN1mm, _pgWsjtx, _pgLog4om, _pgClubLog, _pgAdvanced });
         Controls.Add(_tabs);
         _tabs.BringToFront();
 
         BuildStationTab();
         BuildApiTab();
-        BuildHamQthTab();
         BuildN1mmTab();
         BuildWsjtxTab();
+        BuildLog4omTab();
         BuildClubLogTab();
         BuildAdvancedTab();
     }
@@ -718,7 +741,7 @@ public class MainForm : Form
         {
             Dock       = DockStyle.Fill,
             ColumnCount = 2,
-            RowCount   = rows,
+            RowCount   = rows + 1,
             Padding    = new Padding(20, 14, 20, 14),
             AutoScroll = true
         };
@@ -726,6 +749,9 @@ public class MainForm : Form
         t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         for (int i = 0; i < rows; i++)
             t.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
+        // Linha final vazia que fica com o espaço que sobra (sem ela, a última linha esticava e
+        // as ajudas apareciam a meio do separador).
+        t.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         page.Controls.Add(t);
         return t;
     }
@@ -763,19 +789,13 @@ public class MainForm : Form
 
     private void BuildStationTab()
     {
-        var t = MakeTable(_pgStation, 5);
+        var t = MakeTable(_pgStation, 3);
 
         _txtCallsign = new TextBox { CharacterCasing = CharacterCasing.Upper };
         _lCallsign   = AddRow(t, 0, _txtCallsign);
 
-        _nLat = new NumericUpDown { DecimalPlaces = 6, Minimum = -90m,  Maximum = 90m,  Increment = 0.001m };
-        _lLat = AddRow(t, 1, _nLat);
-
-        _nLon = new NumericUpDown { DecimalPlaces = 6, Minimum = -180m, Maximum = 180m, Increment = 0.001m };
-        _lLon = AddRow(t, 2, _nLon);
-
-        t.RowStyles[3] = new RowStyle(SizeType.Absolute, 8);
-        _lQthHint = AddHint(t, 4, 48);
+        t.RowStyles[1] = new RowStyle(SizeType.Absolute, 8);
+        _lStationHint = AddHint(t, 2, 48);
     }
 
     private void BuildApiTab()
@@ -803,6 +823,11 @@ public class MainForm : Form
         _gridProfiles.Columns.Add(new DataGridViewTextBoxColumn { Name = "InstanceId", FillWeight = 22 });
         _gridProfiles.Columns.Add(new DataGridViewTextBoxColumn { Name = "ApiKey",     FillWeight = 38 });
         _gridProfiles.CellEndEdit += OnProfileCellEndEdit;
+        _gridProfiles.CellBeginEdit += (_, e) =>
+        {
+            if (_gridProfiles.Columns[e.ColumnIndex].Name == "ApiKey") _editingKeyRow = e.RowIndex;
+        };
+        _gridProfiles.CellFormatting += OnProfileCellFormatting;
         t.Controls.Add(new Label(), 0, 1);
         t.Controls.Add(_gridProfiles, 1, 1);
 
@@ -819,8 +844,17 @@ public class MainForm : Form
         _btnProfileRemove = MakeSecondaryButton();
         _btnProfileRemove.Click += OnRemoveProfile;
         _btnProfileRemove.Margin = new Padding(8, 3, 0, 3);
+        _btnShowKeys = MakeSecondaryButton();
+        _btnShowKeys.Margin = new Padding(8, 3, 0, 3);
+        _btnShowKeys.Click += (_, _) =>
+        {
+            _showKeys = !_showKeys;
+            _btnShowKeys.Text = L.Get(_showKeys ? "btn_hide_keys" : "btn_show_keys");
+            _gridProfiles.Invalidate();
+        };
         btnPanel.Controls.Add(_btnProfileAdd);
         btnPanel.Controls.Add(_btnProfileRemove);
+        btnPanel.Controls.Add(_btnShowKeys);
         t.Controls.Add(new Label(), 0, 2);
         t.Controls.Add(btnPanel, 1, 2);
 
@@ -862,9 +896,27 @@ public class MainForm : Form
         _gridProfiles.Rows[idx].Tag = new ApiProfile();
     }
 
+    /// <summary>
+    /// A API key aparece mascarada (só os últimos 4 caracteres, para distinguir chaves), salvo com
+    /// "Mostrar chaves" ou enquanto a célula está a ser editada.
+    /// </summary>
+    private void OnProfileCellFormatting(object? s, DataGridViewCellFormattingEventArgs e)
+    {
+        if (_showKeys || e.RowIndex < 0 || e.RowIndex == _editingKeyRow) return;
+        if (_gridProfiles.Columns[e.ColumnIndex].Name != "ApiKey") return;
+        if (e.Value is not string key || key.Length == 0) return;
+
+        e.Value = MaskApiKey(key);
+        e.FormattingApplied = true;
+    }
+
+    internal static string MaskApiKey(string key) =>
+        key.Length <= 4 ? new string('●', key.Length) : new string('●', 12) + key[^4..];
+
     /// <summary>Ao sair da célula: o link do logbook passa a Instance ID; a API Key fica sem espaços e em minúsculas.</summary>
     private void OnProfileCellEndEdit(object? s, DataGridViewCellEventArgs e)
     {
+        _editingKeyRow = -1;
         var cell = _gridProfiles.Rows[e.RowIndex].Cells[e.ColumnIndex];
         var text = cell.Value?.ToString() ?? string.Empty;
 
@@ -930,22 +982,6 @@ public class MainForm : Form
             _gridProfiles.Rows.Remove(row);
     }
 
-    private void BuildHamQthTab()
-    {
-        var t = MakeTable(_pgHamQth, 5);
-
-        _lHamQthInfo = AddHint(t, 0, 52);
-
-        _txtHamQthUser = new TextBox();
-        _lHamQthUser   = AddRow(t, 1, _txtHamQthUser);
-
-        _txtHamQthPass = new TextBox { PasswordChar = '●' };
-        _lHamQthPass   = AddRow(t, 2, _txtHamQthPass);
-
-        _nHamQthCache = new NumericUpDown { Minimum = 60, Maximum = 10080, Value = 1440, Increment = 60 };
-        _lHamQthCache = AddRow(t, 3, _nHamQthCache);
-    }
-
     private void BuildN1mmTab()
     {
         var t = MakeTable(_pgN1mm, 7);
@@ -995,6 +1031,22 @@ public class MainForm : Form
 
         t.RowStyles[2] = new RowStyle(SizeType.Absolute, 8);
         _lWsjtxHint = AddHint(t, 3, 60);
+    }
+
+    /// <summary>Log4OM: ADIF em texto por UDP (ligação UDP OUTBOUND, mensagem ADIF_MESSAGE).</summary>
+    private void BuildLog4omTab()
+    {
+        var t = MakeTable(_pgLog4om, 4);
+
+        _chkLog4omEnabled = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 6) };
+        t.Controls.Add(new Label(), 0, 0);
+        t.Controls.Add(_chkLog4omEnabled, 1, 0);
+
+        _nLog4omPort = new NumericUpDown { Minimum = 1024, Maximum = 65535, Value = 2333 };
+        _lLog4omPort = AddRow(t, 1, _nLog4omPort);
+
+        t.RowStyles[2] = new RowStyle(SizeType.Absolute, 8);
+        _lLog4omHint = AddHint(t, 3, 96);
     }
 
     private static Button MakeSecondaryButton() => new()
@@ -1081,7 +1133,7 @@ public class MainForm : Form
 
     private void BuildAdvancedTab()
     {
-        var t = MakeTable(_pgAdvanced, 5);
+        var t = MakeTable(_pgAdvanced, 6);
 
         _cboLogLevel = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         _cboLogLevel.Items.AddRange(new object[] { "Debug", "Information", "Warning", "Error" });
@@ -1095,9 +1147,13 @@ public class MainForm : Form
         t.Controls.Add(new Label(), 0, 2);
         t.Controls.Add(_chkNotifyEachQso, 1, 2);
 
-        _chkTelemetry = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 0) };
+        _chkStartWithWindows = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 6) };
         t.Controls.Add(new Label(), 0, 3);
-        t.Controls.Add(_chkTelemetry, 1, 3);
+        t.Controls.Add(_chkStartWithWindows, 1, 3);
+
+        _chkTelemetry = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 0) };
+        t.Controls.Add(new Label(), 0, 4);
+        t.Controls.Add(_chkTelemetry, 1, 4);
 
         _lnkTelemetryWhat = new LinkLabel { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(18, 0, 0, 0) };
         _lnkTelemetryWhat.LinkClicked += (_, _) =>
@@ -1105,8 +1161,8 @@ public class MainForm : Form
             using var dlg = new ConsentForm(askChoice: false);
             dlg.ShowDialog(this);
         };
-        t.Controls.Add(new Label(), 0, 4);
-        t.Controls.Add(_lnkTelemetryWhat, 1, 4);
+        t.Controls.Add(new Label(), 0, 5);
+        t.Controls.Add(_lnkTelemetryWhat, 1, 5);
     }
 
     /// <summary>Primeiro arranque: pergunta se pode enviar os dados da instalação e os relatórios de erros.</summary>
@@ -1158,14 +1214,11 @@ public class MainForm : Form
     {
         _pgStation.Text  = L.Get("tab_station");
         _pgApi.Text      = L.Get("tab_api");
-        _pgHamQth.Text   = L.Get("tab_hamqth");
         _pgAdvanced.Text = L.Get("tab_advanced");
         _pgClubLog.Text  = L.Get("tab_clublog");
 
-        _lCallsign.Text  = L.Get("lbl_callsign");
-        _lLat.Text       = L.Get("lbl_lat");
-        _lLon.Text       = L.Get("lbl_lon");
-        _lQthHint.Text   = L.Get("hint_qth");
+        _lCallsign.Text    = L.Get("lbl_callsign");
+        _lStationHint.Text = L.Get("hint_station");
 
         _lApiUrl.Text        = L.Get("lbl_api_url");
         _lApiHint.Text       = L.Get("hint_api_key");
@@ -1175,15 +1228,11 @@ public class MainForm : Form
         _btnTestApi.Text     = L.Get("btn_test_api");
         _btnProfileAdd.Text    = L.Get("btn_profile_add");
         _btnProfileRemove.Text = L.Get("btn_profile_remove");
+        _btnShowKeys.Text      = L.Get(_showKeys ? "btn_hide_keys" : "btn_show_keys");
         _gridProfiles.Columns["Enabled"].HeaderText    = L.Get("col_profile_enabled");
         _gridProfiles.Columns["Name"].HeaderText       = L.Get("col_profile_name");
         _gridProfiles.Columns["InstanceId"].HeaderText = L.Get("col_profile_instance");
         _gridProfiles.Columns["ApiKey"].HeaderText     = L.Get("col_profile_key");
-
-        _lHamQthInfo.Text  = L.Get("hint_hamqth");
-        _lHamQthUser.Text  = L.Get("lbl_hamqth_user");
-        _lHamQthPass.Text  = L.Get("lbl_hamqth_pass");
-        _lHamQthCache.Text = L.Get("lbl_hamqth_cache");
 
         _pgN1mm.Text     = L.Get("tab_n1mm");
         _lN1mmPort.Text  = L.Get("lbl_n1mm_port");
@@ -1197,6 +1246,11 @@ public class MainForm : Form
         _lWsjtxPort.Text        = L.Get("lbl_wsjtx_port");
         _lWsjtxHint.Text        = L.Get("hint_wsjtx");
 
+        _pgLog4om.Text          = L.Get("tab_log4om");
+        _chkLog4omEnabled.Text  = L.Get("lbl_log4om_enabled");
+        _lLog4omPort.Text       = L.Get("lbl_log4om_port");
+        _lLog4omHint.Text       = L.Get("hint_log4om");
+
         _lClHint.Text       = L.Get("hint_cl");
         _chkClEnabled.Text  = L.Get("lbl_cl_enabled");
         _lClEmail.Text      = L.Get("lbl_cl_email");
@@ -1205,8 +1259,9 @@ public class MainForm : Form
 
         _lLogLevel.Text  = L.Get("lbl_log_level");
         _lLogPath.Text   = L.Get("lbl_log_path");
-        _chkNotifyEachQso.Text = L.Get("lbl_notify_each_qso");
-        _chkTelemetry.Text     = L.Get("lbl_telemetry");
+        _chkNotifyEachQso.Text    = L.Get("lbl_notify_each_qso");
+        _chkStartWithWindows.Text = L.Get("lbl_start_with_windows");
+        _chkTelemetry.Text        = L.Get("lbl_telemetry");
         _lnkTelemetryWhat.Text = L.Get("lnk_telemetry_what");
 
         _miN1mmHelp.Text = L.Get("menu_n1mm_help");
@@ -1233,8 +1288,6 @@ public class MainForm : Form
     private void PopulateForm()
     {
         _txtCallsign.Text = _settings.MyCallsign;
-        _nLat.Value       = Clamp(_settings.MyLatitude,  -90m, 90m);
-        _nLon.Value       = Clamp(_settings.MyLongitude, -180m, 180m);
 
         _txtApiUrl.Text   = _settings.Api.BaseUrl;
         _nTimeout.Value   = Clamp(_settings.Api.TimeoutSeconds,    5, 300);
@@ -1254,27 +1307,25 @@ public class MainForm : Form
         _chkWsjtxEnabled.Checked = _settings.Wsjtx.Enabled;
         _nWsjtxPort.Value        = Clamp(_settings.Wsjtx.UdpPort, 1024, 65535);
 
+        _chkLog4omEnabled.Checked = _settings.Log4om.Enabled;
+        _nLog4omPort.Value        = Clamp(_settings.Log4om.UdpPort, 1024, 65535);
+
         _chkClEnabled.Checked = _settings.ClubLog.Enabled;
         _txtClEmail.Text      = _settings.ClubLog.Email;
         _txtClPass.Text       = _settings.ClubLog.PasswordEncrypted;
         _txtClCall.Text       = _settings.ClubLog.Callsign;
 
-        _txtHamQthUser.Text  = _settings.HamQth.Username;
-        _txtHamQthPass.Text  = _settings.HamQth.PasswordEncrypted;
-        _nHamQthCache.Value  = Clamp(_settings.HamQth.CacheTtlMinutes, 60, 10080);
-
         var idx = _cboLogLevel.Items.IndexOf(_settings.LogLevel);
         _cboLogLevel.SelectedIndex = idx >= 0 ? idx : 1;
         _txtLogPath.Text  = _settings.LogPath;
-        _chkNotifyEachQso.Checked = _prefs.NotifyEachQso;
-        _chkTelemetry.Checked     = _settings.Telemetry.IsActive;
+        _chkNotifyEachQso.Checked    = _prefs.NotifyEachQso;
+        _chkStartWithWindows.Checked = WindowsStartup.IsEnabled();
+        _chkTelemetry.Checked        = _settings.Telemetry.IsActive;
     }
 
     private void CollectForm()
     {
         _settings.MyCallsign = _txtCallsign.Text.Trim().ToUpperInvariant();
-        _settings.MyLatitude  = _nLat.Value;
-        _settings.MyLongitude = _nLon.Value;
 
         var baseUrl                     = _txtApiUrl.Text.Trim().TrimEnd('/');
         _settings.Api.BaseUrl           = baseUrl.Length > 0 ? baseUrl : ApiSettings.DefaultBaseUrl;
@@ -1308,20 +1359,21 @@ public class MainForm : Form
         _settings.Wsjtx.Enabled = _chkWsjtxEnabled.Checked;
         _settings.Wsjtx.UdpPort = (int)_nWsjtxPort.Value;
 
+        _settings.Log4om.Enabled = _chkLog4omEnabled.Checked;
+        _settings.Log4om.UdpPort = (int)_nLog4omPort.Value;
+
         _settings.ClubLog.Enabled             = _chkClEnabled.Checked;
         _settings.ClubLog.Email               = _txtClEmail.Text.Trim();
         _settings.ClubLog.PasswordEncrypted   = _txtClPass.Text;
         _settings.ClubLog.Callsign            = _txtClCall.Text.Trim().ToUpperInvariant();
-
-        _settings.HamQth.Username          = _txtHamQthUser.Text.Trim();
-        _settings.HamQth.PasswordEncrypted = _txtHamQthPass.Text;
-        _settings.HamQth.CacheTtlMinutes   = (int)_nHamQthCache.Value;
 
         _settings.LogLevel = _cboLogLevel.SelectedItem?.ToString() ?? "Information";
         _settings.LogPath  = _txtLogPath.Text.Trim();
 
         _prefs.NotifyEachQso = _chkNotifyEachQso.Checked;
         _prefsMgr.SavePrefs(_prefs);
+
+        WindowsStartup.Set(_chkStartWithWindows.Checked, Application.ExecutablePath);
     }
 
     // ─── Eventos ───────────────────────────────────────────────────────────

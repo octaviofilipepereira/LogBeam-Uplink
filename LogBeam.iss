@@ -30,6 +30,8 @@ Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=lowest
+; O Uplink aberto (instância única) é detectado; o instalador pede para o fechar
+AppMutex=LogBeamUplink.Instance
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 
@@ -68,6 +70,10 @@ Name: "{userdesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: deskto
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+
+[Registry]
+; "Iniciar com o Windows" é ligado pela aplicação; a desinstalação apaga o valor
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: none; ValueName: "LogBeam Uplink"; Flags: uninsdeletevalue dontcreatekey
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\logs"

@@ -56,8 +56,6 @@ public class ServiceRunner : IDisposable
                     Microsoft.Extensions.Options.Options.Create(appSettings));
                 services.AddSingleton(settingsManager);
 
-                services.AddHttpClient<HamQthLookupService>()
-                    .ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(appSettings.Api.TimeoutSeconds));
                 services.AddHttpClient<ApiClientService>()
                     .ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(appSettings.Api.TimeoutSeconds));
                 services.AddHttpClient("clublog")
@@ -75,7 +73,6 @@ public class ServiceRunner : IDisposable
                     sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<LogBeam.Core.Adif.AdifUdpListener>>(),
                     appSettings.Log4om.UdpPort,
                     appSettings.Log4om.ListenAddress));
-                services.AddSingleton<HamQthLookupService>();
                 services.AddSingleton<ApiClientService>();
                 services.AddSingleton<QsoQueueService>();
                 services.AddSingleton<SessionLogService>();
