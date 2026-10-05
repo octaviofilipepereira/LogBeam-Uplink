@@ -363,7 +363,8 @@ public static class L
             "• indicativo;\n" +
             "• versão do Uplink e do .NET;\n" +
             "• versão e arquitectura do Windows;\n" +
-            "• língua da interface e programas de log ligados.\n\n" +
+            "• língua da interface e programas de log ligados;\n" +
+            "• destinos ligados: LogBeam e/ou ClubLog (só sim ou não).\n\n" +
             "Relatórios de erros (guardados 90 dias):\n" +
             "• data e hora, componente, tipo e mensagem do erro, e o ponto do código onde ocorreu;\n" +
             "• o nome do utilizador e o do computador são retirados das mensagens.\n\n" +
@@ -379,7 +380,8 @@ public static class L
             "• callsign;\n" +
             "• Uplink and .NET versions;\n" +
             "• Windows version and architecture;\n" +
-            "• interface language and connected logging programs.\n\n" +
+            "• interface language and connected logging programs;\n" +
+            "• destinations in use: LogBeam and/or ClubLog (yes or no only).\n\n" +
             "Error reports (kept for 90 days):\n" +
             "• date and time, component, error type and message, and where in the code it happened;\n" +
             "• the user name and the computer name are removed from the messages.\n\n" +
@@ -395,7 +397,8 @@ public static class L
             "• indicativo;\n" +
             "• versión de Uplink y de .NET;\n" +
             "• versión y arquitectura de Windows;\n" +
-            "• idioma de la interfaz y programas de log conectados.\n\n" +
+            "• idioma de la interfaz y programas de log conectados;\n" +
+            "• destinos activos: LogBeam y/o ClubLog (solo sí o no).\n\n" +
             "Informes de errores (se conservan 90 días):\n" +
             "• fecha y hora, componente, tipo y mensaje del error, y el punto del código donde se produjo;\n" +
             "• el nombre de usuario y el del equipo se eliminan de los mensajes.\n\n" +
@@ -411,7 +414,8 @@ public static class L
             "• indicatif ;\n" +
             "• versions d'Uplink et de .NET ;\n" +
             "• version et architecture de Windows ;\n" +
-            "• langue de l'interface et logiciels de log connectés.\n\n" +
+            "• langue de l'interface et logiciels de log connectés ;\n" +
+            "• destinations activées : LogBeam et/ou ClubLog (oui ou non uniquement).\n\n" +
             "Rapports d'erreurs (conservés 90 jours) :\n" +
             "• date et heure, composant, type et message de l'erreur, et l'endroit du code où elle s'est produite ;\n" +
             "• le nom d'utilisateur et celui de l'ordinateur sont retirés des messages.\n\n" +

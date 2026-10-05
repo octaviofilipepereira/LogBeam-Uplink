@@ -19,7 +19,8 @@ public class TelemetryClientTests
         new(new HttpClient(_server), baseUrl, () => _now);
 
     private static InstallInfo Install() =>
-        new(Id, "CT7BFV", "2.5.0", "8.0.10", "Microsoft Windows 10.0.26200", "X64", "PT", new[] { "N1MM", "WSJTX" });
+        new(Id, "CT7BFV", "2.5.1", "8.0.10", "Microsoft Windows 10.0.26200", "X64", "PT", new[] { "N1MM", "WSJTX" },
+            new InstallDestinations(LogBeam: false, ClubLog: true));
 
     [Fact]
     public async Task InstallIsPostedWithContractFieldNames()
@@ -35,8 +36,12 @@ public class TelemetryClientTests
         using var json = JsonDocument.Parse(req.Body!);
         var names = json.RootElement.EnumerateObject().Select(p => p.Name).ToArray();
         Assert.Equal(new[] { "installation_id", "callsign", "app_version", "dotnet_version", "os", "os_arch",
-                             "language", "logging_programs" }, names);
+                             "language", "logging_programs", "destinations" }, names);
         Assert.Equal("WSJTX", json.RootElement.GetProperty("logging_programs")[1].GetString());
+        var dest = json.RootElement.GetProperty("destinations");
+        Assert.Equal(new[] { "logbeam", "clublog" }, dest.EnumerateObject().Select(p => p.Name).ToArray());
+        Assert.False(dest.GetProperty("logbeam").GetBoolean());
+        Assert.True(dest.GetProperty("clublog").GetBoolean());
     }
 
     [Fact]

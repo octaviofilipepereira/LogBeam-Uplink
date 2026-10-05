@@ -23,5 +23,8 @@ public class AppVersionTests
         Assert.Matches(@"^\d+\.\d+\.\d+$", AppVersion.Current);
         Assert.Equal(expected, AppVersion.Current);
         Assert.Equal($"LogBeam Uplink v{expected} by CT7BFV", AppVersion.Title);
+        // O servidor só reconhece "LogBeam-Uplink/x.y.z" (ApiKey::clientFromUserAgent).
+        Assert.Equal($"LogBeam-Uplink/{expected}", AppVersion.UserAgent);
+        Assert.Matches(@"^LogBeam-Uplink/\d+(\.\d+){1,3}$", AppVersion.UserAgent);
     }
 }

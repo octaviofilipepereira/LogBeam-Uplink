@@ -10,7 +10,7 @@
     release (o release.yml recusa uma etiqueta vX.Y.Z diferente).
   -->
   <PropertyGroup>
-    <Version>2.5.0</Version>
+    <Version>2.5.1</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 </Project>

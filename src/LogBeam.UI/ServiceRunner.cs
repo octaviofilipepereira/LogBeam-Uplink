@@ -59,8 +59,12 @@ public class ServiceRunner : IDisposable
                     Microsoft.Extensions.Options.Options.Create(appSettings));
                 services.AddSingleton(settingsManager);
 
-                services.AddHttpClient<ApiClientService>()
-                    .ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(appSettings.Api.TimeoutSeconds));
+                services.AddHttpClient("logbeam")
+                    .ConfigureHttpClient(c =>
+                    {
+                        c.Timeout = TimeSpan.FromSeconds(appSettings.Api.TimeoutSeconds);
+                        c.DefaultRequestHeaders.UserAgent.ParseAdd(AppVersion.UserAgent);
+                    });
                 services.AddHttpClient("clublog")
                     .ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
 
@@ -76,7 +80,12 @@ public class ServiceRunner : IDisposable
                     sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<LogBeam.Core.Adif.AdifUdpListener>>(),
                     appSettings.Log4om.UdpPort,
                     appSettings.Log4om.ListenAddress));
-                services.AddSingleton<ApiClientService>();
+                // Cliente com nome: o registo como cliente tipado ficava sem efeito (o singleton recebia um
+                // HttpClient sem configuração, com o tempo limite do .NET em vez do das definições).
+                services.AddSingleton(sp => new ApiClientService(
+                    sp.GetRequiredService<IHttpClientFactory>().CreateClient("logbeam"),
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ServiceAppSettings>>(),
+                    sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<ApiClientService>>()));
                 services.AddSingleton<QsoQueueService>();
                 services.AddSingleton<SessionLogService>();
                 services.AddSingleton<QsoProcessor>();
@@ -89,7 +98,11 @@ public class ServiceRunner : IDisposable
                 // Dados da instalação e relatórios de erros (4.26, 4.27): só actuam com consentimento.
                 services.AddSingleton(_telemetryStore);
                 services.AddSingleton(new TelemetryContext(AppVersion.Current, Language));
-                services.AddHttpClient("telemetry").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(15));
+                services.AddHttpClient("telemetry").ConfigureHttpClient(c =>
+                {
+                    c.Timeout = TimeSpan.FromSeconds(15);
+                    c.DefaultRequestHeaders.UserAgent.ParseAdd(AppVersion.UserAgent);
+                });
                 services.AddSingleton(sp => new TelemetryClient(
                     sp.GetRequiredService<IHttpClientFactory>().CreateClient("telemetry"),
                     appSettings.Api.BaseUrl));

@@ -16,4 +16,7 @@ public static class AppVersion
 
     /// <summary>Nome com a versão, para títulos: "LogBeam Uplink v2.5.0 by CT7BFV".</summary>
     public static string Title => $"LogBeam Uplink v{Current} by CT7BFV";
+
+    /// <summary>User-Agent dos pedidos ao LogBeam: o servidor conta quantos logbooks recebem QSOs do Uplink.</summary>
+    public static string UserAgent => $"LogBeam-Uplink/{Current}";
 }

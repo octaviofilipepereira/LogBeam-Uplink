@@ -91,7 +91,11 @@ public class TelemetryService : BackgroundService
             RuntimeInformation.OSDescription.Trim(),
             RuntimeInformation.OSArchitecture.ToString(),
             context.Language,
-            programs);
+            programs,
+            new InstallDestinations(
+                settings.Api.Profiles.Any(p => p.Enabled && !string.IsNullOrWhiteSpace(p.InstanceId)
+                                                         && !string.IsNullOrWhiteSpace(p.ApiKey)),
+                settings.ClubLog.Enabled));
     }
 
     /// <summary>Indicativo do operador: o da estação ou, na falta dele, o do ClubLog; null se nenhum.</summary>

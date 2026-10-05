@@ -149,6 +149,23 @@ public class TelemetryServiceTests
         Assert.Equal("CS7ABC", info.Callsign);
         Assert.Equal(Id, info.InstallationId);
         Assert.Equal("PT", info.Language);
+        Assert.Equal(new InstallDestinations(LogBeam: false, ClubLog: false), info.Destinations);
+    }
+
+    [Fact]
+    public void InstallInfoDestinationsCountOnlyUsableLogbooksAndTheClubLogSwitch()
+    {
+        var settings = Settings(consent: true);
+        settings.ClubLog.Enabled = true;
+        settings.Api.Profiles.Add(new ApiProfile { Enabled = false, InstanceId = "abcdef0123", ApiKey = new string('a', 64) });
+        settings.Api.Profiles.Add(new ApiProfile { Enabled = true,  InstanceId = "",           ApiKey = new string('a', 64) });
+
+        Assert.Equal(new InstallDestinations(LogBeam: false, ClubLog: true),
+                     TelemetryService.BuildInstallInfo(settings, Context).Destinations);   // só ClubLog
+
+        settings.Api.Profiles.Add(new ApiProfile { Enabled = true, InstanceId = "abcdef0123", ApiKey = new string('b', 64) });
+        Assert.Equal(new InstallDestinations(LogBeam: true, ClubLog: true),
+                     TelemetryService.BuildInstallInfo(settings, Context).Destinations);
     }
 
     [Fact]

@@ -18,13 +18,19 @@ public record InstallInfo(
     [property: JsonPropertyName("os")]               string Os,
     [property: JsonPropertyName("os_arch")]          string OsArch,
     [property: JsonPropertyName("language")]         string Language,
-    [property: JsonPropertyName("logging_programs")] IReadOnlyList<string> LoggingPrograms)
+    [property: JsonPropertyName("logging_programs")] IReadOnlyList<string> LoggingPrograms,
+    [property: JsonPropertyName("destinations")]     InstallDestinations Destinations)
 {
     /// <summary>Identifica o conteúdo, para só reenviar quando algum valor mudar.</summary>
     public string Fingerprint() =>
         string.Join("|", InstallationId, Callsign, AppVersion, DotnetVersion, Os, OsArch, Language,
-                    string.Join(",", LoggingPrograms));
+                    string.Join(",", LoggingPrograms), Destinations.LogBeam, Destinations.ClubLog);
 }
+
+/// <summary>Destinos ligados (2.5.1): só sim ou não, sem os logbooks nem as contas.</summary>
+public record InstallDestinations(
+    [property: JsonPropertyName("logbeam")] bool LogBeam,
+    [property: JsonPropertyName("clublog")] bool ClubLog);
 
 /// <summary>Relatório de erro (4.27) — corpo de POST /api/uplink/error.</summary>
 public record ErrorReport
