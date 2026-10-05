@@ -64,7 +64,7 @@ O LogBeam Uplink é uma aplicação para Windows que recebe cada QSO no momento 
 
 | Funcionalidade | Descrição | Manual |
 |---|---|---|
-| Chaves cifradas | As API keys e as passwords ficam cifradas pelo Windows, só legíveis pelo utilizador que as gravou. Na grelha aparecem mascaradas | [Resolução de problemas](docs/MANUAL.pt.md#8-resolução-de-problemas) |
+| Chaves cifradas | As API keys e as passwords ficam cifradas, só legíveis pelo utilizador do Windows que as gravou. Na grelha aparecem mascaradas | [Resolução de problemas](docs/MANUAL.pt.md#8-resolução-de-problemas) |
 | Só este computador | Por omissão, o Uplink só aceita pacotes deste computador. Receber da rede local tem de ser pedido | [N1MM+](docs/MANUAL.pt.md#n1mm) |
 | Dados só com autorização | Os dados da instalação e os relatórios de erros só são enviados com autorização, e são apagados do servidor quando ela é retirada | [Primeiro arranque](docs/MANUAL.pt.md#2-primeiro-arranque) |
 | Instalação simples | Sem privilégios de administrador e sem instalar o .NET | [Instalar](docs/MANUAL.pt.md#1-instalar) |

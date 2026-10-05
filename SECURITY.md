@@ -30,9 +30,9 @@ A recepção é confirmada em até 7 dias. A correcção é publicada numa vers�
 
 ### Boas práticas já seguidas
 
-- As API keys e as passwords ficam cifradas no `settings.json` com a protecção de dados do Windows (DPAPI), só legíveis pelo utilizador que as gravou.
+- As API keys e as passwords ficam cifradas no `settings.json`, só legíveis pelo utilizador do Windows que as gravou.
 - Os receptores UDP escutam por omissão só neste computador (127.0.0.1). Escutar na rede local tem de ser pedido expressamente.
-- A chave de aplicação do ClubLog não está no código: entra apenas nas compilações oficiais.
+- A chave de aplicação do ClubLog não está no código.
 
 ---
 
@@ -62,9 +62,9 @@ Receipt is acknowledged within 7 days. The fix is published in a new release, an
 
 ### Practices already in place
 
-- API keys and passwords are encrypted in `settings.json` with Windows data protection (DPAPI), readable only by the user who saved them.
+- API keys and passwords are encrypted in `settings.json`, readable only by the Windows user who saved them.
 - UDP receivers listen only on this computer (127.0.0.1) by default. Listening on the local network has to be requested explicitly.
-- The ClubLog application key is not in the code: it is added only to official builds.
+- The ClubLog application key is not in the code.
 
 ---
 
@@ -94,9 +94,9 @@ La recepción se confirma en un plazo de 7 días. La corrección se publica en u
 
 ### Buenas prácticas ya aplicadas
 
-- Las API keys y las contraseñas se guardan cifradas en `settings.json` con la protección de datos de Windows (DPAPI), legibles solo por el usuario que las guardó.
+- Las API keys y las contraseñas se guardan cifradas en `settings.json`, legibles solo por el usuario de Windows que las guardó.
 - Los receptores UDP escuchan por defecto solo en este ordenador (127.0.0.1). Escuchar en la red local hay que pedirlo expresamente.
-- La clave de aplicación de ClubLog no está en el código: solo se incluye en las compilaciones oficiales.
+- La clave de aplicación de ClubLog no está en el código.
 
 ---
 
@@ -126,6 +126,6 @@ La réception est confirmée sous 7 jours. Le correctif est publié dans une nou
 
 ### Bonnes pratiques déjà en place
 
-- Les API Keys et les mots de passe sont chiffrés dans `settings.json` avec la protection des données de Windows (DPAPI), lisibles uniquement par l'utilisateur qui les a enregistrés.
+- Les API Keys et les mots de passe sont chiffrés dans `settings.json`, lisibles uniquement par l'utilisateur Windows qui les a enregistrés.
 - Les récepteurs UDP n'écoutent par défaut que sur cet ordinateur (127.0.0.1). L'écoute sur le réseau local doit être demandée explicitement.
-- La clé d'application ClubLog n'est pas dans le code : elle n'est ajoutée qu'aux compilations officielles.
+- La clé d'application ClubLog n'est pas dans le code.
