@@ -23,7 +23,7 @@ Contribuições são bem-vindas: correcções, melhorias, traduções, testes co
 3. O código tem de compilar sem avisos (`dotnet build`) e passar em todos os testes (`dotnet test`). Cada alteração de comportamento vem acompanhada dos testes que a verificam. Nos programas de log, os testes devem usar, sempre que possível, pacotes reais capturados do programa, sem dados pessoais, guardados em `tests/LogBeam.Tests/Fixtures/`.
 4. Textos da interface: em `src/LogBeam.UI/Localization/L.cs`, sempre nas quatro línguas (PT, EN, ES, FR). Um teste falha se faltar alguma.
 5. Datas DD/MM/AAAA, horas HH:MM em 24 h e QSOs em UTC.
-6. Nada de segredos no código: chaves, passwords, endereços internos.
+6. Não são permitidos segredos no código: chaves, passwords ou endereços internos.
 7. Ficheiros novos levam o mesmo cabeçalho de licença dos restantes.
 
 ### Licença das contribuições
@@ -55,7 +55,7 @@ Contributions are welcome: fixes, improvements, translations, testing with other
 3. The code must build with no warnings (`dotnet build`) and pass every test (`dotnet test`). Every change in behaviour comes with the tests that check it. For logging programs, tests should use, whenever possible, real packets captured from the program, with personal data removed, stored in `tests/LogBeam.Tests/Fixtures/`.
 4. Interface texts: in `src/LogBeam.UI/Localization/L.cs`, always in the four languages (PT, EN, ES, FR). A test fails if any is missing.
 5. Dates DD/MM/YYYY, times HH:MM in 24 h and QSOs in UTC.
-6. No secrets in the code: keys, passwords, internal addresses.
+6. Secrets are not allowed in the code: keys, passwords or internal addresses.
 7. New files carry the same licence header as the others.
 
 ### Licence of contributions
@@ -87,7 +87,7 @@ Las contribuciones son bienvenidas: correcciones, mejoras, traducciones, pruebas
 3. El código debe compilar sin avisos (`dotnet build`) y superar todas las pruebas (`dotnet test`). Cada cambio de comportamiento va acompañado de las pruebas que lo verifican. Para los programas de log, las pruebas deben usar, siempre que sea posible, paquetes reales capturados del programa, sin datos personales, guardados en `tests/LogBeam.Tests/Fixtures/`.
 4. Textos de la interfaz: en `src/LogBeam.UI/Localization/L.cs`, siempre en los cuatro idiomas (PT, EN, ES, FR). Una prueba falla si falta alguno.
 5. Fechas DD/MM/AAAA, horas HH:MM en 24 h y QSOs en UTC.
-6. Nada de secretos en el código: claves, contraseñas, direcciones internas.
+6. No se permiten secretos en el código: claves, contraseñas o direcciones internas.
 7. Los archivos nuevos llevan la misma cabecera de licencia que los demás.
 
 ### Licencia de las contribuciones
@@ -119,7 +119,7 @@ Les contributions sont les bienvenues : corrections, améliorations, traductions
 3. Le code doit compiler sans avertissements (`dotnet build`) et réussir tous les tests (`dotnet test`). Chaque changement de comportement s'accompagne des tests qui le vérifient. Pour les logiciels de log, les tests doivent utiliser, autant que possible, des paquets réels capturés depuis le logiciel, sans données personnelles, placés dans `tests/LogBeam.Tests/Fixtures/`.
 4. Textes de l'interface : dans `src/LogBeam.UI/Localization/L.cs`, toujours dans les quatre langues (PT, EN, ES, FR). Un test échoue s'il en manque une.
 5. Dates JJ/MM/AAAA, heures HH:MM sur 24 h et QSO en UTC.
-6. Aucun secret dans le code : clés, mots de passe, adresses internes.
+6. Les secrets ne sont pas autorisés dans le code : clés, mots de passe ou adresses internes.
 7. Les nouveaux fichiers portent le même en-tête de licence que les autres.
 
 ### Licence des contributions
