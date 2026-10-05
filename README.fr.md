@@ -14,7 +14,7 @@
 
 ---
 
-LogBeam Uplink est une application pour Windows qui reste dans la zone de notification, à côté de l'horloge. Elle reçoit chaque QSO dès qu'il est enregistré dans le logiciel de log et l'envoie vers votre logbook sur [LogBeam](https://logbeam.org) et, si vous l'activez, vers ClubLog. Le globe 3D de LogBeam se met à jour tout seul, sans exporter ni importer de fichiers ADIF.
+LogBeam Uplink est une application pour Windows qui reçoit chaque QSO dès qu'il est enregistré dans le logiciel de log et l'envoie vers votre logbook sur [LogBeam](https://logbeam.org) et, si vous l'activez, vers ClubLog. Le globe 3D de LogBeam se met à jour tout seul, sans exporter ni importer de fichiers ADIF.
 
 <p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-en.png" width="720" alt="Globe 3D de LogBeam avec les QSO"></a></p>
 

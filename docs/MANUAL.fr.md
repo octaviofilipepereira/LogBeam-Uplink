@@ -4,7 +4,7 @@
 
 <p align="center"><a href="MANUAL.pt.md">Português</a> · <a href="MANUAL.en.md">English</a> · <a href="MANUAL.es.md">Español</a> · <b>Français</b></p>
 
-LogBeam Uplink est une application pour Windows qui reste dans la zone de notification (à côté de l'horloge, dans la barre des tâches). Elle reçoit les QSO de **N1MM+**, **WSJT-X**, **JTDX** et **Log4OM** dès qu'ils sont enregistrés et les envoie vers un ou plusieurs logbooks [LogBeam](https://logbeam.org) et, si vous l'activez, vers **ClubLog**.
+LogBeam Uplink est une application pour Windows qui reçoit les QSO de **N1MM+**, **WSJT-X**, **JTDX** et **Log4OM** dès qu'ils sont enregistrés et les envoie vers un ou plusieurs logbooks [LogBeam](https://logbeam.org) et, si vous l'activez, vers **ClubLog**.
 
 **Sommaire :** [1. Installer](#1-installer) · [2. Premier démarrage](#2-premier-démarrage) · [3. La fenêtre et la zone de notification](#3-la-fenêtre-et-la-zone-de-notification) · [4. Onglets](#4-onglets) · [5. Sans internet](#5-sans-internet) · [6. Exporter la session](#6-exporter-la-session) · [7. Mises à jour](#7-mises-à-jour) · [8. Dépannage](#8-dépannage) · [9. Désinstaller](#9-désinstaller)
 
