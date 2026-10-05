@@ -42,7 +42,7 @@ public class AdifUdpListener : IDisposable
         if (IsRunning) return;
 
         _cts = new CancellationTokenSource();
-        _udpClient = new UdpClient(new IPEndPoint(_listenAddress, _port));
+        _udpClient = UdpListenAddress.Open(_listenAddress, _port);
         IsRunning = true;
 
         _logger.LogInformation("Receptor ADIF (Log4OM) activo em {Address}:{Port}.", _listenAddress, _port);
@@ -68,6 +68,7 @@ public class AdifUdpListener : IDisposable
             try
             {
                 var result = await _udpClient!.ReceiveAsync(ct);
+                if (!UdpListenAddress.Accept(_listenAddress, result.RemoteEndPoint)) continue;
                 ProcessDatagram(result.Buffer);
             }
             catch (OperationCanceledException)

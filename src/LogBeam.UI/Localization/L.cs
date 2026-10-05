@@ -36,6 +36,11 @@ public static class L
         ["balloon_qso_sent"]     = ("QSO enviado", "QSO sent", "QSO enviado", "QSO envoyé"),
         ["balloon_qso_duplicate"] = ("QSO já existia no logbook", "QSO was already in the logbook",
                                      "El QSO ya existía en el logbook", "Le QSO existait déjà dans le logbook"),
+        ["balloon_listener_failed"] = ("Porta ocupada", "Port in use", "Puerto ocupado", "Port occupé"),
+        ["status_listener_failed"]  = ("Não é possível receber do {0}: a porta {1} está ocupada por outro programa.",
+                                       "Cannot receive from {0}: port {1} is in use by another program.",
+                                       "No es posible recibir de {0}: el puerto {1} está ocupado por otro programa.",
+                                       "Impossible de recevoir de {0} : le port {1} est occupé par un autre logiciel."),
         ["balloon_qso_failed"]   = ("Falha ao enviar o QSO", "Failed to send QSO",
                                     "Error al enviar el QSO", "Échec de l'envoi du QSO"),
         ["balloon_confirmed_title"] = ("✓ Confirmado por outro LogBeam", "✓ Confirmed by another LogBeam",
@@ -143,10 +148,14 @@ public static class L
         // N1MM tab
         ["lbl_n1mm_port"]        = ("Porta UDP:", "UDP Port:", "Puerto UDP:", "Port UDP :"),
         ["lbl_n1mm_addr"]        = ("Endereço:", "Address:", "Dirección:", "Adresse :"),
-        ["hint_n1mm"]            = ("Porta UDP para onde o N1MM+ envia os contactos (por omissão: 12060). Endereço: 127.0.0.1 aceita só este computador; 0.0.0.0 aceita pacotes de qualquer computador da rede local.",
-                                    "UDP port where N1MM+ sends contacts (default: 12060). Address: 127.0.0.1 accepts only this computer; 0.0.0.0 accepts packets from any computer on the local network.",
-                                    "Puerto UDP al que N1MM+ envía los contactos (por defecto: 12060). Dirección: 127.0.0.1 acepta solo este ordenador; 0.0.0.0 acepta paquetes de cualquier ordenador de la red local.",
-                                    "Port UDP vers lequel N1MM+ envoie les contacts (par défaut : 12060). Adresse : 127.0.0.1 n'accepte que cet ordinateur ; 0.0.0.0 accepte les paquets de tout ordinateur du réseau local."),
+        ["hint_n1mm"]            = ("Porta UDP para onde o N1MM+ envia os contactos (por omissão: 12060). Endereço: 127.0.0.1 aceita só este computador; 0.0.0.0 aceita pacotes de qualquer computador da rede local.\n" +
+                                    "Se outro programa (ex. Log4OM) já recebe o N1MM+ na 12060, use outra porta aqui (ex. 12061) e \"Configurar automaticamente\": o N1MM+ passa a enviar para os dois.",
+                                    "UDP port where N1MM+ sends contacts (default: 12060). Address: 127.0.0.1 accepts only this computer; 0.0.0.0 accepts packets from any computer on the local network.\n" +
+                                    "If another program (e.g. Log4OM) already receives N1MM+ on 12060, use another port here (e.g. 12061) and \"Configure automatically\": N1MM+ will send to both.",
+                                    "Puerto UDP al que N1MM+ envía los contactos (por defecto: 12060). Dirección: 127.0.0.1 acepta solo este ordenador; 0.0.0.0 acepta paquetes de cualquier ordenador de la red local.\n" +
+                                    "Si otro programa (p. ej. Log4OM) ya recibe N1MM+ en el 12060, use otro puerto aquí (p. ej. 12061) y \"Configurar automáticamente\": N1MM+ enviará a los dos.",
+                                    "Port UDP vers lequel N1MM+ envoie les contacts (par défaut : 12060). Adresse : 127.0.0.1 n'accepte que cet ordinateur ; 0.0.0.0 accepte les paquets de tout ordinateur du réseau local.\n" +
+                                    "Si un autre logiciel (ex. Log4OM) reçoit déjà N1MM+ sur le 12060, utilisez un autre port ici (ex. 12061) et « Configurer automatiquement » : N1MM+ enverra aux deux."),
         ["btn_n1mm_detect"]      = ("Detectar N1MM+", "Detect N1MM+", "Detectar N1MM+", "Détecter N1MM+"),
         ["btn_n1mm_autoconfig"]  = ("Configurar automaticamente", "Configure automatically",
                                     "Configurar automáticamente", "Configurer automatiquement"),
@@ -186,10 +195,14 @@ public static class L
         ["lbl_wsjtx_enabled"]   = ("Activar recepção do WSJT-X / JTDX", "Enable WSJT-X / JTDX reception",
                                    "Activar recepción de WSJT-X / JTDX", "Activer la réception de WSJT-X / JTDX"),
         ["lbl_wsjtx_port"]      = ("Porta UDP:", "UDP Port:", "Puerto UDP:", "Port UDP :"),
-        ["hint_wsjtx"]          = ("No WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, porta 2237 (valores por omissão). No JTDX: a mesma configuração e, além disso, marcar \"Enable sending logged QSO ADIF data\".",
-                                   "In WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, port 2237 (the defaults). In JTDX: the same settings, and also tick \"Enable sending logged QSO ADIF data\".",
-                                   "En WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, puerto 2237 (valores por defecto). En JTDX: la misma configuración y, además, marcar \"Enable sending logged QSO ADIF data\".",
-                                   "Dans WSJT-X : File → Settings → Reporting → UDP Server : 127.0.0.1, port 2237 (valeurs par défaut). Dans JTDX : les mêmes réglages, en cochant aussi « Enable sending logged QSO ADIF data »."),
+        ["hint_wsjtx"]          = ("No WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, porta 2237 (valores por omissão). No JTDX: a mesma configuração e, além disso, marcar \"Enable sending logged QSO ADIF data\".\n" +
+                                   "Com o JTAlert ou o GridTracker na mesma porta: usar o endereço multicast 239.255.0.1 no WSJT-X/JTDX, nesses programas e aqui. Todos recebem os QSOs.",
+                                   "In WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, port 2237 (the defaults). In JTDX: the same settings, and also tick \"Enable sending logged QSO ADIF data\".\n" +
+                                   "With JTAlert or GridTracker on the same port: use the multicast address 239.255.0.1 in WSJT-X/JTDX, in those programs and here. All of them receive the QSOs.",
+                                   "En WSJT-X: File → Settings → Reporting → UDP Server: 127.0.0.1, puerto 2237 (valores por defecto). En JTDX: la misma configuración y, además, marcar \"Enable sending logged QSO ADIF data\".\n" +
+                                   "Con JTAlert o GridTracker en el mismo puerto: use la dirección multicast 239.255.0.1 en WSJT-X/JTDX, en esos programas y aquí. Todos reciben los QSOs.",
+                                   "Dans WSJT-X : File → Settings → Reporting → UDP Server : 127.0.0.1, port 2237 (valeurs par défaut). Dans JTDX : les mêmes réglages, en cochant aussi « Enable sending logged QSO ADIF data ».\n" +
+                                   "Avec JTAlert ou GridTracker sur le même port : utilisez l'adresse multicast 239.255.0.1 dans WSJT-X/JTDX, dans ces logiciels et ici. Tous reçoivent les QSO."),
 
         // Log4OM tab
         ["lbl_log4om_enabled"]  = ("Activar recepção do Log4OM", "Enable Log4OM reception",

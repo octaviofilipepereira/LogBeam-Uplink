@@ -44,10 +44,13 @@ public sealed class ErrorReportSink : ILogEventSink
         var component = ComponentOf(sourceContext);
         if (component != "Service" || ex is null) return component;
 
-        var thrower = new System.Diagnostics.StackTrace(ex, false).GetFrames()
+        // A primeira classe do LogBeam que pertence a um componente concreto (as auxiliares comuns,
+        // como a abertura das portas em LogBeam.Core.Net, não contam).
+        return new System.Diagnostics.StackTrace(ex, false).GetFrames()
             .Select(f => f.GetMethod()?.DeclaringType?.FullName)
-            .FirstOrDefault(n => n is not null && n.StartsWith("LogBeam.", StringComparison.Ordinal));
-        return thrower is null ? component : ComponentOf(thrower);
+            .Where(n => n is not null && n.StartsWith("LogBeam.", StringComparison.Ordinal))
+            .Select(n => ComponentOf(n!))
+            .FirstOrDefault(c => c != "Service") ?? component;
     }
 
     /// <summary>Componente do contrato (ApiClient, N1MM, WSJTX, Log4OM, ClubLog, UI, Service) a partir da origem do log.</summary>

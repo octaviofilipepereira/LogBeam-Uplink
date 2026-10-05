@@ -46,6 +46,9 @@ public class QsoProcessor : BackgroundService
     /// </summary>
     public event Action<Core.Models.QsoRecord>? QsoAlreadyLogged;
 
+    /// <summary>Um receptor não arrancou (porta ocupada por outro programa): programa e porta.</summary>
+    public event Action<string, int>? ListenerFailed;
+
     public QsoProcessor(
         N1MMUdpListener listener,
         WsjtxUdpListener wsjtxListener,
@@ -91,7 +94,8 @@ public class QsoProcessor : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Não foi possível iniciar o listener N1MM (porta ocupada?). Este listener fica desactivado.");
+                _logger.LogWarning(ex, "Não foi possível iniciar o listener N1MM (porta ocupada?). Este listener fica desactivado.");
+                ListenerFailed?.Invoke("N1MM+", _settings.Value.N1mm.UdpPort);
             }
 
             if (_settings.Value.Wsjtx.Enabled)
@@ -103,7 +107,8 @@ public class QsoProcessor : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Não foi possível iniciar o listener WSJT-X (porta ocupada?). Este listener fica desactivado.");
+                    _logger.LogWarning(ex, "Não foi possível iniciar o listener WSJT-X (porta ocupada?). Este listener fica desactivado.");
+                    ListenerFailed?.Invoke("WSJT-X / JTDX", _settings.Value.Wsjtx.UdpPort);
                 }
             }
 
@@ -116,7 +121,8 @@ public class QsoProcessor : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Não foi possível iniciar o receptor ADIF do Log4OM (porta ocupada?). Este receptor fica desactivado.");
+                    _logger.LogWarning(ex, "Não foi possível iniciar o receptor ADIF do Log4OM (porta ocupada?). Este receptor fica desactivado.");
+                    ListenerFailed?.Invoke("Log4OM", _settings.Value.Log4om.UdpPort);
                 }
             }
 

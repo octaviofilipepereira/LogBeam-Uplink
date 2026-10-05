@@ -41,7 +41,7 @@ public class N1MMUdpListener : IDisposable
         if (IsRunning) return;
 
         _cts = new CancellationTokenSource();
-        _udpClient = new UdpClient(new IPEndPoint(_listenAddress, _port));
+        _udpClient = UdpListenAddress.Open(_listenAddress, _port);
         IsRunning = true;
 
         _logger.LogInformation("N1MM listener started on {Address}:{Port}.", _listenAddress, _port);
@@ -67,6 +67,7 @@ public class N1MMUdpListener : IDisposable
             try
             {
                 var result = await _udpClient!.ReceiveAsync(ct);
+                if (!UdpListenAddress.Accept(_listenAddress, result.RemoteEndPoint)) continue;
                 var xml = Encoding.UTF8.GetString(result.Buffer);
                 ProcessXml(xml);
             }

@@ -55,6 +55,36 @@ public class WsjtxUdpListenerTests
     }
 
     [Fact]
+    public void TruncatedPackets_AreIgnoredAtEveryLength()
+    {
+        var full = Fixture.Bytes("Wsjtx/logged_adif_ft8.bin");
+        for (var len = 0; len < full.Length; len++)
+        {
+            var listener = new WsjtxUdpListener(NullLogger<WsjtxUdpListener>.Instance);
+            var received = 0;
+            listener.QsoReceived += (_, _) => received++;
+            listener.ProcessDatagram(full[..len]);
+            Assert.Equal(0, received);
+        }
+    }
+
+    [Fact]
+    public void ImpossibleStringLength_IsRejectedBeforeReading()
+    {
+        // magic, schema 2, tipo 12 (Logged ADIF), id com comprimento de ~4 GB
+        var packet = new byte[] { 0xAD, 0xBC, 0xCB, 0xDA, 0, 0, 0, 2, 0, 0, 0, 12, 0xFF, 0xFF, 0xFF, 0xF0, 0x41 };
+        var reader = new WsjtxBinaryReader(packet);
+        reader.ReadUInt32(); reader.ReadUInt32(); reader.ReadUInt32();
+        Assert.Throws<FormatException>(() => reader.ReadUtf8String());
+
+        var listener = new WsjtxUdpListener(NullLogger<WsjtxUdpListener>.Instance);
+        var received = 0;
+        listener.QsoReceived += (_, _) => received++;
+        listener.ProcessDatagram(packet);
+        Assert.Equal(0, received);
+    }
+
+    [Fact]
     public void NonWsjtxDatagram_IsIgnored()
     {
         var listener = new WsjtxUdpListener(NullLogger<WsjtxUdpListener>.Instance);

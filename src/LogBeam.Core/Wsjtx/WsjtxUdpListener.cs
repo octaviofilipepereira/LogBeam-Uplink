@@ -45,7 +45,7 @@ public class WsjtxUdpListener : IDisposable
         if (IsRunning) return;
 
         _cts = new CancellationTokenSource();
-        _udpClient = new UdpClient(new IPEndPoint(_listenAddress, _port));
+        _udpClient = UdpListenAddress.Open(_listenAddress, _port);
         IsRunning = true;
 
         _logger.LogInformation("WSJT-X listener started on {Address}:{Port}.", _listenAddress, _port);
@@ -71,6 +71,7 @@ public class WsjtxUdpListener : IDisposable
             try
             {
                 var result = await _udpClient!.ReceiveAsync(ct);
+                if (!UdpListenAddress.Accept(_listenAddress, result.RemoteEndPoint)) continue;
                 ProcessDatagram(result.Buffer);
             }
             catch (OperationCanceledException)
@@ -111,6 +112,10 @@ public class WsjtxUdpListener : IDisposable
             _logger.LogDebug("WSJT-X QSO received: {Call} {Band} {Mode}", qso.Call, qso.Band, qso.Mode);
             QsoReceived?.Invoke(this, qso);
         }
+        catch (FormatException ex)
+        {
+            _logger.LogDebug("Pacote WSJT-X inválido ou truncado, ignorado: {Reason}", ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Falha ao processar datagrama WSJT-X.");
@@ -127,7 +132,10 @@ public class WsjtxUdpListener : IDisposable
     }
 }
 
-/// <summary>Leitor big-endian mínimo para o formato binário QDataStream usado pelo WSJT-X.</summary>
+/// <summary>
+/// Leitor big-endian mínimo para o formato binário QDataStream usado pelo WSJT-X. Valida os
+/// limites antes de ler: um pacote truncado ou com um comprimento impossível dá FormatException.
+/// </summary>
 internal class WsjtxBinaryReader
 {
     private readonly byte[] _buf;
@@ -135,8 +143,11 @@ internal class WsjtxBinaryReader
 
     public WsjtxBinaryReader(byte[] buf) => _buf = buf;
 
+    private int Remaining => _buf.Length - _pos;
+
     public uint ReadUInt32()
     {
+        if (Remaining < 4) throw new FormatException($"faltam bytes na posição {_pos} (pacote com {_buf.Length})");
         var v = (uint)((_buf[_pos] << 24) | (_buf[_pos + 1] << 16) | (_buf[_pos + 2] << 8) | _buf[_pos + 3]);
         _pos += 4;
         return v;
@@ -147,6 +158,7 @@ internal class WsjtxBinaryReader
     {
         var len = ReadUInt32();
         if (len == 0xFFFFFFFF) return string.Empty;
+        if (len > (uint)Remaining) throw new FormatException($"texto de {len} bytes com só {Remaining} no pacote");
         var s = System.Text.Encoding.UTF8.GetString(_buf, _pos, (int)len);
         _pos += (int)len;
         return s;

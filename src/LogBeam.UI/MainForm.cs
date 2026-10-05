@@ -57,8 +57,9 @@ public class MainForm : Form
 
     // WSJT-X tab
     private CheckBox       _chkWsjtxEnabled = null!;
-    private Label          _lWsjtxPort = null!, _lWsjtxHint = null!;
+    private Label          _lWsjtxPort = null!, _lWsjtxAddr = null!, _lWsjtxHint = null!;
     private NumericUpDown  _nWsjtxPort = null!;
+    private TextBox        _txtWsjtxAddr = null!;
 
     // Log4OM tab
     private CheckBox       _chkLog4omEnabled = null!;
@@ -116,6 +117,7 @@ public class MainForm : Form
         _runner.QsoResult               += OnQsoResult;
         _runner.QsoConfirmedByLogbeam   += OnQsoConfirmedByLogbeam;
         _runner.QsoAlreadyLogged        += OnQsoAlreadyLogged;
+        _runner.ListenerFailed          += OnListenerFailed;
 
         // Primeiro arranque: dados da instalação e relatórios de erros só com autorização explícita.
         if (_settings.Telemetry.Consent is null) AskTelemetryConsent();
@@ -277,6 +279,21 @@ public class MainForm : Form
             _tray.BalloonTipTitle = success ? L.Get("balloon_qso_sent") : L.Get("balloon_qso_failed");
             _tray.BalloonTipText  = $"{qso.Call} — {qso.Band} {qso.Mode}";
             _tray.ShowBalloonTip(4000);
+        });
+    }
+
+    /// <summary>Um receptor não arrancou (porta ocupada): aviso na barra de estado e no tabuleiro.</summary>
+    private void OnListenerFailed(string program, int port)
+    {
+        if (IsDisposed || !IsHandleCreated) return;
+        BeginInvoke(() =>
+        {
+            var text = string.Format(L.Get("status_listener_failed"), program, port);
+            SetStatus("err", text);
+            _tray.BalloonTipIcon  = ToolTipIcon.Warning;
+            _tray.BalloonTipTitle = L.Get("balloon_listener_failed");
+            _tray.BalloonTipText  = text;
+            _tray.ShowBalloonTip(8000);
         });
     }
 
@@ -1008,7 +1025,7 @@ public class MainForm : Form
         _lN1mmAddr   = AddRow(t, 1, _txtN1mmAddr);
 
         t.RowStyles[2] = new RowStyle(SizeType.Absolute, 8);
-        _lN1mmHint = AddHint(t, 3, 52);
+        _lN1mmHint = AddHint(t, 3, 84);
 
         t.RowStyles[4] = new RowStyle(SizeType.Absolute, 10);
         t.RowStyles[5] = new RowStyle(SizeType.AutoSize);
@@ -1035,7 +1052,7 @@ public class MainForm : Form
 
     private void BuildWsjtxTab()
     {
-        var t = MakeTable(_pgWsjtx, 4);
+        var t = MakeTable(_pgWsjtx, 5);
 
         _chkWsjtxEnabled = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 6) };
         t.Controls.Add(new Label(), 0, 0);
@@ -1044,8 +1061,11 @@ public class MainForm : Form
         _nWsjtxPort = new NumericUpDown { Minimum = 1024, Maximum = 65535, Value = 2237 };
         _lWsjtxPort = AddRow(t, 1, _nWsjtxPort);
 
-        t.RowStyles[2] = new RowStyle(SizeType.Absolute, 8);
-        _lWsjtxHint = AddHint(t, 3, 60);
+        _txtWsjtxAddr = new TextBox { Text = LogBeam.Core.Net.UdpListenAddress.Default };
+        _lWsjtxAddr   = AddRow(t, 2, _txtWsjtxAddr);
+
+        t.RowStyles[3] = new RowStyle(SizeType.Absolute, 8);
+        _lWsjtxHint = AddHint(t, 4, 96);
     }
 
     /// <summary>Log4OM: ADIF em texto por UDP (ligação UDP OUTBOUND, mensagem ADIF_MESSAGE).</summary>
@@ -1259,6 +1279,7 @@ public class MainForm : Form
         _pgWsjtx.Text           = L.Get("tab_wsjtx");
         _chkWsjtxEnabled.Text   = L.Get("lbl_wsjtx_enabled");
         _lWsjtxPort.Text        = L.Get("lbl_wsjtx_port");
+        _lWsjtxAddr.Text        = L.Get("lbl_n1mm_addr");
         _lWsjtxHint.Text        = L.Get("hint_wsjtx");
 
         _pgLog4om.Text          = L.Get("tab_log4om");
@@ -1321,6 +1342,7 @@ public class MainForm : Form
 
         _chkWsjtxEnabled.Checked = _settings.Wsjtx.Enabled;
         _nWsjtxPort.Value        = Clamp(_settings.Wsjtx.UdpPort, 1024, 65535);
+        _txtWsjtxAddr.Text       = string.IsNullOrEmpty(_settings.Wsjtx.ListenAddress) ? LogBeam.Core.Net.UdpListenAddress.Default : _settings.Wsjtx.ListenAddress;
 
         _chkLog4omEnabled.Checked = _settings.Log4om.Enabled;
         _nLog4omPort.Value        = Clamp(_settings.Log4om.UdpPort, 1024, 65535);
@@ -1373,6 +1395,7 @@ public class MainForm : Form
 
         _settings.Wsjtx.Enabled = _chkWsjtxEnabled.Checked;
         _settings.Wsjtx.UdpPort = (int)_nWsjtxPort.Value;
+        _settings.Wsjtx.ListenAddress = _txtWsjtxAddr.Text.Trim();
 
         _settings.Log4om.Enabled = _chkLog4omEnabled.Checked;
         _settings.Log4om.UdpPort = (int)_nLog4omPort.Value;
