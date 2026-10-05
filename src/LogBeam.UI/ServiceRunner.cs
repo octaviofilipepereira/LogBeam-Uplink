@@ -6,6 +6,7 @@ using LogBeam.Core.Models;
 using LogBeam.Core.N1MM;
 using LogBeam.Service.Services;
 using LogBeam.Service.Settings;
+using LogBeam.Service.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -22,6 +23,14 @@ public class ServiceRunner : IDisposable
     private CancellationTokenSource _cts = new();
     private Task?             _runTask;
 
+    // Criado uma vez: os erros pendentes sobrevivem aos reinícios do serviço (e ficam em disco).
+    private readonly TelemetryStore _telemetryStore = new(Path.Combine(AppContext.BaseDirectory, "telemetry.json"));
+
+    public TelemetryStore TelemetryStore => _telemetryStore;
+
+    /// <summary>Língua da interface, enviada nos dados da instalação; aplica-se no próximo arranque do serviço.</summary>
+    public string Language { get; set; } = "PT";
+
     public bool IsRunning => _host is not null && !(_cts.IsCancellationRequested);
 
     public event Action<string>? StatusChanged;
@@ -37,7 +46,7 @@ public class ServiceRunner : IDisposable
         var settingsManager = new SettingsManager();
         var appSettings     = settingsManager.Load();
 
-        ConfigureSerilog(appSettings);
+        ConfigureSerilog(appSettings, _telemetryStore);
 
         _host = Host.CreateDefaultBuilder()
             .UseSerilog()
@@ -73,6 +82,15 @@ public class ServiceRunner : IDisposable
                 services.AddSingleton<QsoProcessor>();
                 services.AddHostedService(sp => sp.GetRequiredService<QsoProcessor>());
                 services.AddHostedService<ClubLogUploadService>();
+
+                // Dados da instalação e relatórios de erros (4.26, 4.27): só actuam com consentimento.
+                services.AddSingleton(_telemetryStore);
+                services.AddSingleton(new TelemetryContext(AppVersion.Current, Language));
+                services.AddHttpClient("telemetry").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(15));
+                services.AddSingleton(sp => new TelemetryClient(
+                    sp.GetRequiredService<IHttpClientFactory>().CreateClient("telemetry"),
+                    appSettings.Api.BaseUrl));
+                services.AddHostedService<TelemetryService>();
             })
             .Build();
 
@@ -112,7 +130,7 @@ public class ServiceRunner : IDisposable
         _runTask = null;
     }
 
-    private static void ConfigureSerilog(ServiceAppSettings settings)
+    private static void ConfigureSerilog(ServiceAppSettings settings, TelemetryStore telemetryStore)
     {
         var exeDir  = AppContext.BaseDirectory;
         var logPath = Path.IsPathRooted(settings.LogPath)
@@ -123,13 +141,18 @@ public class ServiceRunner : IDisposable
             settings.LogLevel, ignoreCase: true, out var parsed)
             ? parsed : Serilog.Events.LogEventLevel.Information;
 
-        Log.Logger = new LoggerConfiguration()
+        var config = new LoggerConfiguration()
             .MinimumLevel.Is(level)
             .WriteTo.File(logPath,
                 rollingInterval: RollingInterval.Day,
                 retainedFileCountLimit: 30,
-                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
-            .CreateLogger();
+                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz}] [{Level:u3}] {Message:lj}{NewLine}{Exception}");
+
+        // Relatórios de erros só com consentimento do operador.
+        if (settings.Telemetry.IsActive)
+            config.WriteTo.Sink(new ErrorReportSink(telemetryStore), Serilog.Events.LogEventLevel.Error);
+
+        Log.Logger = config.CreateLogger();
     }
 
     public void Dispose() => Stop();

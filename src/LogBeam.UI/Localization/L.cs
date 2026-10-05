@@ -310,6 +310,91 @@ public static class L
         ["lbl_log_path"]         = ("Ficheiro de log:", "Log File:", "Archivo de log:", "Fichier journal :"),
         ["lbl_notify_each_qso"]  = ("Avisar a cada QSO enviado", "Notify for every QSO sent",
                                     "Avisar de cada QSO enviado", "Notifier chaque QSO envoyé"),
+        ["lbl_telemetry"]        = ("Enviar dados da instalação e relatórios de erros",
+                                    "Send installation data and error reports",
+                                    "Enviar datos de la instalación e informes de errores",
+                                    "Envoyer les données d'installation et les rapports d'erreurs"),
+        ["lnk_telemetry_what"]   = ("O que é enviado?", "What is sent?", "¿Qué se envía?", "Qu'est-ce qui est envoyé ?"),
+
+        // Consentimento: dados da instalação e relatórios de erros
+        ["consent_title"]        = ("Dados da instalação e relatórios de erros", "Installation data and error reports",
+                                    "Datos de la instalación e informes de errores", "Données d'installation et rapports d'erreurs"),
+        ["consent_body"]         = (
+            "Pode autorizar o LogBeam Uplink a enviar para o logbeam.org os dados abaixo. Servem para saber em que " +
+            "sistemas o Uplink é usado e para corrigir erros mais depressa.\n\n" +
+            "Dados da instalação (guardados 12 meses):\n" +
+            "• identificador aleatório desta instalação;\n" +
+            "• indicativo;\n" +
+            "• versão do Uplink e do .NET;\n" +
+            "• versão e arquitectura do Windows;\n" +
+            "• língua da interface e programas de log ligados.\n\n" +
+            "Relatórios de erros (guardados 90 dias):\n" +
+            "• data e hora, componente, tipo e mensagem do erro, e o ponto do código onde ocorreu;\n" +
+            "• o nome do utilizador do Windows é retirado dos caminhos dos ficheiros.\n\n" +
+            "Nunca são enviados o nome do computador, o nome do utilizador, números de série nem QSOs, e o endereço " +
+            "IP não é guardado.\n\n" +
+            "Pode mudar esta opção a qualquer momento no separador Avançado. Ao retirar a autorização, os dados já " +
+            "enviados são apagados.",
+
+            "You can allow LogBeam Uplink to send the data below to logbeam.org. It shows which systems Uplink runs " +
+            "on and helps fix errors faster.\n\n" +
+            "Installation data (kept for 12 months):\n" +
+            "• a random identifier for this installation;\n" +
+            "• callsign;\n" +
+            "• Uplink and .NET versions;\n" +
+            "• Windows version and architecture;\n" +
+            "• interface language and connected logging programs.\n\n" +
+            "Error reports (kept for 90 days):\n" +
+            "• date and time, component, error type and message, and where in the code it happened;\n" +
+            "• the Windows user name is removed from file paths.\n\n" +
+            "The computer name, user name, serial numbers and QSOs are never sent, and the IP address is not " +
+            "stored.\n\n" +
+            "You can change this option at any time in the Advanced tab. If you withdraw your permission, the data " +
+            "already sent is deleted.",
+
+            "Puede autorizar a LogBeam Uplink a enviar a logbeam.org los datos siguientes. Sirven para saber en qué " +
+            "sistemas se usa Uplink y para corregir errores más deprisa.\n\n" +
+            "Datos de la instalación (se conservan 12 meses):\n" +
+            "• identificador aleatorio de esta instalación;\n" +
+            "• indicativo;\n" +
+            "• versión de Uplink y de .NET;\n" +
+            "• versión y arquitectura de Windows;\n" +
+            "• idioma de la interfaz y programas de log conectados.\n\n" +
+            "Informes de errores (se conservan 90 días):\n" +
+            "• fecha y hora, componente, tipo y mensaje del error, y el punto del código donde se produjo;\n" +
+            "• el nombre de usuario de Windows se elimina de las rutas de los archivos.\n\n" +
+            "Nunca se envían el nombre del equipo, el nombre de usuario, números de serie ni QSOs, y la dirección " +
+            "IP no se guarda.\n\n" +
+            "Puede cambiar esta opción en cualquier momento en la pestaña Avanzado. Si retira la autorización, se " +
+            "borran los datos ya enviados.",
+
+            "Vous pouvez autoriser LogBeam Uplink à envoyer à logbeam.org les données ci-dessous. Elles servent à " +
+            "savoir sur quels systèmes Uplink est utilisé et à corriger les erreurs plus vite.\n\n" +
+            "Données d'installation (conservées 12 mois) :\n" +
+            "• identifiant aléatoire de cette installation ;\n" +
+            "• indicatif ;\n" +
+            "• versions d'Uplink et de .NET ;\n" +
+            "• version et architecture de Windows ;\n" +
+            "• langue de l'interface et logiciels de log connectés.\n\n" +
+            "Rapports d'erreurs (conservés 90 jours) :\n" +
+            "• date et heure, composant, type et message de l'erreur, et l'endroit du code où elle s'est produite ;\n" +
+            "• le nom d'utilisateur Windows est retiré des chemins de fichiers.\n\n" +
+            "Le nom de l'ordinateur, le nom d'utilisateur, les numéros de série et les QSO ne sont jamais envoyés, " +
+            "et l'adresse IP n'est pas conservée.\n\n" +
+            "Vous pouvez modifier ce choix à tout moment dans l'onglet Avancé. Si vous retirez votre autorisation, " +
+            "les données déjà envoyées sont supprimées."),
+        ["consent_allow"]        = ("Autorizar", "Allow", "Autorizar", "Autoriser"),
+        ["consent_deny"]         = ("Não autorizar", "Don't allow", "No autorizar", "Ne pas autoriser"),
+        ["consent_privacy"]      = ("Política de privacidade", "Privacy policy", "Política de privacidad", "Politique de confidentialité"),
+        ["btn_close"]            = ("Fechar", "Close", "Cerrar", "Fermer"),
+
+        // Erros não tratados
+        ["crash_title"]          = ("LogBeam Uplink — erro inesperado", "LogBeam Uplink — unexpected error",
+                                    "LogBeam Uplink — error inesperado", "LogBeam Uplink — erreur inattendue"),
+        ["crash_body"]           = ("Ocorreu um erro inesperado, que ficou registado no ficheiro de log:\n\n{0}",
+                                    "An unexpected error occurred and was written to the log file:\n\n{0}",
+                                    "Se produjo un error inesperado, que quedó registrado en el archivo de log:\n\n{0}",
+                                    "Une erreur inattendue s'est produite et a été enregistrée dans le fichier journal :\n\n{0}"),
 
         // Buttons
         ["btn_save"]             = ("Guardar", "Save", "Guardar", "Enregistrer"),

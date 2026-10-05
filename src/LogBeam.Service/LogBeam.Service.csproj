@@ -28,6 +28,10 @@
     <ProjectReference Include="..\LogBeam.Core\LogBeam.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="LogBeam.Tests" />
+  </ItemGroup>
+
   <!--
     Chave de aplicação do ClubLog: não está no código. Vem da variável de ambiente
     CLUBLOG_API_KEY (segredo do GitHub Actions) ou do ficheiro clublog.key na raiz do

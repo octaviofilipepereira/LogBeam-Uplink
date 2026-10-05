@@ -19,6 +19,7 @@ TestResults/
 settings.json
 queue.json
 ui.json
+telemetry.json
 logs/
 *.log
 

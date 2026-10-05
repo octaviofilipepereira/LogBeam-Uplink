@@ -19,6 +19,7 @@ public class AppSettings
     public N1mmSettings N1mm { get; set; } = new();
     public WsjtxSettings Wsjtx { get; set; } = new();
     public Log4omSettings Log4om { get; set; } = new();
+    public TelemetrySettings Telemetry { get; set; } = new();
     public ClubLogSettings ClubLog { get; set; } = new();
     public string LogLevel { get; set; } = "Information";
     public string LogPath { get; set; } = "logs/logbeam.log";
@@ -58,6 +59,22 @@ public class Log4omSettings
 
     /// <summary>127.0.0.1 = só este computador; 0.0.0.0 = toda a rede local.</summary>
     public string ListenAddress { get; set; } = UdpListenAddress.Default;
+}
+
+/// <summary>
+/// Dados da instalação e relatórios de erros enviados ao LogBeam (4.26, 4.27) — só com
+/// consentimento explícito do operador.
+/// </summary>
+public class TelemetrySettings
+{
+    /// <summary>null = ainda não foi perguntado; true/false = resposta do operador.</summary>
+    public bool? Consent { get; set; }
+
+    /// <summary>UUID gerado quando o operador aceita; apagado quando retira o consentimento.</summary>
+    public string InstallationId { get; set; } = string.Empty;
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool IsActive => Consent == true && !string.IsNullOrWhiteSpace(InstallationId);
 }
 
 /// <summary>

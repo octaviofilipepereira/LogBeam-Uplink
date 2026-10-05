@@ -71,6 +71,7 @@ Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; F
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\logs"
+Type: files; Name: "{app}\telemetry.json"
 
 [Code]
 procedure InitializeWizard;

@@ -86,7 +86,8 @@ public class MainForm : Form
     // Advanced tab
     private Label    _lLogLevel = null!, _lLogPath = null!;
     private ComboBox _cboLogLevel = null!;
-    private CheckBox _chkNotifyEachQso = null!;
+    private CheckBox _chkNotifyEachQso = null!, _chkTelemetry = null!;
+    private LinkLabel _lnkTelemetryWhat = null!;
     private TextBox  _txtLogPath = null!;
 
     // Bottom panel
@@ -109,7 +110,12 @@ public class MainForm : Form
         _runner.StatusChanged           += OnServiceStatusChanged;
         _runner.QsoResult               += OnQsoResult;
         _runner.QsoConfirmedByLogbeam   += OnQsoConfirmedByLogbeam;
+
+        // Primeiro arranque: dados da instalação e relatórios de erros só com autorização explícita.
+        if (_settings.Telemetry.Consent is null) AskTelemetryConsent();
+
         // arrancar o serviço automaticamente ao abrir
+        _runner.Language = L.Lang;
         _runner.Start();
 
         _ = CheckForUpdateAsync(silent: true);
@@ -306,9 +312,14 @@ public class MainForm : Form
     /// Pára o serviço fora da thread da janela, para ela continuar a responder; o serviço avisa
     /// a janela com BeginInvoke, por isso esperar por ele aqui não cria um bloqueio mútuo.
     /// </summary>
-    private async Task RestartServiceAsync()
+    /// <param name="revokedInstallationId">
+    /// Instalação cujo consentimento foi retirado: os erros pendentes são apagados e a instalação
+    /// fica marcada para apagar no servidor — com o serviço parado, para nenhum erro entrar entretanto.
+    /// </param>
+    private async Task RestartServiceAsync(string? revokedInstallationId = null)
     {
         await Task.Run(_runner.Stop);
+        if (revokedInstallationId is not null) _runner.TelemetryStore.Revoke(revokedInstallationId);
         _runner.Start();
     }
 
@@ -1070,7 +1081,7 @@ public class MainForm : Form
 
     private void BuildAdvancedTab()
     {
-        var t = MakeTable(_pgAdvanced, 3);
+        var t = MakeTable(_pgAdvanced, 5);
 
         _cboLogLevel = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         _cboLogLevel.Items.AddRange(new object[] { "Debug", "Information", "Warning", "Error" });
@@ -1083,12 +1094,59 @@ public class MainForm : Form
         _chkNotifyEachQso = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 6) };
         t.Controls.Add(new Label(), 0, 2);
         t.Controls.Add(_chkNotifyEachQso, 1, 2);
+
+        _chkTelemetry = new CheckBox { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(0, 6, 0, 0) };
+        t.Controls.Add(new Label(), 0, 3);
+        t.Controls.Add(_chkTelemetry, 1, 3);
+
+        _lnkTelemetryWhat = new LinkLabel { AutoSize = true, Anchor = AnchorStyles.Left | AnchorStyles.Top, Margin = new Padding(18, 0, 0, 0) };
+        _lnkTelemetryWhat.LinkClicked += (_, _) =>
+        {
+            using var dlg = new ConsentForm(askChoice: false);
+            dlg.ShowDialog(this);
+        };
+        t.Controls.Add(new Label(), 0, 4);
+        t.Controls.Add(_lnkTelemetryWhat, 1, 4);
+    }
+
+    /// <summary>Primeiro arranque: pergunta se pode enviar os dados da instalação e os relatórios de erros.</summary>
+    private void AskTelemetryConsent()
+    {
+        using var dlg = new ConsentForm(askChoice: true);
+        var allow = dlg.ShowDialog() == DialogResult.OK;
+
+        _settings.Telemetry.Consent        = allow;
+        _settings.Telemetry.InstallationId = allow ? Guid.NewGuid().ToString() : string.Empty;
+        try { _mgr.Save(_settings); }
+        catch { /* sem escrita: volta a perguntar no próximo arranque */ }
+        _chkTelemetry.Checked = allow;
+    }
+
+    /// <summary>
+    /// Aplica a caixa do separador Avançado. Devolve o identificador da instalação cujo
+    /// consentimento foi retirado (para apagar no servidor), ou null.
+    /// </summary>
+    private string? ApplyTelemetryChoice(bool wanted)
+    {
+        var t = _settings.Telemetry;
+        if (wanted)
+        {
+            t.Consent = true;
+            if (string.IsNullOrWhiteSpace(t.InstallationId)) t.InstallationId = Guid.NewGuid().ToString();
+            return null;
+        }
+
+        var revoked = t.Consent == true && !string.IsNullOrWhiteSpace(t.InstallationId) ? t.InstallationId : null;
+        t.Consent        = false;
+        t.InstallationId = string.Empty;
+        return revoked;
     }
 
     // ─── Idioma ────────────────────────────────────────────────────────────
     private void ChangeLanguage(string lang)
     {
         L.Lang            = lang;
+        _runner.Language  = lang;   // vai nos dados da instalação no próximo arranque do serviço
         _prefs.Language   = lang;
         _prefsMgr.SavePrefs(_prefs);
         UpdateAllText();
@@ -1148,6 +1206,8 @@ public class MainForm : Form
         _lLogLevel.Text  = L.Get("lbl_log_level");
         _lLogPath.Text   = L.Get("lbl_log_path");
         _chkNotifyEachQso.Text = L.Get("lbl_notify_each_qso");
+        _chkTelemetry.Text     = L.Get("lbl_telemetry");
+        _lnkTelemetryWhat.Text = L.Get("lnk_telemetry_what");
 
         _miN1mmHelp.Text = L.Get("menu_n1mm_help");
 
@@ -1207,6 +1267,7 @@ public class MainForm : Form
         _cboLogLevel.SelectedIndex = idx >= 0 ? idx : 1;
         _txtLogPath.Text  = _settings.LogPath;
         _chkNotifyEachQso.Checked = _prefs.NotifyEachQso;
+        _chkTelemetry.Checked     = _settings.Telemetry.IsActive;
     }
 
     private void CollectForm()
@@ -1272,13 +1333,14 @@ public class MainForm : Form
         if (ProfileFormatError() is { } formatError) { SetStatus("err", formatError); return; }
 
         CollectForm();
+        var revoked = ApplyTelemetryChoice(_chkTelemetry.Checked);
         _btnSave.Enabled = false;
         try
         {
             _mgr.Save(_settings);
             SetStatus("", L.Get("busy_restarting"));
             _qsoCount = 0;
-            await RestartServiceAsync();
+            await RestartServiceAsync(revoked);
             SetStatus("ok", L.Get("status_saved"));
         }
         catch (Exception ex)
