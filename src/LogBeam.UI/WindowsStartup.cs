@@ -8,7 +8,7 @@ namespace LogBeam.UI;
 
 /// <summary>
 /// "Iniciar com o Windows": valor na chave Run do utilizador (HKCU, sem administrador), com
-/// <see cref="TrayArgument"/> para a aplicação arrancar só no tabuleiro. O desinstalador apaga o valor.
+/// <see cref="TrayArgument"/> para a aplicação arrancar só na área de notificação. O desinstalador apaga o valor.
 /// </summary>
 internal static class WindowsStartup
 {

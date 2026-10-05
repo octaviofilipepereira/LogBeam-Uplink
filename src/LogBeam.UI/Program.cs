@@ -39,7 +39,7 @@ internal static class Program
 
         ApplicationConfiguration.Initialize();
 
-        // --tray: arranque com o Windows, só no tabuleiro.
+        // --tray: arranque com o Windows, só na área de notificação.
         var form = new MainForm(startHidden: args.Contains(WindowsStartup.TrayArgument, StringComparer.OrdinalIgnoreCase));
 
         var waiter = new Thread(() =>

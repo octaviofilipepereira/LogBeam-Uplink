@@ -100,7 +100,7 @@ public class MainForm : Form
     private Panel? _pnlBusy;
     private bool   _exiting;
 
-    // Arranque com o Windows: a janela não aparece, fica só o ícone no tabuleiro.
+    // Arranque com o Windows: a janela não aparece, fica só o ícone na área de notificação.
     private bool _startHidden;
 
     // ──────────────────────────────────────────────────────────────────────
@@ -238,7 +238,7 @@ public class MainForm : Form
             _tmiSendTo.DropDownItems.Add(new ToolStripMenuItem(L.Get("tray_no_logbooks")) { Enabled = false });
     }
 
-    /// <summary>Liga/desliga um logbook a partir do tabuleiro: grava logo e reinicia o serviço.</summary>
+    /// <summary>Liga/desliga um logbook a partir da área de notificação: grava logo e reinicia o serviço.</summary>
     private async void OnTrayToggleProfile(object? s, EventArgs e)
     {
         if (s is not ToolStripMenuItem { Tag: string id }) return;
@@ -282,7 +282,7 @@ public class MainForm : Form
         });
     }
 
-    /// <summary>Um receptor não arrancou (porta ocupada): aviso na barra de estado e no tabuleiro.</summary>
+    /// <summary>Um receptor não arrancou (porta ocupada): aviso na barra de estado e na área de notificação.</summary>
     private void OnListenerFailed(string program, int port)
     {
         if (IsDisposed || !IsHandleCreated) return;
@@ -323,7 +323,7 @@ public class MainForm : Form
         });
     }
 
-    /// <summary>Mostra a janela (tabuleiro, ou uma segunda instância que foi aberta).</summary>
+    /// <summary>Mostra a janela (área de notificação, ou uma segunda instância que foi aberta).</summary>
     internal void ShowWindow()
     {
         _startHidden = false;
@@ -334,7 +334,7 @@ public class MainForm : Form
 
     /// <summary>
     /// Com <see cref="_startHidden"/>, a primeira vez que o Application.Run tenta mostrar a janela
-    /// ela fica escondida. O handle é criado na mesma, porque os avisos do tabuleiro e a segunda
+    /// ela fica escondida. O handle é criado na mesma, porque os avisos da área de notificação e a segunda
     /// instância usam BeginInvoke.
     /// </summary>
     protected override void SetVisibleCore(bool value)

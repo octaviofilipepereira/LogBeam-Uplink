@@ -11,6 +11,6 @@ public class UiPreferences
 {
     public string Language { get; set; } = "PT";
 
-    /// <summary>Aviso no tabuleiro a cada QSO enviado. Desligado: só falhas e confirmações LogBeam.</summary>
+    /// <summary>Aviso na área de notificação a cada QSO enviado. Desligado: só falhas e confirmações LogBeam.</summary>
     public bool NotifyEachQso { get; set; } = false;
 }
