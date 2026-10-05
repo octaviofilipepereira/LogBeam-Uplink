@@ -132,6 +132,22 @@ public sealed class QsoProcessorTests : IDisposable
     }
 
     [Fact]
+    public async Task DuplicateRaisesAlreadyLoggedInsteadOfSent()
+    {
+        _server.Respond = req => new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new StringContent("{\"status\":\"success\",\"data\":{\"duplicate\":true}}") };
+        var (processor, _) = Build(Settings(clubLog: false));
+        var sent = 0; var already = 0;
+        processor.QsoResult        += (_, _) => sent++;
+        processor.QsoAlreadyLogged += _ => already++;
+
+        await processor.ProcessQsoAsync(Qso(), CancellationToken.None);
+
+        Assert.Equal(0, sent);
+        Assert.Equal(1, already);
+    }
+
+    [Fact]
     public async Task LogbookPermanentFailureIsDiscarded()
     {
         _logbeamStatus = HttpStatusCode.Unauthorized;   // chave revogada

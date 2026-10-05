@@ -18,8 +18,9 @@ namespace LogBeam.Service.Services;
 /// IsPermanentFailure distingue erros que reenviar nunca vai resolver (4xx —
 /// QSO inválido, limite atingido, API Key revogada) de falhas transitórias
 /// (rede em baixo, 5xx, 429) que valem a pena voltar a tentar mais tarde.
+/// Duplicate: aceite, mas o QSO já existia no logbook (o servidor não o acrescentou).
 /// </summary>
-public record QsoSendResult(bool Success, bool ConfirmedLogbeam, bool IsPermanentFailure = false);
+public record QsoSendResult(bool Success, bool ConfirmedLogbeam, bool IsPermanentFailure = false, bool Duplicate = false);
 
 /// <summary>
 /// Serviço para enviar QSOs para a API REST do LogBeam backend
@@ -46,18 +47,37 @@ public class ApiClientService
         // tentativa, e o único efeito de os incluir era queimar 3 tentativas
         // e (antes desta correcção) acabar sempre na fila offline, onde
         // bloqueavam todos os QSOs seguintes desse perfil para sempre.
+        //
+        // Um 429 respeita o Retry-After (4.15): espera o tempo pedido pelo servidor, até
+        // MaxRetryAfter; acima disso não se repete aqui e o QSO vai para a fila offline.
         _retryPolicy = Policy
             .Handle<HttpRequestException>()
             .Or<TaskCanceledException>()
-            .OrResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode && IsTransientStatus(r.StatusCode))
+            .OrResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode && IsTransientStatus(r.StatusCode)
+                                                && !(RetryAfter(r) > MaxRetryAfter))
             .WaitAndRetryAsync(
                 retryCount: settings.Value.Api.RetryCount,
-                sleepDurationProvider: attempt => TimeSpan.FromSeconds(settings.Value.Api.RetryDelaySeconds * Math.Pow(2, attempt - 1)),
-                onRetry: (outcome, timespan, attempt, context) =>
+                sleepDurationProvider: (attempt, outcome, _) =>
+                    (outcome.Result is { } r ? RetryAfter(r) : null)
+                    ?? TimeSpan.FromSeconds(settings.Value.Api.RetryDelaySeconds * Math.Pow(2, attempt - 1)),
+                onRetryAsync: (outcome, timespan, attempt, _) =>
                 {
                     _logger.LogWarning("Retry {Attempt}/{Max} após {Delay}ms. Última tentativa: {Outcome}",
                         attempt, settings.Value.Api.RetryCount, timespan.TotalMilliseconds, outcome.Exception?.Message ?? outcome.Result?.StatusCode.ToString());
+                    return Task.CompletedTask;
                 });
+    }
+
+    /// <summary>Espera máxima por um Retry-After antes de desistir e deixar o QSO na fila offline.</summary>
+    public static readonly TimeSpan MaxRetryAfter = TimeSpan.FromSeconds(60);
+
+    /// <summary>Tempo pedido pelo servidor num 429 (Retry-After em segundos ou em data); null se não houver.</summary>
+    internal static TimeSpan? RetryAfter(HttpResponseMessage response)
+    {
+        if (response.StatusCode != HttpStatusCode.TooManyRequests || response.Headers.RetryAfter is not { } ra) return null;
+        if (ra.Delta is { } delta) return delta;
+        if (ra.Date is { } date) { var wait = date - DateTimeOffset.UtcNow; return wait > TimeSpan.Zero ? wait : TimeSpan.Zero; }
+        return null;
     }
 
     /// <summary>
@@ -105,9 +125,13 @@ public class ApiClientService
 
             if (response.IsSuccessStatusCode)
             {
-                var confirmed = TryReadConfirmedLogbeam(content);
-                _logger.LogInformation("QSO enviado com sucesso: {Callsign} (perfil {Profile})", qso.Call, profile.Name);
-                return new QsoSendResult(true, confirmed);
+                var confirmed = ReadDataFlag(content, "confirmed_logbeam");
+                var duplicate = ReadDataFlag(content, "duplicate");
+                if (duplicate)
+                    _logger.LogInformation("QSO já existia no logbook: {Callsign} (perfil {Profile})", qso.Call, profile.Name);
+                else
+                    _logger.LogInformation("QSO enviado com sucesso: {Callsign} (perfil {Profile})", qso.Call, profile.Name);
+                return new QsoSendResult(true, confirmed, Duplicate: duplicate);
             }
             else
             {
@@ -117,13 +141,22 @@ public class ApiClientService
                 return new QsoSendResult(false, false, IsPermanentFailure: permanent);
             }
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;   // a aplicação está a parar
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            // Sem rede ou sem resposta (já esgotou os retries do Polly): o QSO fica na fila.
+            // Aviso e não erro — é o ambiente do operador, não uma falha da aplicação.
+            _logger.LogWarning("Sem ligação ao enviar QSO {Callsign} (perfil {Profile}): {Error}", qso.Call, profile.Name, ex.Message);
+            return new QsoSendResult(false, false, IsPermanentFailure: false);
+        }
         catch (Exception ex)
         {
-            // Excepção (rede em baixo, timeout, etc. — já esgotou os retries do
-            // Polly antes de chegar aqui) — trata-se como transitória por
-            // omissão: não há forma de a distinguir de um problema permanente
-            // a partir de uma excepção genérica, e o custo de errar para este
-            // lado é só reenviar mais tarde, não perder o QSO.
+            // Excepção inesperada — trata-se como transitória por omissão: não há forma de a
+            // distinguir de um problema permanente, e o custo de errar para este lado é só
+            // reenviar mais tarde, não perder o QSO.
             _logger.LogError(ex, "Erro ao enviar QSO para {Callsign} (perfil {Profile})", qso.Call, profile.Name);
             return new QsoSendResult(false, false, IsPermanentFailure: false);
         }
@@ -138,16 +171,18 @@ public class ApiClientService
     private static bool IsTransientStatus(HttpStatusCode statusCode)
         => (int)statusCode >= 500 || statusCode == HttpStatusCode.TooManyRequests;
 
-    private static bool TryReadConfirmedLogbeam(string jsonContent)
+    /// <summary>Lê um campo booleano de "data" na resposta (confirmed_logbeam, duplicate); false se faltar.</summary>
+    private static bool ReadDataFlag(string jsonContent, string name)
     {
         try
         {
             using var doc = JsonDocument.Parse(jsonContent);
             if (doc.RootElement.TryGetProperty("data", out var data) &&
-                data.TryGetProperty("confirmed_logbeam", out var confirmed))
-                return confirmed.ValueKind == JsonValueKind.True;
+                data.ValueKind == JsonValueKind.Object &&
+                data.TryGetProperty(name, out var value))
+                return value.ValueKind == JsonValueKind.True;
         }
-        catch { /* resposta sem esse campo — assume não confirmado */ }
+        catch { /* resposta sem esse campo */ }
         return false;
     }
 

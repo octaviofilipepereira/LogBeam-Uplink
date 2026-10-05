@@ -115,6 +115,7 @@ public class MainForm : Form
         _runner.StatusChanged           += OnServiceStatusChanged;
         _runner.QsoResult               += OnQsoResult;
         _runner.QsoConfirmedByLogbeam   += OnQsoConfirmedByLogbeam;
+        _runner.QsoAlreadyLogged        += OnQsoAlreadyLogged;
 
         // Primeiro arranque: dados da instalação e relatórios de erros só com autorização explícita.
         if (_settings.Telemetry.Consent is null) AskTelemetryConsent();
@@ -274,6 +275,20 @@ public class MainForm : Form
             if (success && !_prefs.NotifyEachQso) return;
             _tray.BalloonTipIcon = success ? ToolTipIcon.Info : ToolTipIcon.Warning;
             _tray.BalloonTipTitle = success ? L.Get("balloon_qso_sent") : L.Get("balloon_qso_failed");
+            _tray.BalloonTipText  = $"{qso.Call} — {qso.Band} {qso.Mode}";
+            _tray.ShowBalloonTip(4000);
+        });
+    }
+
+    /// <summary>O QSO já existia em todos os logbooks: não conta como enviado; aviso só com "Avisar a cada QSO".</summary>
+    private void OnQsoAlreadyLogged(QsoRecord qso)
+    {
+        if (IsDisposed || !IsHandleCreated) return;
+        BeginInvoke(() =>
+        {
+            if (!_prefs.NotifyEachQso) return;
+            _tray.BalloonTipIcon  = ToolTipIcon.Info;
+            _tray.BalloonTipTitle = L.Get("balloon_qso_duplicate");
             _tray.BalloonTipText  = $"{qso.Call} — {qso.Band} {qso.Mode}";
             _tray.ShowBalloonTip(4000);
         });

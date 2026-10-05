@@ -40,6 +40,12 @@ public class QsoProcessor : BackgroundService
     /// <summary>Disparado quando um QSO é confirmado por outro logbook LogBeam (correspondência automática).</summary>
     public event Action<Core.Models.QsoRecord>? QsoConfirmedByLogbeam;
 
+    /// <summary>
+    /// Disparado em vez de <see cref="QsoResult"/> quando todos os logbooks que aceitaram o QSO
+    /// responderam que ele já existia (não foi acrescentado).
+    /// </summary>
+    public event Action<Core.Models.QsoRecord>? QsoAlreadyLogged;
+
     public QsoProcessor(
         N1MMUdpListener listener,
         WsjtxUdpListener wsjtxListener,
@@ -160,12 +166,15 @@ public class QsoProcessor : BackgroundService
                 }
             }
 
+            int accepted = 0, duplicates = 0;
             foreach (var profile in profiles)
             {
                 var result = await _apiClient.SendQsoAsync(qso, profile, ct);
                 if (result.Success)
                 {
                     anySuccess = true;
+                    accepted++;
+                    if (result.Duplicate) duplicates++;
                     if (result.ConfirmedLogbeam) anyConfirmed = true;
                 }
                 else if (result.IsPermanentFailure)
@@ -177,7 +186,7 @@ public class QsoProcessor : BackgroundService
                 }
                 else
                 {
-                    _logger.LogError("Falha ao enviar QSO para API: {Callsign} (perfil {Profile}). Colocado na fila offline.", qso.Call, profile.Name);
+                    _logger.LogWarning("Falha ao enviar QSO para API: {Callsign} (perfil {Profile}). Colocado na fila offline.", qso.Call, profile.Name);
                     _queue.Enqueue(qso, profile.Id);
                 }
             }
@@ -185,7 +194,10 @@ public class QsoProcessor : BackgroundService
             if (anySuccess)
                 _sessionLog.Add(qso);
 
-            QsoResult?.Invoke(qso, anySuccess);
+            if (accepted > 0 && duplicates == accepted)
+                QsoAlreadyLogged?.Invoke(qso);
+            else
+                QsoResult?.Invoke(qso, anySuccess);
             if (anyConfirmed)
                 QsoConfirmedByLogbeam?.Invoke(qso);
         }
@@ -249,7 +261,8 @@ public class QsoProcessor : BackgroundService
                 _queue.Remove(item);
                 _sessionLog.Add(item.Qso);
                 _logger.LogInformation("QSO reenviado com sucesso a partir da fila offline: {Callsign} (perfil {Profile})", item.Qso.Call, profile.Name);
-                QsoResult?.Invoke(item.Qso, true);
+                if (result.Duplicate) QsoAlreadyLogged?.Invoke(item.Qso);
+                else                  QsoResult?.Invoke(item.Qso, true);
                 if (result.ConfirmedLogbeam)
                     QsoConfirmedByLogbeam?.Invoke(item.Qso);
             }

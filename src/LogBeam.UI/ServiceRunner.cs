@@ -36,6 +36,7 @@ public class ServiceRunner : IDisposable
     public event Action<string>? StatusChanged;
     public event Action<QsoRecord, bool>? QsoResult;
     public event Action<QsoRecord>? QsoConfirmedByLogbeam;
+    public event Action<QsoRecord>? QsoAlreadyLogged;
 
     public void Start()
     {
@@ -97,6 +98,7 @@ public class ServiceRunner : IDisposable
         var processor = _host.Services.GetRequiredService<QsoProcessor>();
         processor.QsoResult += (qso, success) => QsoResult?.Invoke(qso, success);
         processor.QsoConfirmedByLogbeam += qso => QsoConfirmedByLogbeam?.Invoke(qso);
+        processor.QsoAlreadyLogged      += qso => QsoAlreadyLogged?.Invoke(qso);
 
         _runTask = Task.Run(async () =>
         {
