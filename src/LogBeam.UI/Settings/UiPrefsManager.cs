@@ -4,6 +4,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using LogBeam.Core.Platform;
 using LogBeam.UI.Models;
 
 namespace LogBeam.UI.Settings;
@@ -27,7 +28,7 @@ public class UiPrefsManager
 
     public UiPrefsManager()
     {
-        _prefsPath = Path.Combine(AppContext.BaseDirectory, "ui.json");
+        _prefsPath = Path.Combine(AppPaths.DataDir, "ui.json");
     }
 
     public UiPreferences LoadPrefs()
@@ -42,7 +43,7 @@ public class UiPrefsManager
 
     public void SavePrefs(UiPreferences prefs)
     {
-        Directory.CreateDirectory(AppContext.BaseDirectory);
+        Directory.CreateDirectory(AppPaths.DataDir);
         File.WriteAllText(_prefsPath, JsonSerializer.Serialize(prefs, JsonOpts));
     }
 }

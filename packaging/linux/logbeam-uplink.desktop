@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=LogBeam Uplink
+Comment=Sends your QSOs to LogBeam and ClubLog
+Comment[pt]=Envia os seus QSOs para o LogBeam e o ClubLog
+Comment[es]=Envía sus QSOs a LogBeam y ClubLog
+Comment[fr]=Envoie vos QSO vers LogBeam et ClubLog
+Exec=logbeam-uplink
+Icon=logbeam-uplink
+Terminal=false
+Categories=HamRadio;
+StartupWMClass=logbeam-uplink

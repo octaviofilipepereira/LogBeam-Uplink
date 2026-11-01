@@ -346,6 +346,8 @@ public static class L
                                     "Avisar de cada QSO enviado", "Notifier chaque QSO envoyé"),
         ["lbl_start_with_windows"] = ("Iniciar com o Windows, sem abrir a janela", "Start with Windows, without opening the window",
                                       "Iniciar con Windows, sin abrir la ventana", "Démarrer avec Windows, sans ouvrir la fenêtre"),
+        ["lbl_start_with_session"] = ("Iniciar com o sistema, sem abrir a janela", "Start with the system, without opening the window",
+                                      "Iniciar con el sistema, sin abrir la ventana", "Démarrer avec le système, sans ouvrir la fenêtre"),
         ["lbl_telemetry"]        = ("Enviar dados da instalação e relatórios de erros",
                                     "Send installation data and error reports",
                                     "Enviar datos de la instalación e informes de errores",
@@ -362,7 +364,7 @@ public static class L
             "• identificador aleatório desta instalação;\n" +
             "• indicativo;\n" +
             "• versão do Uplink e do .NET;\n" +
-            "• versão e arquitectura do Windows;\n" +
+            "• versão e arquitectura do sistema operativo;\n" +
             "• língua da interface e programas de log ligados;\n" +
             "• destinos ligados: LogBeam e/ou ClubLog (só sim ou não).\n\n" +
             "Relatórios de erros (guardados 90 dias):\n" +
@@ -379,7 +381,7 @@ public static class L
             "• a random identifier for this installation;\n" +
             "• callsign;\n" +
             "• Uplink and .NET versions;\n" +
-            "• Windows version and architecture;\n" +
+            "• operating system version and architecture;\n" +
             "• interface language and connected logging programs;\n" +
             "• destinations in use: LogBeam and/or ClubLog (yes or no only).\n\n" +
             "Error reports (kept for 90 days):\n" +
@@ -396,7 +398,7 @@ public static class L
             "• identificador aleatorio de esta instalación;\n" +
             "• indicativo;\n" +
             "• versión de Uplink y de .NET;\n" +
-            "• versión y arquitectura de Windows;\n" +
+            "• versión y arquitectura del sistema operativo;\n" +
             "• idioma de la interfaz y programas de log conectados;\n" +
             "• destinos activos: LogBeam y/o ClubLog (solo sí o no).\n\n" +
             "Informes de errores (se conservan 90 días):\n" +
@@ -413,7 +415,7 @@ public static class L
             "• identifiant aléatoire de cette installation ;\n" +
             "• indicatif ;\n" +
             "• versions d'Uplink et de .NET ;\n" +
-            "• version et architecture de Windows ;\n" +
+            "• version et architecture du système d'exploitation ;\n" +
             "• langue de l'interface et logiciels de log connectés ;\n" +
             "• destinations activées : LogBeam et/ou ClubLog (oui ou non uniquement).\n\n" +
             "Rapports d'erreurs (conservés 90 jours) :\n" +
@@ -427,6 +429,8 @@ public static class L
         ["consent_deny"]         = ("Não autorizar", "Don't allow", "No autorizar", "Ne pas autoriser"),
         ["consent_privacy"]      = ("Política de privacidade", "Privacy policy", "Política de privacidad", "Politique de confidentialité"),
         ["btn_close"]            = ("Fechar", "Close", "Cerrar", "Fermer"),
+        ["dialog_yes"]           = ("Sim", "Yes", "Sí", "Oui"),
+        ["dialog_no"]            = ("Não", "No", "No", "Non"),
 
         // Erros não tratados
         ["crash_title"]          = ("LogBeam Uplink — erro inesperado", "LogBeam Uplink — unexpected error",

@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>logbeam-uplink</AssemblyName>
+    <RootNamespace>LogBeam.Linux</RootNamespace>
+    <AssemblyTitle>LogBeam Uplink</AssemblyTitle>
+    <Company>CT7BFV</Company>
+    <Product>LogBeam Uplink</Product>
+    <Copyright>© 2026 Octávio Filipe Pereira Gonçalves</Copyright>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <AvaloniaNameGeneratorIsEnabled>false</AvaloniaNameGeneratorIsEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LogBeam.Core\LogBeam.Core.csproj" />
+    <ProjectReference Include="..\LogBeam.Service\LogBeam.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
+  <!-- Código comum com a versão Windows: uma só fonte para os textos e o arranque do serviço. -->
+  <ItemGroup>
+    <Compile Include="..\LogBeam.UI\ServiceRunner.cs" Link="Comum\ServiceRunner.cs" />
+    <Compile Include="..\LogBeam.UI\AppVersion.cs" Link="Comum\AppVersion.cs" />
+    <Compile Include="..\LogBeam.UI\Localization\L.cs" Link="Comum\L.cs" />
+    <Compile Include="..\LogBeam.UI\Settings\UiPrefsManager.cs" Link="Comum\UiPrefsManager.cs" />
+    <Compile Include="..\LogBeam.UI\Models\UiPreferences.cs" Link="Comum\UiPreferences.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\logbeam.png" LogicalName="logbeam.png" />
+  </ItemGroup>
+</Project>

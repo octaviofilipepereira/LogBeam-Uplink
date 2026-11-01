@@ -2,6 +2,7 @@
 // © 2026 Octávio Filipe Pereira Gonçalves
 // Licença GPL v3 (https://www.gnu.org/licenses/gpl-3.0.pt-br.html | https://www.gnu.org/licenses/gpl-3.0.html.en)
 
+using LogBeam.Core.Platform;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using LogBeam.Core.Models;
@@ -36,11 +37,11 @@ public class QsoQueueService
         Converters = { new JsonStringEnumConverter() }
     };
 
-    /// <param name="queuePath">Ficheiro da fila; por omissão, queue.json junto do executável (os testes usam outro).</param>
+    /// <param name="queuePath">Ficheiro da fila; por omissão, queue.json na pasta de dados (os testes usam outro).</param>
     public QsoQueueService(ILogger<QsoQueueService> logger, string? queuePath = null)
     {
         _logger     = logger;
-        _queuePath  = queuePath ?? Path.Combine(AppContext.BaseDirectory, "queue.json");
+        _queuePath  = queuePath ?? Path.Combine(AppPaths.DataDir, "queue.json");
         Load();
     }
 

@@ -179,12 +179,21 @@ public class N1MMConfigManager
 
     /// <summary>
     /// Checks if the N1MM+ process is currently running (executável N1MMLogger.net.exe).
+    /// No Linux o N1MM+ corre no Wine e procura-se pela linha de comando.
     /// </summary>
     public bool IsN1MMRunning() =>
-        System.Diagnostics.Process
-            .GetProcessesByName("N1MMLogger.net")
-            .Concat(System.Diagnostics.Process.GetProcessesByName("N1MMLogger"))
-            .Any();
+        OperatingSystem.IsWindows()
+            ? System.Diagnostics.Process
+                .GetProcessesByName("N1MMLogger.net")
+                .Concat(System.Diagnostics.Process.GetProcessesByName("N1MMLogger"))
+                .Any()
+            : Directory.EnumerateDirectories("/proc").Any(IsN1MMProcess);
+
+    private static bool IsN1MMProcess(string procDir)
+    {
+        try { return File.ReadAllText(Path.Combine(procDir, "cmdline")).Contains("N1MMLogger", StringComparison.Ordinal); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
+    }
 
     // ─── Leitura e escrita linha a linha ────────────────────────────────────
 

@@ -4,6 +4,7 @@
 
 using LogBeam.Core.Models;
 using LogBeam.Core.N1MM;
+using LogBeam.Core.Platform;
 using LogBeam.Service.Services;
 using LogBeam.Service.Settings;
 using LogBeam.Service.Telemetry;
@@ -24,7 +25,7 @@ public class ServiceRunner : IDisposable
     private Task?             _runTask;
 
     // Criado uma vez: os erros pendentes sobrevivem aos reinícios do serviço (e ficam em disco).
-    private readonly TelemetryStore _telemetryStore = new(Path.Combine(AppContext.BaseDirectory, "telemetry.json"));
+    private readonly TelemetryStore _telemetryStore = new(Path.Combine(AppPaths.DataDir, "telemetry.json"));
 
     public TelemetryStore TelemetryStore => _telemetryStore;
 
@@ -151,10 +152,10 @@ public class ServiceRunner : IDisposable
 
     private static void ConfigureSerilog(ServiceAppSettings settings, TelemetryStore telemetryStore)
     {
-        var exeDir  = AppContext.BaseDirectory;
+        var dataDir = AppPaths.DataDir;
         var logPath = Path.IsPathRooted(settings.LogPath)
             ? settings.LogPath
-            : Path.Combine(exeDir, settings.LogPath);
+            : Path.Combine(dataDir, settings.LogPath);
 
         var level = Enum.TryParse<Serilog.Events.LogEventLevel>(
             settings.LogLevel, ignoreCase: true, out var parsed)

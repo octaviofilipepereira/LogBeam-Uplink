@@ -2,6 +2,7 @@
 // © 2026 Octávio Filipe Pereira Gonçalves
 // Licença GPL v3 (https://www.gnu.org/licenses/gpl-3.0.pt-br.html | https://www.gnu.org/licenses/gpl-3.0.html.en)
 
+using LogBeam.Core.Platform;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using LogBeam.Core.Security;
@@ -30,7 +31,7 @@ public class SettingsManager
     {
         _logger = logger;
 
-        _configDir  = AppContext.BaseDirectory;
+        _configDir  = AppPaths.DataDir;
         _configPath = Path.Combine(_configDir, "settings.json");
     }
 

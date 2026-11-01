@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Os testes do núcleo e do serviço a correr em qualquer sistema: são os ficheiros de LogBeam.Tests,
+    sem os que dependem da interface Windows. O nome do conjunto é o mesmo para ver o que é interno.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>LogBeam.Tests</AssemblyName>
+    <RootNamespace>LogBeam.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LogBeam.Core\LogBeam.Core.csproj" />
+    <ProjectReference Include="..\..\src\LogBeam.Service\LogBeam.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\LogBeam.Tests\**\*.cs"
+             Exclude="..\LogBeam.Tests\bin\**;..\LogBeam.Tests\obj\**;..\LogBeam.Tests\UI\**;..\LogBeam.Tests\Localization\**"
+             LinkBase="Comum" />
+    <None Include="..\LogBeam.Tests\Fixtures\**\*" Link="Fixtures\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
