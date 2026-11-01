@@ -136,7 +136,7 @@ public sealed class MainWindow : Window
         Width     = 780;
         Height    = 760;
         MinWidth  = 700;
-        MinHeight = 680;
+        MinHeight = 480;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Icon = new WindowIcon(LogoStream());
 
@@ -176,6 +176,9 @@ public sealed class MainWindow : Window
     private async void OnFirstOpened(object? s, EventArgs e)
     {
         Opened -= OnFirstOpened;
+        // Em ecrãs baixos, 760 tapariam os botões: desconta a barra de título e o painel
+        var screen = Screens.ScreenFromWindow(this) ?? Screens.Primary;
+        if (screen != null) Height = Math.Min(Height, screen.WorkingArea.Height / screen.Scaling - 80);
         // Primeiro arranque: dados da instalação e relatórios de erros só com autorização explícita.
         if (_settings.Telemetry.Consent is null) await AskTelemetryConsent();
         StartService();
