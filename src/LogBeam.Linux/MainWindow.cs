@@ -155,6 +155,12 @@ public sealed class MainWindow : Window
         Closing += (_, e) =>
         {
             if (_exiting) return;
+            // Desligar, reiniciar ou fim de sessão: sair; esconder a janela cancelaria o pedido do sistema
+            if (e.CloseReason is WindowCloseReason.OSShutdown or WindowCloseReason.ApplicationShutdown)
+            {
+                ExitApp();
+                return;
+            }
             e.Cancel = true;
             Hide(); // o serviço continua, na área de notificação
         };
