@@ -27,7 +27,7 @@ Uplink was born on Windows, written in C# with .NET. The Linux version uses the 
 
 | | Windows | Linux |
 |---|---|---|
-| Installation | Installer, no administrator rights | `.deb` package (Debian, Ubuntu, Linux Mint and derivatives), 64-bit |
+| Installation | Installer, no administrator rights | `.deb` package (Debian, Ubuntu, Linux Mint and derivatives), 64-bit: PC or ARM (Raspberry Pi) |
 | Logging programs | N1MM+, WSJT-X, JTDX, Log4OM | The same (N1MM+ and Log4OM through Wine) and Not1MM |
 | API keys and passwords | Encrypted with Windows DPAPI | Encrypted with AES-256-GCM, with a key readable only by the user |
 | Automatic start | With Windows | With the user session |
@@ -116,8 +116,8 @@ The official release is at **https://logbeam.org/uplink/**, with the SHA-256 fin
 
 ### Linux
 
-- **Requirements:** a distribution with `.deb` packages, 64-bit (PC). Tested on Linux Mint 22, which is based on Ubuntu 24.04.
-- **Installation:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb`. The package brings everything it needs, with no .NET to install.
+- **Requirements:** a 64-bit distribution with `.deb` packages: `amd64` (PC) or `arm64` (for example, 64-bit Raspberry Pi OS). Tested on Linux Mint 22 (amd64) and Debian 12 (arm64, in a virtual machine).
+- **Installation:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb` (on ARM, `_arm64.deb`). The package brings everything it needs, with no .NET to install.
 - **Checking the package:** `sha256sum logbeam-uplink_X.Y.Z_amd64.deb`. The result must match the SHA-256 published on the page.
 - **Removing:** `sudo apt remove logbeam-uplink`. The settings stay in `~/.config/logbeam-uplink`.
 
@@ -183,6 +183,8 @@ dotnet test tests/LogBeam.Portable.Tests -c Release
 dotnet publish src/LogBeam.Linux/LogBeam.Linux.csproj -c Release -r linux-x64 --self-contained true -p:DebugType=none -p:PublishReadyToRun=true -o publish-linux
 packaging/linux/build-deb.sh publish-linux dist
 ```
+
+For ARM (arm64): `-r linux-arm64` and `packaging/linux/build-deb.sh publish-linux dist arm64`.
 
 The version lives in a single place, `Directory.Build.props`. Official releases are built by `.github/workflows/release.yml` when a `vX.Y.Z` tag is created.
 

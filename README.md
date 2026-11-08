@@ -27,7 +27,7 @@ O Uplink nasceu para Windows, escrito em C# com o .NET. A versão para Linux usa
 
 | | Windows | Linux |
 |---|---|---|
-| Instalação | Instalador, sem privilégios de administrador | Pacote `.deb` (Debian, Ubuntu, Linux Mint e derivadas), 64 bits |
+| Instalação | Instalador, sem privilégios de administrador | Pacote `.deb` (Debian, Ubuntu, Linux Mint e derivadas), 64 bits: PC ou ARM (Raspberry Pi) |
 | Programas de log | N1MM+, WSJT-X, JTDX, Log4OM | Os mesmos (o N1MM+ e o Log4OM pelo Wine) e o Not1MM |
 | API keys e passwords | Cifradas com o DPAPI do Windows | Cifradas com AES-256-GCM, com uma chave só legível pelo utilizador |
 | Arranque automático | Com o Windows | Com a sessão do utilizador |
@@ -116,8 +116,8 @@ A versão oficial está em **https://logbeam.org/uplink/**, com a impressão dig
 
 ### Linux
 
-- **Requisitos:** distribuição com pacotes `.deb`, 64 bits (PC). Testado no Linux Mint 22, que tem por base o Ubuntu 24.04.
-- **Instalação:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb`. O pacote traz tudo o que precisa, sem instalar o .NET.
+- **Requisitos:** distribuição com pacotes `.deb`, de 64 bits: `amd64` (PC) ou `arm64` (por exemplo, o Raspberry Pi OS de 64 bits). Ensaiado no Linux Mint 22 (amd64) e no Debian 12 (arm64, em máquina virtual).
+- **Instalação:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb` (no ARM, `_arm64.deb`). O pacote traz tudo o que precisa, sem instalar o .NET.
 - **Confirmar o pacote:** `sha256sum logbeam-uplink_X.Y.Z_amd64.deb`. O resultado tem de ser igual ao SHA-256 publicado na página.
 - **Remover:** `sudo apt remove logbeam-uplink`. As definições ficam em `~/.config/logbeam-uplink`.
 
@@ -183,6 +183,8 @@ dotnet test tests/LogBeam.Portable.Tests -c Release
 dotnet publish src/LogBeam.Linux/LogBeam.Linux.csproj -c Release -r linux-x64 --self-contained true -p:DebugType=none -p:PublishReadyToRun=true -o publish-linux
 packaging/linux/build-deb.sh publish-linux dist
 ```
+
+Para ARM (arm64): `-r linux-arm64` e `packaging/linux/build-deb.sh publish-linux dist arm64`.
 
 A versão está num único sítio, o `Directory.Build.props`. As versões oficiais são compiladas pelo `.github/workflows/release.yml` ao criar uma etiqueta `vX.Y.Z`.
 

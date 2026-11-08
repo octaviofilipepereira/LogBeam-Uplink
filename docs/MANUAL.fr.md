@@ -178,7 +178,7 @@ Sous Linux : `sudo apt remove logbeam-uplink`. Les réglages et la file d'attent
 
 La version Linux a les mêmes onglets, les mêmes quatre langues et le même cœur que la version Windows. Les différences :
 
-- **Installer :** téléchargez le paquet `.deb` sur **https://logbeam.org/uplink/**, vérifiez le SHA-256 (`sha256sum logbeam-uplink_X.Y.Z_amd64.deb`) et installez-le avec `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb`. Le paquet apporte tout ce dont il a besoin, sans installer .NET. Il apparaît dans le menu des applications sous le nom « LogBeam Uplink » et s'ouvre aussi avec la commande `logbeam-uplink`.
+- **Installer :** téléchargez le paquet `.deb` sur **https://logbeam.org/uplink/**, vérifiez le SHA-256 (`sha256sum logbeam-uplink_X.Y.Z_amd64.deb`) et installez-le avec `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb` (sur ARM, par exemple Raspberry Pi OS 64 bits, le paquet `_arm64.deb`). Le paquet apporte tout ce dont il a besoin, sans installer .NET. Il apparaît dans le menu des applications sous le nom « LogBeam Uplink » et s'ouvre aussi avec la commande `logbeam-uplink`.
 - **Logiciels de log :** WSJT-X, JTDX et Not1MM sont natifs. N1MM+ et Log4OM fonctionnent dans Wine et se configurent comme sous Windows, avec la destination 127.0.0.1. Uplink cherche N1MM+ dans le dossier Documents de l'utilisateur (`N1MM Logger+`) ; si le dossier Documents de Wine est un autre, utilisez **Aide → Configurer N1MM+...**
 - **Zone de notification :** l'icône d'Uplink apparaît dans la zone de notification du bureau (testé sous Cinnamon). Les avertissements sont des notifications du système.
 - **Démarrer avec le système :** crée `~/.config/autostart/logbeam-uplink.desktop`, et Uplink démarre avec la session, avec seulement son icône.

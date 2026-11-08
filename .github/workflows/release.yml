@@ -12,8 +12,53 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # Pacotes .deb para Linux (amd64 e arm64), feitos num runner Linux; passam ao trabalho do Windows,
+  # que cria a Release com todos os ficheiros.
+  linux-packages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirmar que a etiqueta corresponde à versão
+        run: |
+          version=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' Directory.Build.props)
+          if [ "v$version" != "${{ github.ref_name }}" ]; then
+            echo "A etiqueta ${{ github.ref_name }} não corresponde à versão $version do Directory.Build.props"
+            exit 1
+          fi
+
+      - name: Configurar .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Testes (núcleo e serviço, em Linux)
+        run: dotnet test tests/LogBeam.Portable.Tests -c Release
+
+      - name: Publicar e empacotar (linux-x64 e linux-arm64)
+        env:
+          CLUBLOG_API_KEY: ${{ secrets.CLUBLOG_API_KEY }}
+        run: |
+          for rid in linux-x64 linux-arm64; do
+            dotnet publish src/LogBeam.Linux/LogBeam.Linux.csproj -c Release -r $rid --self-contained true \
+              -p:DebugType=none -p:PublishReadyToRun=true -o publish-$rid
+          done
+          bash packaging/linux/build-deb.sh publish-linux-x64 dist amd64
+          bash packaging/linux/build-deb.sh publish-linux-arm64 dist arm64
+          cd dist && for f in *.deb; do sha256sum "$f" > "$f.sha256"; done && ls -la
+
+      - name: Guardar os pacotes
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: dist/
+          if-no-files-found: error
+
   build-and-release:
     runs-on: windows-latest
+    needs: linux-packages
 
     steps:
       - name: Checkout
@@ -75,6 +120,24 @@ jobs:
           "file=$($f.Name)" >> $env:GITHUB_OUTPUT
           Write-Host "SHA-256 de $($f.Name): $h"
 
+      - name: Buscar os pacotes Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-packages
+          path: installer
+
+      - name: SHA-256 dos pacotes Linux
+        id: linux
+        shell: pwsh
+        run: |
+          $linhas = Get-ChildItem installer/*.deb.sha256 | ForEach-Object {
+            $h, $n = (Get-Content $_.FullName -Raw).Trim() -split '\s+', 2
+            "``$n``: ``$h``"
+          }
+          "hashes<<FIM" >> $env:GITHUB_OUTPUT
+          ($linhas -join "`n") >> $env:GITHUB_OUTPUT
+          "FIM" >> $env:GITHUB_OUTPUT
+
       - name: Criar Release no GitHub
         uses: softprops/action-gh-release@v2
         with:
@@ -90,17 +153,31 @@ jobs:
 
             **FR** — Installateur pour Windows 10 ou 11 (64 bits), sans droits d'administrateur ni .NET. Il n'a pas de signature numérique : Windows peut afficher un avertissement avant de l'exécuter (voir le [manuel](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/MANUAL.fr.md#1-installer)).
 
+            ### Linux
+
+            **PT** — Pacotes `.deb` de 64 bits: `amd64` para PC e `arm64` (por exemplo, Raspberry Pi OS de 64 bits). Instalar com `sudo apt install ./logbeam-uplink_…_amd64.deb` (ou `_arm64.deb`); sem .NET.
+
+            **EN** — 64-bit `.deb` packages: `amd64` for PCs and `arm64` (for example, 64-bit Raspberry Pi OS). Install with `sudo apt install ./logbeam-uplink_…_amd64.deb` (or `_arm64.deb`); no .NET needed.
+
+            **ES** — Paquetes `.deb` de 64 bits: `amd64` para PC y `arm64` (por ejemplo, Raspberry Pi OS de 64 bits). Instalar con `sudo apt install ./logbeam-uplink_…_amd64.deb` (o `_arm64.deb`); sin .NET.
+
+            **FR** — Paquets `.deb` 64 bits : `amd64` pour PC et `arm64` (par exemple Raspberry Pi OS 64 bits). Installer avec `sudo apt install ./logbeam-uplink_…_amd64.deb` (ou `_arm64.deb`) ; sans .NET.
+
             Versão oficial · Official release · Versión oficial · Version officielle: https://logbeam.org/uplink/
 
             **SHA-256** — `${{ steps.hash.outputs.file }}`:
             `${{ steps.hash.outputs.sha256 }}`
 
-            PowerShell: `Get-FileHash .\${{ steps.hash.outputs.file }}`
+            ${{ steps.linux.outputs.hashes }}
+
+            PowerShell: `Get-FileHash .\${{ steps.hash.outputs.file }}` · Linux: `sha256sum logbeam-uplink_*.deb`
 
             ---
             © 2026 Octávio Filipe Pereira Gonçalves (CT7BFV) · [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
           files: |
             installer/LogBeamUplink-Setup-*.exe
             installer/LogBeamUplink-Setup-*.exe.sha256
+            installer/logbeam-uplink_*.deb
+            installer/logbeam-uplink_*.deb.sha256
           draft: false
           prerelease: false

@@ -27,7 +27,7 @@ Uplink nació para Windows, escrito en C# con .NET. La versión para Linux usa e
 
 | | Windows | Linux |
 |---|---|---|
-| Instalación | Instalador, sin privilegios de administrador | Paquete `.deb` (Debian, Ubuntu, Linux Mint y derivadas), 64 bits |
+| Instalación | Instalador, sin privilegios de administrador | Paquete `.deb` (Debian, Ubuntu, Linux Mint y derivadas), 64 bits: PC o ARM (Raspberry Pi) |
 | Programas de log | N1MM+, WSJT-X, JTDX, Log4OM | Los mismos (N1MM+ y Log4OM a través de Wine) y Not1MM |
 | API keys y contraseñas | Cifradas con el DPAPI de Windows | Cifradas con AES-256-GCM, con una clave legible solo por el usuario |
 | Arranque automático | Con Windows | Con la sesión del usuario |
@@ -116,8 +116,8 @@ La versión oficial está en **https://logbeam.org/uplink/**, con la huella digi
 
 ### Linux
 
-- **Requisitos:** distribución con paquetes `.deb`, 64 bits (PC). Probado en Linux Mint 22, basado en Ubuntu 24.04.
-- **Instalación:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb`. El paquete trae todo lo que necesita, sin instalar .NET.
+- **Requisitos:** distribución con paquetes `.deb`, de 64 bits: `amd64` (PC) o `arm64` (por ejemplo, Raspberry Pi OS de 64 bits). Probado en Linux Mint 22 (amd64) y en Debian 12 (arm64, en máquina virtual).
+- **Instalación:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb` (en ARM, `_arm64.deb`). El paquete trae todo lo que necesita, sin instalar .NET.
 - **Comprobar el paquete:** `sha256sum logbeam-uplink_X.Y.Z_amd64.deb`. El resultado tiene que ser igual al SHA-256 publicado en la página.
 - **Desinstalar:** `sudo apt remove logbeam-uplink`. La configuración se queda en `~/.config/logbeam-uplink`.
 
@@ -183,6 +183,8 @@ dotnet test tests/LogBeam.Portable.Tests -c Release
 dotnet publish src/LogBeam.Linux/LogBeam.Linux.csproj -c Release -r linux-x64 --self-contained true -p:DebugType=none -p:PublishReadyToRun=true -o publish-linux
 packaging/linux/build-deb.sh publish-linux dist
 ```
+
+Para ARM (arm64): `-r linux-arm64` y `packaging/linux/build-deb.sh publish-linux dist arm64`.
 
 La versión está en un único sitio, `Directory.Build.props`. Las versiones oficiales las compila `.github/workflows/release.yml` al crear una etiqueta `vX.Y.Z`.
 

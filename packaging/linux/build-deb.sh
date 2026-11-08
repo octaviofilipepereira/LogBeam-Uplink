@@ -6,13 +6,27 @@
 # Cria o pacote .deb do LogBeam Uplink para Linux a partir de uma pasta publicada:
 #   dotnet publish src/LogBeam.Linux/LogBeam.Linux.csproj -c Release -r linux-x64 --self-contained true \
 #     -p:DebugType=none -p:PublishReadyToRun=true -o <pasta>
-# Uso: packaging/linux/build-deb.sh <pasta-publicada> <pasta-de-saída>
+# (linux-arm64 para o pacote arm64, por exemplo para o Raspberry Pi OS de 64 bits)
+# Uso: packaging/linux/build-deb.sh <pasta-publicada> <pasta-de-saída> [amd64|arm64]
 set -e
 PUB=${1:?pasta publicada em falta}
 OUT=${2:?pasta de saída em falta}
+ARCH=${3:-amd64}
+case "$ARCH" in
+  amd64) ELF="x86-64" ;;
+  arm64) ELF="aarch64" ;;
+  *) echo "arquitectura desconhecida: $ARCH (amd64 ou arm64)" >&2; exit 1 ;;
+esac
 AQUI=$(cd "$(dirname "$0")" && pwd)
 RAIZ=$(cd "$AQUI/../.." && pwd)
 VER=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' "$RAIZ/Directory.Build.props")
+
+# A pasta publicada tem de ser da mesma arquitectura do pacote
+if ! file -L "$PUB/logbeam-uplink" | grep -q "$ELF"; then
+  echo "$PUB/logbeam-uplink não é $ELF: publicar com -r linux-$([ "$ARCH" = amd64 ] && echo x64 || echo arm64)" >&2
+  exit 1
+fi
+
 D=$(mktemp -d)
 trap 'rm -rf "$D"' EXIT
 
@@ -32,7 +46,7 @@ Package: logbeam-uplink
 Version: $VER
 Section: hamradio
 Priority: optional
-Architecture: amd64
+Architecture: $ARCH
 Maintainer: Octávio Filipe Pereira Gonçalves <ct7bfv@gmail.com>
 Depends: libc6, libgcc-s1, libstdc++6, zlib1g, libssl3t64 | libssl3, libice6, libsm6, libx11-6, libfontconfig1, libnotify-bin, xdg-utils
 Homepage: https://logbeam.org
@@ -43,5 +57,5 @@ Description: Sends QSOs from your logging programs to LogBeam and ClubLog
 EOF
 
 mkdir -p "$OUT"
-dpkg-deb --root-owner-group --build "$D" "$OUT/logbeam-uplink_${VER}_amd64.deb"
-sha256sum "$OUT/logbeam-uplink_${VER}_amd64.deb"
+dpkg-deb --root-owner-group --build "$D" "$OUT/logbeam-uplink_${VER}_${ARCH}.deb"
+sha256sum "$OUT/logbeam-uplink_${VER}_${ARCH}.deb"
