@@ -80,6 +80,7 @@ public sealed class MainWindow : Window
     private TextBox   _txtN1mmAddr = null!;
     private TextBlock _lN1mmStatus = null!;
     private string?   _n1mmFolder;
+    private TextBlock _lNot1mmStatus = null!;
 
     // WSJT-X
     private CheckBox _chkWsjtxEnabled = null!;
@@ -386,6 +387,7 @@ public sealed class MainWindow : Window
         BuildStationTab();
         BuildApiTab();
         BuildN1mmTab();
+        BuildNot1mmTab();
         BuildWsjtxTab();
         BuildLog4omTab();
         BuildClubLogTab();
@@ -764,6 +766,69 @@ public sealed class MainWindow : Window
             N1MMApplyResult.AlreadyConfigured => L.Get("n1mm_status_ok"),
             N1MMApplyResult.Applied           => L.Get("n1mm_status_configured"),
             _                                 => L.Get("n1mm_status_config_failed")
+        };
+    }
+
+    /// <summary>
+    /// Not1MM: envia no formato do N1MM+, para a porta do separador N1MM+ (o mesmo receptor).
+    /// Este separador só verifica e liga o envio dos contactos nas preferências do Not1MM.
+    /// </summary>
+    private void BuildNot1mmTab()
+    {
+        var p = new StackPanel();
+        p.Children.Add(Hint("hint_not1mm"));
+
+        var detect = Dialogs.Primary("");
+        var auto   = Dialogs.Primary("");
+        Text("btn_not1mm_detect",   t => detect.Content = t);
+        Text("btn_n1mm_autoconfig", t => auto.Content = t);
+        detect.Click += (_, _) => _lNot1mmStatus.Text = Not1mmStatusText(Not1mmConfig().ReadStatus(N1mmPort()));
+        auto.Click   += OnNot1mmAutoConfig;
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        buttons.Children.Add(detect);
+        buttons.Children.Add(auto);
+        p.Children.Add(buttons);
+
+        _lNot1mmStatus = new TextBlock { Foreground = Brushes.DimGray, FontSize = 12, TextWrapping = TextWrapping.Wrap };
+        p.Children.Add(_lNot1mmStatus);
+        AddTab("tab_not1mm", p);
+    }
+
+    private static Not1MMConfigManager Not1mmConfig() =>
+        new(Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger<Not1MMConfigManager>(
+            new Serilog.Extensions.Logging.SerilogLoggerFactory(Serilog.Log.Logger)));
+
+    private int N1mmPort() => (int)(_nN1mmPort.Value ?? 12060);
+
+    private static string Not1mmStatusText(N1MMBroadcastStatus status) => status switch
+    {
+        N1MMBroadcastStatus.ConfiguredCorrectly     => L.Get("not1mm_status_ok"),
+        N1MMBroadcastStatus.ConfiguredDifferentPort => L.Get("not1mm_status_wrong_port"),
+        N1MMBroadcastStatus.NotConfigured           => L.Get("not1mm_status_not_configured"),
+        _                                           => L.Get("not1mm_status_not_found")
+    };
+
+    private async void OnNot1mmAutoConfig(object? s, RoutedEventArgs e)
+    {
+        var config = Not1mmConfig();
+        var port   = N1mmPort();
+        var status = config.ReadStatus(port);
+        if (status == N1MMBroadcastStatus.IniNotFound)
+        {
+            _lNot1mmStatus.Text = L.Get("not1mm_status_not_found");
+            return;
+        }
+
+        if (status != N1MMBroadcastStatus.ConfiguredCorrectly
+            && config.IsNot1MMRunning()
+            && !await Dialogs.YesNo(this, L.Get("not1mm_confirm_title"), L.Get("not1mm_confirm_running")))
+            return;
+
+        _lNot1mmStatus.Text = config.ApplyConfiguration(port) switch
+        {
+            N1MMApplyResult.AlreadyConfigured => L.Get("not1mm_status_ok"),
+            N1MMApplyResult.Applied           => L.Get("not1mm_status_configured"),
+            _                                 => L.Get("not1mm_status_config_failed")
         };
     }
 

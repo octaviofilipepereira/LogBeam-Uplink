@@ -85,7 +85,8 @@ public class N1MMUdpListener : IDisposable
     /// <summary>
     /// Trata uma mensagem XML do N1MM+ ("External UDP Broadcasts"). Só "contactinfo" (QSO novo)
     /// é enviado; "contactreplace" (QSO editado) e "contactdelete" (QSO apagado) ficam só no log
-    /// — propagar edições e eliminações exige endpoints novos no servidor (previsto para a 2.6).
+    /// — propagar edições e eliminações exige endpoints novos no servidor (previsto para a 2.7).
+    /// O Not1MM (Linux) envia as mesmas mensagens, com app=NOT1MM, e é tratado da mesma forma.
     /// As restantes mensagens (RadioInfo, AppInfo, spots...) são ignoradas.
     /// </summary>
     internal void ProcessXml(string xml)

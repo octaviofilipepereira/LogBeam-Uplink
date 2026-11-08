@@ -264,7 +264,7 @@ public class N1MMConfigManager
             .ToList();
 
     /// <summary>Destino que chega a um receptor neste computador: 127.0.0.1 ou localhost, na porta indicada.</summary>
-    private static bool IsLocalTarget(string target, int port)
+    internal static bool IsLocalTarget(string target, int port)
     {
         var colon = target.LastIndexOf(':');
         if (colon <= 0 || !int.TryParse(target[(colon + 1)..], out var p) || p != port) return false;
