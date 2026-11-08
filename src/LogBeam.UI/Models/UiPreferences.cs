@@ -13,4 +13,9 @@ public class UiPreferences
 
     /// <summary>Aviso na área de notificação a cada QSO enviado. Desligado: só falhas e confirmações LogBeam.</summary>
     public bool NotifyEachQso { get; set; } = false;
+
+    /// <summary>Última versão nova anunciada automaticamente, e quando (UTC): no máximo um aviso por dia.</summary>
+    public string? LastUpdateNoticeVersion { get; set; }
+
+    public DateTime? LastUpdateNoticeUtc { get; set; }
 }

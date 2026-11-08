@@ -147,7 +147,15 @@ Les erreurs qu'un nouvel envoi ne résout pas, comme une API Key révoquée ou u
 
 ## 7. Mises à jour
 
-Sous Windows, Uplink vérifie au démarrage si une nouvelle version est disponible et vous prévient. Vous pouvez aussi vérifier dans **Aide → Rechercher des mises à jour...** Sous Linux, cette vérification n'existe pas : on installe le nouveau paquet par-dessus l'ancien. Les nouvelles versions sont sur https://logbeam.org/uplink/.
+Uplink vérifie si une nouvelle version est disponible une minute après le démarrage, puis une fois par jour tant qu'il est ouvert. Si la vérification échoue (par exemple, sans réseau juste après le démarrage de l'ordinateur), il réessaie 15 minutes plus tard. Lorsqu'une nouvelle version est disponible :
+
+- fenêtre affichée, il demande s'il faut ouvrir la page de téléchargement ;
+- fenêtre masquée, il prévient dans la zone de notification. Sous Windows, un clic sur l'avis ouvre la page ; sous Linux, l'avis est une notification du système ;
+- le menu de l'icône propose **Télécharger la version X**, qui ouvre la page.
+
+L'avis apparaît au plus une fois par jour. Vous pouvez aussi vérifier à tout moment dans **Aide → Rechercher des mises à jour...** Sous Windows, la nouvelle version s'installe avec l'installateur, par-dessus l'ancienne ; sous Linux, on installe le nouveau paquet par-dessus l'ancien. Les réglages sont conservés. Les nouvelles versions sont sur https://logbeam.org/uplink/.
+
+Jusqu'à la version 2.6.0, l'avis pouvait ne pas apparaître : sous Windows, utilisez **Aide → Rechercher des mises à jour...** ; sous Linux, consultez la page de téléchargement.
 
 ## 8. Dépannage
 
@@ -183,7 +191,7 @@ La version Linux a les mêmes onglets, les mêmes quatre langues et le même cœ
 - **Zone de notification :** l'icône d'Uplink apparaît dans la zone de notification du bureau (testé sous Cinnamon). Les avertissements sont des notifications du système.
 - **Démarrer avec le système :** crée `~/.config/autostart/logbeam-uplink.desktop`, et Uplink démarre avec la session, avec seulement son icône.
 - **API Keys et mots de passe :** chiffrés avec AES-256-GCM, avec une clé aléatoire conservée dans `credentials.key`, lisible uniquement par l'utilisateur.
-- **Mises à jour :** Uplink ne prévient pas ; on installe le nouveau paquet par-dessus l'ancien.
+- **Mises à jour :** Uplink prévient comme sous Windows ([7. Mises à jour](#7-mises-à-jour)), avec une notification du système ; on installe le nouveau paquet par-dessus l'ancien.
 
 **Fichiers**, dans `~/.config/logbeam-uplink` :
 

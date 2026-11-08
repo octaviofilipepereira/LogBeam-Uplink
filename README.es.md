@@ -31,7 +31,7 @@ Uplink nació para Windows, escrito en C# con .NET. La versión para Linux usa e
 | Programas de log | N1MM+, WSJT-X, JTDX, Log4OM | Los mismos (N1MM+ y Log4OM a través de Wine) y Not1MM |
 | API keys y contraseñas | Cifradas con el DPAPI de Windows | Cifradas con AES-256-GCM, con una clave legible solo por el usuario |
 | Arranque automático | Con Windows | Con la sesión del usuario |
-| Aviso de versión nueva | Sí | No: se instala el paquete nuevo |
+| Aviso de versión nueva | Sí | Sí: se instala el paquete nuevo encima |
 
 ## Funcionalidades
 
@@ -71,7 +71,7 @@ Uplink nació para Windows, escrito en C# con .NET. La versión para Linux usa e
 | ✓ Confirmado por otro LogBeam | Aviso cuando el corresponsal también tiene el QSO en un logbook de LogBeam | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
 | Iniciar con el sistema | Uplink arranca con Windows, o con la sesión en Linux, sin abrir la ventana | [Avanzado](docs/MANUAL.es.md#avanzado) |
 | Una sola instancia | Abrir Uplink de nuevo trae al frente la ventana que ya estaba abierta | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
-| Actualizaciones | En Windows, Uplink comprueba al arrancar si hay una versión nueva y avisa | [Actualizaciones](docs/MANUAL.es.md#7-actualizaciones) |
+| Actualizaciones | Uplink comprueba un minuto después de arrancar y luego una vez al día si hay una versión nueva. Con la ventana oculta, avisa en el área de notificación, y el menú del icono pasa a tener **Descargar la versión…** | [Actualizaciones](docs/MANUAL.es.md#7-actualizaciones) |
 | Cuatro idiomas | Interfaz en portugués, inglés, español y francés, elegido con los botones de la parte superior de la ventana | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
 
 ### Seguridad y privacidad
@@ -149,7 +149,7 @@ El manual explica cada pestaña, los avisos, la cola sin internet y la solución
 ## Limitaciones de la versión 2.6
 
 - Un QSO editado o borrado en el programa de log después de enviado sigue en LogBeam y en ClubLog tal como se envió. La propagación de ediciones y borrados está prevista para la versión 2.7.
-- En Linux solo hay paquete `.deb` y Uplink no avisa cuando hay una versión nueva.
+- En Linux solo hay paquete `.deb`.
 
 ## Privacidad
 

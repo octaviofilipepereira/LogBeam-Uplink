@@ -21,6 +21,7 @@ using LogBeam.Core.Models;
 using LogBeam.Core.N1MM;
 using LogBeam.Core.Net;
 using LogBeam.Core.Platform;
+using LogBeam.Core.Updates;
 using LogBeam.Service.Models;
 using LogBeam.Service.Settings;
 using LogBeam.UI;
@@ -58,6 +59,13 @@ public sealed class MainWindow : Window
     // Tray
     private TrayIcon _tray = null!;
     private NativeMenuItem _tmiOpen = null!, _tmiSendTo = null!, _tmiStart = null!, _tmiStop = null!, _tmiExit = null!;
+    private NativeMenu _trayMenu = null!;
+
+    // Versão nova: item no topo do menu do ícone, acrescentado quando há uma
+    private readonly UpdateChecker _updateChecker = new(AppVersion.Current);
+    private UpdateWatcher? _updateWatcher;
+    private NativeMenuItem? _tmiUpdate;
+    private string? _updateVersion, _updateUrl;
 
     // Separadores
     private TabControl _tabs = null!;
@@ -170,6 +178,8 @@ public sealed class MainWindow : Window
         // Fim de sessão ou desligar: sair como no botão Sair (sem isto, só o serviço parava e a janela ficava).
         _sigterm = PosixSignalRegistration.Create(PosixSignal.SIGTERM, c => { c.Cancel = true; OnUi(ExitApp); });
 
+        StartUpdateWatcher();
+
         if (!startHidden) return;
         if (_settings.Telemetry.Consent is null) Show();
         else StartService();
@@ -212,7 +222,7 @@ public sealed class MainWindow : Window
         _tmiStop.Click  += async (_, _) => { await Task.Run(_runner.Stop); UpdateTray(); };
         _tmiExit.Click  += (_, _) => ExitApp();
 
-        var menu = new NativeMenu();
+        var menu = _trayMenu = new NativeMenu();
         menu.Add(_tmiOpen);
         menu.Add(new NativeMenuItemSeparator());
         menu.Add(_tmiSendTo);
@@ -242,6 +252,7 @@ public sealed class MainWindow : Window
         _tmiStart.Header    = L.Get("tray_start");
         _tmiStop.Header     = L.Get("tray_stop");
         _tmiExit.Header     = L.Get("tray_exit");
+        if (_tmiUpdate is not null) _tmiUpdate.Header = string.Format(L.Get("tray_update"), _updateVersion);
     }
 
     /// <summary>Submenu "Enviar para": um item por logbook, marcado se estiver activo.</summary>
@@ -327,6 +338,73 @@ public sealed class MainWindow : Window
         _importantNoticeUntil = DateTime.UtcNow.AddSeconds(10);
     }
 
+    // ─── Versão nova ────────────────────────────────────────────────────
+    /// <summary>
+    /// Verificação automática enquanto o Uplink estiver aberto: um minuto depois de arrancar, de novo
+    /// 15 minutos depois se falhar (no arranque da sessão a rede pode ainda não estar pronta) e
+    /// depois uma vez por dia. Com a janela escondida, o aviso vai para as notificações do sistema.
+    /// </summary>
+    private void StartUpdateWatcher()
+    {
+        _updateWatcher = new UpdateWatcher(_updateChecker.CheckAsync);
+        _updateWatcher.UpdateAvailable += r => OnUi(() => _ = OnUpdateAvailable(r, manual: false));
+        _updateWatcher.Start();
+    }
+
+    /// <summary>Menu Ajuda → Verificar actualizações: mostra sempre um resultado.</summary>
+    private async void OnCheckUpdateNow()
+    {
+        var result = await _updateChecker.CheckAsync(CancellationToken.None);
+        if (result.HasUpdate)
+        {
+            await OnUpdateAvailable(result, manual: true);
+            return;
+        }
+        var title = L.Get("update_available_title");
+        await Dialogs.Show(this, title, title,
+            L.Get(result.Error != null ? "update_check_failed" : "update_up_to_date"), 460, 200);
+    }
+
+    /// <summary>
+    /// Há versão nova: fica o item no menu do ícone e, no máximo uma vez por dia (pedido pelo menu: sempre),
+    /// a pergunta na janela, se estiver à vista, ou uma notificação do sistema que aponta para o menu do ícone.
+    /// </summary>
+    private async Task OnUpdateAvailable(UpdateCheckResult r, bool manual)
+    {
+        if (_exiting || r.LatestVersion is null) return;
+        var url = r.DownloadUrl ?? UpdateChecker.DefaultDownloadPage;
+
+        _updateVersion = r.LatestVersion;
+        _updateUrl     = url;
+        if (_tmiUpdate is null)
+        {
+            _tmiUpdate = new NativeMenuItem();
+            _tmiUpdate.Click += (_, _) => { if (_updateUrl is not null) Notifier.OpenUrl(_updateUrl); };
+            _trayMenu.Items.Insert(0, _tmiUpdate);
+            _trayMenu.Items.Insert(1, new NativeMenuItemSeparator());
+        }
+        UpdateTray();
+
+        var now = DateTime.UtcNow;
+        if (!manual && !UpdateNotice.ShouldNotify(r.LatestVersion, _prefs.LastUpdateNoticeVersion, _prefs.LastUpdateNoticeUtc, now))
+            return;
+        _prefs.LastUpdateNoticeVersion = r.LatestVersion;
+        _prefs.LastUpdateNoticeUtc     = now;
+        try { _prefsMgr.SavePrefs(_prefs); }
+        catch (Exception) { /* sem gravar, o aviso pode repetir-se no próximo arranque */ }
+
+        if (manual || (IsVisible && WindowState != WindowState.Minimized))
+        {
+            var body = string.Format(L.Get("update_available_body"), r.LatestVersion, AppVersion.Current);
+            if (await Dialogs.YesNo(this, L.Get("update_available_title"), body)) Notifier.OpenUrl(url);
+            return;
+        }
+
+        Notifier.Show(L.Get("update_balloon_title"),
+            string.Format(L.Get("update_notify_text"), r.LatestVersion, AppVersion.Current), 15000);
+        _importantNoticeUntil = DateTime.UtcNow.AddSeconds(15);
+    }
+
     internal void ShowWindow()
     {
         _startHidden = false;
@@ -348,6 +426,7 @@ public sealed class MainWindow : Window
         if (_exiting) return;
         _exiting = true;
 
+        _updateWatcher?.Dispose();
         SetStatus("", L.Get("busy_stopping"));
         await Task.Run(_runner.Stop);
 
@@ -418,7 +497,8 @@ public sealed class MainWindow : Window
             ItemsSource = new[]
             {
                 Head("menu_file", Item("menu_export_adif", OnExportAdif)),
-                Head("menu_help", Item("menu_about", OnAbout), Item("menu_n1mm_help", OnN1mmHelp))
+                Head("menu_help", Item("menu_about", OnAbout), Item("menu_n1mm_help", OnN1mmHelp),
+                                  Item("menu_check_update", OnCheckUpdateNow))
             }
         };
     }

@@ -147,7 +147,15 @@ Erros que reenviar não resolve, como uma API key revogada ou um logbook apagado
 
 ## 7. Actualizações
 
-No Windows, o Uplink verifica no arranque se há uma versão nova e avisa. Também se pode verificar em **Ajuda → Verificar actualizações...** No Linux não há esta verificação: instala-se o pacote novo por cima do anterior. As versões novas estão em https://logbeam.org/uplink/.
+O Uplink verifica se há uma versão nova um minuto depois de arrancar e, a partir daí, uma vez por dia enquanto estiver aberto. Se a verificação falhar (por exemplo, sem rede logo a seguir ao arranque do computador), tenta de novo 15 minutos depois. Quando há uma versão nova:
+
+- com a janela à vista, pergunta se quer abrir a página de download;
+- com a janela escondida, avisa na área de notificação. No Windows, clicar no aviso abre a página; no Linux, o aviso é uma notificação do sistema;
+- o menu do ícone passa a ter **Descarregar a versão X**, que abre a página.
+
+O aviso aparece no máximo uma vez por dia. Também se pode verificar a qualquer momento em **Ajuda → Verificar actualizações...** No Windows, a versão nova instala-se com o instalador, por cima da anterior; no Linux, instala-se o pacote novo por cima do anterior. As definições mantêm-se. As versões novas estão em https://logbeam.org/uplink/.
+
+Até à versão 2.6.0, o aviso podia não aparecer: no Windows, use **Ajuda → Verificar actualizações...**; no Linux, consulte a página de download.
 
 ## 8. Resolução de problemas
 
@@ -183,7 +191,7 @@ A versão para Linux tem os mesmos separadores, as mesmas quatro línguas e o me
 - **Área de notificação:** o ícone do Uplink aparece na área de notificação do ambiente de trabalho (ensaiado no Cinnamon). Os avisos são notificações do sistema.
 - **Iniciar com o sistema:** cria `~/.config/autostart/logbeam-uplink.desktop`, e o Uplink arranca com a sessão, só com o ícone.
 - **API keys e passwords:** cifradas com AES-256-GCM, com uma chave aleatória guardada em `credentials.key`, só legível pelo utilizador.
-- **Actualizações:** o Uplink não avisa; instala-se o pacote novo por cima do anterior.
+- **Actualizações:** o Uplink avisa como no Windows ([7. Actualizações](#7-actualizações)), com uma notificação do sistema; instala-se o pacote novo por cima do anterior.
 
 **Ficheiros**, em `~/.config/logbeam-uplink`:
 

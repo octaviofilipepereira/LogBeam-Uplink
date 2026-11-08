@@ -147,7 +147,15 @@ Errors that retrying will not fix, such as a revoked API key or a deleted logboo
 
 ## 7. Updates
 
-On Windows, Uplink checks at start-up whether a new version is available and tells you. You can also check in **Help → Check for Updates...** On Linux there is no such check: install the new package over the old one. New versions are at https://logbeam.org/uplink/.
+Uplink checks whether a new version is available a minute after start-up and then once a day while it is open. If the check fails (for example, no network right after the computer starts), it tries again 15 minutes later. When there is a new version:
+
+- with the window on screen, it asks whether to open the download page;
+- with the window hidden, it tells you in the notification area. On Windows, clicking the notice opens the page; on Linux, the notice is a system notification;
+- the icon menu gets **Download version X**, which opens the page.
+
+The notice appears at most once a day. You can also check at any time in **Help → Check for Updates...** On Windows, install the new version with the installer, over the old one; on Linux, install the new package over the old one. Your settings are kept. New versions are at https://logbeam.org/uplink/.
+
+Up to version 2.6.0, the notice might not appear: on Windows, use **Help → Check for Updates...**; on Linux, check the download page.
 
 ## 8. Troubleshooting
 
@@ -183,7 +191,7 @@ The Linux version has the same tabs, the same four languages and the same core a
 - **Notification area:** the Uplink icon appears in the desktop's notification area (tested on Cinnamon). Notifications are system notifications.
 - **Start with the system:** creates `~/.config/autostart/logbeam-uplink.desktop`, and Uplink starts with the session, with only its icon.
 - **API keys and passwords:** encrypted with AES-256-GCM, with a random key kept in `credentials.key`, readable only by the user.
-- **Updates:** Uplink does not tell you; install the new package over the old one.
+- **Updates:** Uplink tells you as on Windows ([7. Updates](#7-updates)), with a system notification; install the new package over the old one.
 
 **Files**, in `~/.config/logbeam-uplink`:
 

@@ -147,7 +147,15 @@ Los errores que no se resuelven reenviando, como una API key revocada o un logbo
 
 ## 7. Actualizaciones
 
-En Windows, Uplink comprueba al arrancar si hay una versión nueva y avisa. También puede comprobarlo en **Ayuda → Buscar actualizaciones...** En Linux no hay esta comprobación: se instala el paquete nuevo encima del anterior. Las versiones nuevas están en https://logbeam.org/uplink/.
+Uplink comprueba si hay una versión nueva un minuto después de arrancar y, a partir de ahí, una vez al día mientras esté abierto. Si la comprobación falla (por ejemplo, sin red justo después de arrancar el ordenador), lo intenta de nuevo 15 minutos después. Cuando hay una versión nueva:
+
+- con la ventana a la vista, pregunta si quiere abrir la página de descarga;
+- con la ventana oculta, avisa en el área de notificación. En Windows, al hacer clic en el aviso se abre la página; en Linux, el aviso es una notificación del sistema;
+- el menú del icono pasa a tener **Descargar la versión X**, que abre la página.
+
+El aviso aparece como máximo una vez al día. También puede comprobarlo en cualquier momento en **Ayuda → Buscar actualizaciones...** En Windows, la versión nueva se instala con el instalador, encima de la anterior; en Linux, se instala el paquete nuevo encima del anterior. La configuración se mantiene. Las versiones nuevas están en https://logbeam.org/uplink/.
+
+Hasta la versión 2.6.0, el aviso podía no aparecer: en Windows, use **Ayuda → Buscar actualizaciones...**; en Linux, consulte la página de descarga.
 
 ## 8. Solución de problemas
 
@@ -183,7 +191,7 @@ La versión para Linux tiene las mismas pestañas, los mismos cuatro idiomas y e
 - **Área de notificación:** el icono de Uplink aparece en el área de notificación del escritorio (probado en Cinnamon). Los avisos son notificaciones del sistema.
 - **Iniciar con el sistema:** crea `~/.config/autostart/logbeam-uplink.desktop`, y Uplink arranca con la sesión, solo con su icono.
 - **API keys y contraseñas:** cifradas con AES-256-GCM, con una clave aleatoria guardada en `credentials.key`, legible solo por el usuario.
-- **Actualizaciones:** Uplink no avisa; se instala el paquete nuevo encima del anterior.
+- **Actualizaciones:** Uplink avisa como en Windows ([7. Actualizaciones](#7-actualizaciones)), con una notificación del sistema; se instala el paquete nuevo encima del anterior.
 
 **Archivos**, en `~/.config/logbeam-uplink`:
 

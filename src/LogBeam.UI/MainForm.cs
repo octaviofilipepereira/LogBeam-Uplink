@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Windows.Forms;
 using LogBeam.Core.Api;
 using LogBeam.Core.Models;
+using LogBeam.Core.Updates;
 using LogBeam.Service.Models;
 using LogBeam.Service.Settings;
 using LogBeam.UI.Localization;
@@ -28,6 +29,9 @@ public class MainForm : Form
     private ContextMenuStrip _trayMenu = null!;
     private ToolStripMenuItem _tmiStart = null!, _tmiStop = null!;
     private ToolStripMenuItem _tmiOpen = null!, _tmiSendTo = null!, _tmiExit = null!;
+    // Versão nova: item no topo do menu do ícone, escondido até haver uma
+    private ToolStripMenuItem _tmiUpdate = null!;
+    private ToolStripSeparator _tmiUpdateSep = null!;
     private int _qsoCount;
     private Icon? _iconBrand;
     // Menu
@@ -128,7 +132,7 @@ public class MainForm : Form
         _runner.Language = L.Lang;
         _runner.Start();
 
-        _ = CheckForUpdateAsync(silent: true);
+        StartUpdateWatcher();
     }
 
     private void InitializeComponent()
@@ -169,6 +173,12 @@ public class MainForm : Form
 
         _trayMenu = new ContextMenuStrip { Font = new Font("Segoe UI", 9f) };
 
+        _tmiUpdate = new ToolStripMenuItem { Visible = false, Font = new Font("Segoe UI", 9f, FontStyle.Bold) };
+        _tmiUpdate.Click += (_, _) => { if (_tmiUpdate.Tag is string url) OpenUrl(url); };
+        _tmiUpdateSep = new ToolStripSeparator { Visible = false };
+        _trayMenu.Items.Add(_tmiUpdate);
+        _trayMenu.Items.Add(_tmiUpdateSep);
+
         _tmiOpen = new ToolStripMenuItem();
         _tmiOpen.Click += (_, _) => ShowWindow();
 
@@ -200,6 +210,11 @@ public class MainForm : Form
             Visible          = true
         };
         _tray.DoubleClick += (_, _) => ShowWindow();
+        // Só o aviso de versão nova abre uma página; os outros avisos não fazem nada ao clicar.
+        _tray.BalloonTipClicked += (_, _) =>
+        {
+            if (_updateBalloonUrl is { } url && _tray.BalloonTipTitle == L.Get("update_balloon_title")) OpenUrl(url);
+        };
 
         UpdateTray();
         RefreshTrayProfiles();
@@ -219,6 +234,7 @@ public class MainForm : Form
         _tmiStart.Text       = L.Get("tray_start");
         _tmiStop.Text        = L.Get("tray_stop");
         _tmiExit.Text        = L.Get("tray_exit");
+        if (_updateVersion is not null) _tmiUpdate.Text = string.Format(L.Get("tray_update"), _updateVersion);
     }
 
     /// <summary>Submenu "Enviar para": um item por logbook, marcado se estiver activo.</summary>
@@ -430,6 +446,7 @@ public class MainForm : Form
         if (_exiting) return;
         _exiting = true;
 
+        _updateWatcher?.Dispose();
         ShowBusy(L.Get("busy_stopping"));
         _tray.Text = L.Get("busy_stopping");
         await Task.Run(_runner.Stop);
@@ -457,7 +474,10 @@ public class MainForm : Form
     // ─── Menu ──────────────────────────────────────────────────────────────
     private ToolStripMenuItem _miFile = null!, _miExportAdif = null!;
     private ToolStripMenuItem _miHelp = null!, _miAbout = null!, _miN1mmHelp = null!, _miCheckUpdate = null!;
-    private readonly UpdateCheckService _updateCheck = new();
+    private readonly UpdateChecker _updateChecker = new(AppVersion.Current);
+    private UpdateWatcher? _updateWatcher;
+    private string? _updateVersion;      // versão nova encontrada (item do menu do ícone)
+    private string? _updateBalloonUrl;   // página que o clique no aviso abre
 
     private void BuildMenu()
     {
@@ -475,7 +495,7 @@ public class MainForm : Form
         _miCheckUpdate = new ToolStripMenuItem { ForeColor = Color.White, BackColor = Color.FromArgb(50, 50, 50) };
         _miAbout.Click       += OnAbout;
         _miN1mmHelp.Click    += OnN1mmHelp;
-        _miCheckUpdate.Click += (_, _) => _ = CheckForUpdateAsync(silent: false);
+        _miCheckUpdate.Click += async (_, _) => await CheckForUpdateNowAsync();
         _miHelp.DropDownItems.Add(_miAbout);
         _miHelp.DropDownItems.Add(_miN1mmHelp);
         _miHelp.DropDownItems.Add(_miCheckUpdate);
@@ -484,36 +504,87 @@ public class MainForm : Form
         Controls.Add(_menuStrip);
     }
 
+    // ─── Versão nova ───────────────────────────────────────────────────────
     /// <summary>
-    /// Verifica se há uma versão mais recente. silent=true (arranque): não mostra nada
-    /// se já estiver actualizado ou se a verificação falhar. silent=false (menu manual):
-    /// mostra sempre um resultado.
+    /// Verificação automática enquanto o Uplink estiver aberto: um minuto depois de arrancar, de novo
+    /// 15 minutos depois se falhar (no arranque com o Windows a rede pode ainda não estar pronta) e
+    /// depois uma vez por dia. Com a janela escondida, o aviso vai para a área de notificação.
     /// </summary>
-    private async Task CheckForUpdateAsync(bool silent)
+    private void StartUpdateWatcher()
     {
-        var result = await _updateCheck.CheckAsync(CancellationToken.None);
-        if (IsDisposed || !IsHandleCreated) return;
-
-        Invoke(() =>
+        _updateWatcher = new UpdateWatcher(_updateChecker.CheckAsync);
+        _updateWatcher.Checked += r =>
         {
-            if (result.HasUpdate)
-            {
-                var msg = string.Format(L.Get("update_available_body"), result.LatestVersion, AppVersion.Current);
-                var openDownload = MessageBox.Show(this, msg, L.Get("update_available_title"),
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
-                if (openDownload && !string.IsNullOrEmpty(result.DownloadUrl))
-                {
-                    try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(result.DownloadUrl) { UseShellExecute = true }); }
-                    catch { /* utilizador pode copiar o link manualmente do About */ }
-                }
-            }
-            else if (!silent)
-            {
-                MessageBox.Show(this,
-                    result.Error != null ? L.Get("update_check_failed") : L.Get("update_up_to_date"),
-                    L.Get("update_available_title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        });
+            if (r.Error is not null) Serilog.Log.Debug("Verificação de versão nova falhou: {Error}", r.Error);
+        };
+        _updateWatcher.UpdateAvailable += r =>
+        {
+            if (IsDisposed || !IsHandleCreated) return;
+            BeginInvoke(() => OnUpdateAvailable(r, manual: false));
+        };
+        _updateWatcher.Start();
+    }
+
+    /// <summary>Menu Ajuda → Verificar actualizações: mostra sempre um resultado.</summary>
+    private async Task CheckForUpdateNowAsync()
+    {
+        var result = await _updateChecker.CheckAsync(CancellationToken.None);
+        if (IsDisposed) return;
+
+        if (result.HasUpdate)
+        {
+            OnUpdateAvailable(result, manual: true);
+            return;
+        }
+        MessageBox.Show(this,
+            result.Error != null ? L.Get("update_check_failed") : L.Get("update_up_to_date"),
+            L.Get("update_available_title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    /// <summary>
+    /// Há versão nova: fica o item no menu do ícone e, no máximo uma vez por dia (pedido pelo menu: sempre),
+    /// a pergunta na janela, se estiver à vista, ou o aviso na área de notificação, que abre a página ao clicar.
+    /// </summary>
+    private void OnUpdateAvailable(UpdateCheckResult r, bool manual)
+    {
+        if (_exiting || r.LatestVersion is null) return;
+        var url = r.DownloadUrl ?? UpdateChecker.DefaultDownloadPage;
+
+        _updateVersion        = r.LatestVersion;
+        _tmiUpdate.Tag        = url;
+        _tmiUpdate.Visible    = true;
+        _tmiUpdateSep.Visible = true;
+        UpdateTray();
+
+        var now = DateTime.UtcNow;
+        if (!manual && !UpdateNotice.ShouldNotify(r.LatestVersion, _prefs.LastUpdateNoticeVersion, _prefs.LastUpdateNoticeUtc, now))
+            return;
+        _prefs.LastUpdateNoticeVersion = r.LatestVersion;
+        _prefs.LastUpdateNoticeUtc     = now;
+        try { _prefsMgr.SavePrefs(_prefs); }
+        catch (Exception ex) { Serilog.Log.Warning(ex, "Não foi possível guardar a hora do aviso de versão nova"); }
+
+        if (manual || (Visible && WindowState != FormWindowState.Minimized))
+        {
+            var msg = string.Format(L.Get("update_available_body"), r.LatestVersion, AppVersion.Current);
+            if (MessageBox.Show(this, msg, L.Get("update_available_title"),
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                OpenUrl(url);
+            return;
+        }
+
+        _updateBalloonUrl     = url;
+        _tray.BalloonTipIcon  = ToolTipIcon.Info;
+        _tray.BalloonTipTitle = L.Get("update_balloon_title");
+        _tray.BalloonTipText  = string.Format(L.Get("update_balloon_text"), r.LatestVersion, AppVersion.Current);
+        _tray.ShowBalloonTip(15000);
+        _importantBalloonUntil = DateTime.UtcNow.AddSeconds(15);
+    }
+
+    private static void OpenUrl(string url)
+    {
+        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }); }
+        catch (Exception ex) { Serilog.Log.Warning(ex, "Não foi possível abrir {Url}", url); }
     }
 
     private void OnExportAdif(object? s, EventArgs e)

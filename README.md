@@ -31,7 +31,7 @@ Uplink was born on Windows, written in C# with .NET. The Linux version uses the 
 | Logging programs | N1MM+, WSJT-X, JTDX, Log4OM | The same (N1MM+ and Log4OM through Wine) and Not1MM |
 | API keys and passwords | Encrypted with Windows DPAPI | Encrypted with AES-256-GCM, with a key readable only by the user |
 | Automatic start | With Windows | With the user session |
-| New version notice | Yes | No: install the new package |
+| New version notice | Yes | Yes: install the new package over the old one |
 
 ## Features
 
@@ -71,7 +71,7 @@ Uplink was born on Windows, written in C# with .NET. The Linux version uses the 
 | ✓ Confirmed by another LogBeam | Notification when the other station also has the QSO in a LogBeam logbook | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
 | Start with the system | Uplink starts with Windows, or with the session on Linux, without opening the window | [Advanced](docs/MANUAL.en.md#advanced) |
 | Single instance | Starting Uplink again brings the window that is already open to the front | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
-| Updates | On Windows, Uplink checks at start-up whether a new version is available and tells you | [Updates](docs/MANUAL.en.md#7-updates) |
+| Updates | Uplink checks a minute after start-up and then once a day whether a new version is available. With the window hidden, it tells you in the notification area, and the icon menu gets **Download version…** | [Updates](docs/MANUAL.en.md#7-updates) |
 | Four languages | Interface in Portuguese, English, Spanish and French, chosen with the buttons at the top of the window | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
 
 ### Security and privacy
@@ -149,7 +149,7 @@ The manual covers each tab, the notifications, the offline queue and troubleshoo
 ## Limitations of version 2.6
 
 - A QSO edited or deleted in the logging program after it was sent stays in LogBeam and ClubLog as it was sent. Propagating edits and deletions is planned for version 2.7.
-- On Linux there is only a `.deb` package, and Uplink does not tell you when a new version is available.
+- On Linux there is only a `.deb` package.
 
 ## Privacy
 

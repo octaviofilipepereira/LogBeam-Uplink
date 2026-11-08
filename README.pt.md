@@ -31,7 +31,7 @@ O Uplink nasceu para Windows, escrito em C# com o .NET. A versão para Linux usa
 | Programas de log | N1MM+, WSJT-X, JTDX, Log4OM | Os mesmos (o N1MM+ e o Log4OM pelo Wine) e o Not1MM |
 | API keys e passwords | Cifradas com o DPAPI do Windows | Cifradas com AES-256-GCM, com uma chave só legível pelo utilizador |
 | Arranque automático | Com o Windows | Com a sessão do utilizador |
-| Aviso de versão nova | Sim | Não: instala-se o pacote novo |
+| Aviso de versão nova | Sim | Sim: instala-se o pacote novo por cima |
 
 ## Funcionalidades
 
@@ -71,7 +71,7 @@ O Uplink nasceu para Windows, escrito em C# com o .NET. A versão para Linux usa
 | ✓ Confirmado por outro LogBeam | Aviso quando o correspondente também tem o QSO num logbook LogBeam | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
 | Iniciar com o sistema | O Uplink arranca com o Windows, ou com a sessão no Linux, sem abrir a janela | [Avançado](docs/MANUAL.pt.md#avançado) |
 | Uma só instância | Abrir o Uplink outra vez traz para a frente a janela que já está aberta | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
-| Actualizações | No Windows, o Uplink verifica no arranque se há uma versão nova e avisa | [Actualizações](docs/MANUAL.pt.md#7-actualizações) |
+| Actualizações | O Uplink verifica um minuto depois de arrancar e depois uma vez por dia se há uma versão nova. Com a janela escondida, avisa na área de notificação, e o menu do ícone passa a ter **Descarregar a versão…** | [Actualizações](docs/MANUAL.pt.md#7-actualizações) |
 | Quatro línguas | Interface em português, inglês, espanhol e francês, escolhida nos botões do topo da janela | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
 
 ### Segurança e privacidade
@@ -149,7 +149,7 @@ O manual explica cada separador, os avisos, a fila sem internet e a resolução 
 ## Limitações da versão 2.6
 
 - Um QSO editado ou apagado no programa de log depois de enviado continua no LogBeam e no ClubLog tal como foi enviado. A propagação de edições e eliminações está prevista para a versão 2.7.
-- No Linux, só há pacote `.deb` e o Uplink não avisa quando há uma versão nova.
+- No Linux, só há pacote `.deb`.
 
 ## Privacidade
 

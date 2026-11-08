@@ -31,7 +31,7 @@ Uplink est né sous Windows, écrit en C# avec .NET. La version Linux utilise le
 | Logiciels de log | N1MM+, WSJT-X, JTDX, Log4OM | Les mêmes (N1MM+ et Log4OM via Wine) et Not1MM |
 | API Keys et mots de passe | Chiffrés avec le DPAPI de Windows | Chiffrés avec AES-256-GCM, avec une clé lisible uniquement par l'utilisateur |
 | Démarrage automatique | Avec Windows | Avec la session de l'utilisateur |
-| Avis de nouvelle version | Oui | Non : on installe le nouveau paquet |
+| Avis de nouvelle version | Oui | Oui : on installe le nouveau paquet par-dessus |
 
 ## Fonctionnalités
 
@@ -71,7 +71,7 @@ Uplink est né sous Windows, écrit en C# avec .NET. La version Linux utilise le
 | ✓ Confirmé par un autre LogBeam | Notification quand le correspondant a aussi le QSO dans un logbook LogBeam | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |
 | Démarrer avec le système | Uplink démarre avec Windows, ou avec la session sous Linux, sans ouvrir la fenêtre | [Avancé](docs/MANUAL.fr.md#avancé) |
 | Une seule instance | Relancer Uplink ramène au premier plan la fenêtre déjà ouverte | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |
-| Mises à jour | Sous Windows, Uplink vérifie au démarrage si une nouvelle version est disponible et vous prévient | [Mises à jour](docs/MANUAL.fr.md#7-mises-à-jour) |
+| Mises à jour | Uplink vérifie une minute après le démarrage, puis une fois par jour, si une nouvelle version est disponible. Fenêtre masquée, il prévient dans la zone de notification, et le menu de l'icône propose **Télécharger la version…** | [Mises à jour](docs/MANUAL.fr.md#7-mises-à-jour) |
 | Quatre langues | Interface en portugais, anglais, espagnol et français, choisie avec les boutons en haut de la fenêtre | [La fenêtre et la zone de notification](docs/MANUAL.fr.md#3-la-fenêtre-et-la-zone-de-notification) |
 
 ### Sécurité et confidentialité
@@ -149,7 +149,7 @@ Le manuel décrit chaque onglet, les notifications, la file d'attente hors ligne
 ## Limites de la version 2.6
 
 - Un QSO modifié ou supprimé dans le logiciel de log après son envoi reste dans LogBeam et ClubLog tel qu'il a été envoyé. La propagation des modifications et suppressions est prévue pour la version 2.7.
-- Sous Linux, il n'y a qu'un paquet `.deb` et Uplink ne prévient pas lorsqu'une nouvelle version est disponible.
+- Sous Linux, il n'y a qu'un paquet `.deb`.
 
 ## Confidentialité
 
