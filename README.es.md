@@ -11,7 +11,7 @@
   <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img alt="Licencia GPL v3" src="https://img.shields.io/badge/licencia-GPL%20v3-blue"></a>
 </p>
 
-<p align="center"><a href="README.md">Português</a> · <a href="README.en.md">English</a> · <b>Español</b> · <a href="README.fr.md">Français</a></p>
+<p align="center"><a href="README.pt.md">Português</a> · <a href="README.md">English</a> · <b>Español</b> · <a href="README.fr.md">Français</a></p>
 
 ---
 

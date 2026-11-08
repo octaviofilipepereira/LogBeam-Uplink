@@ -36,7 +36,7 @@ O projecto é distribuído com a [GNU General Public License v3.0](https://www.g
 
 ### Compilar e testar
 
-Ver a secção "Compilar" do [README.md](README.md#compilar).
+Ver a secção "Compilar" do [README.pt.md](README.pt.md#compilar).
 
 ---
 
@@ -72,7 +72,7 @@ The project is distributed under the [GNU General Public License v3.0](https://w
 
 ### Building and testing
 
-See the "Building" section of [README.en.md](README.en.md#building).
+See the "Building" section of [README.md](README.md#building).
 
 ---
 

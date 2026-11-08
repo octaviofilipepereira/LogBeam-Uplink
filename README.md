@@ -2,181 +2,181 @@
 
 <h1 align="center">LogBeam Uplink</h1>
 
-<p align="center"><b>Cada QSO do N1MM+, do Not1MM, do WSJT-X, do JTDX e do Log4OM no logbook LogBeam, no momento em que é registado.</b></p>
+<p align="center"><b>Every QSO from N1MM+, Not1MM, WSJT-X, JTDX and Log4OM in your LogBeam logbook, as soon as it is logged.</b></p>
 
 <p align="center">
-  <a href="https://logbeam.org/uplink/"><img alt="Descarregar" src="https://img.shields.io/badge/descarregar-logbeam.org%2Fuplink-2f81f7"></a>
-  <img alt="Windows 10 e 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4">
+  <a href="https://logbeam.org/uplink/"><img alt="Download" src="https://img.shields.io/badge/download-logbeam.org%2Fuplink-2f81f7"></a>
+  <img alt="Windows 10 and 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4">
   <img alt="Linux (.deb)" src="https://img.shields.io/badge/Linux-.deb-e95420">
-  <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img alt="Licença GPL v3" src="https://img.shields.io/badge/licen%C3%A7a-GPL%20v3-blue"></a>
+  <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img alt="GPL v3 licence" src="https://img.shields.io/badge/licence-GPL%20v3-blue"></a>
 </p>
 
-<p align="center"><b>Português</b> · <a href="README.en.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a></p>
+<p align="center"><a href="README.pt.md">Português</a> · <b>English</b> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a></p>
 
 ---
 
-O LogBeam Uplink é uma aplicação para Windows e Linux que recebe cada QSO no momento em que é registado no programa de log e o envia para o logbook do operador no [LogBeam](https://logbeam.org) e, se o activar, para o ClubLog. O globo 3D do LogBeam actualiza-se sozinho, sem exportar nem importar ficheiros ADIF.
+LogBeam Uplink is a Windows and Linux application that receives each QSO as soon as it is logged in your logging program and sends it to your logbook on [LogBeam](https://logbeam.org) and, if you turn it on, to ClubLog. The LogBeam 3D globe updates by itself, with no ADIF export or import.
 
-<p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-pt.png" width="720" alt="Globo 3D do LogBeam com os QSOs"></a></p>
+<p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-en.png" width="720" alt="LogBeam 3D globe with QSOs"></a></p>
 
-**Índice:** [Windows e Linux](#windows-e-linux) · [Funcionalidades](#funcionalidades) · [Capturas de ecrã](#capturas-de-ecrã) · [Descarregar e instalar](#descarregar-e-instalar) · [Começar](#começar) · [Manual](#manual) · [Limitações](#limitações-da-versão-26) · [Privacidade](#privacidade) · [Compilar](#compilar) · [Contribuir](#contribuir-e-segurança) · [Licença](#licença)
+**Contents:** [Windows and Linux](#windows-and-linux) · [Features](#features) · [Screenshots](#screenshots) · [Download and install](#download-and-install) · [Getting started](#getting-started) · [Manual](#manual) · [Limitations](#limitations-of-version-26) · [Privacy](#privacy) · [Building](#building) · [Contributing](#contributing-and-security) · [Licence](#licence)
 
-## Windows e Linux
+## Windows and Linux
 
-O Uplink nasceu para Windows, escrito em C# com o .NET. A versão para Linux usa o mesmo núcleo: a recepção dos QSOs, a fila sem internet e o envio para o LogBeam e para o ClubLog são o mesmo código nos dois sistemas. Só a janela é própria, feita com o [Avalonia](https://avaloniaui.net), com os mesmos separadores e as mesmas quatro línguas. Assim o Uplink comporta-se da mesma forma no Windows e no Linux, e cada correcção chega aos dois ao mesmo tempo.
+Uplink was born on Windows, written in C# with .NET. The Linux version uses the same core: receiving QSOs, the offline queue and sending to LogBeam and ClubLog are the same code on both systems. Only the window is its own, built with [Avalonia](https://avaloniaui.net), with the same tabs and the same four languages. This way Uplink behaves the same on Windows and Linux, and every fix reaches both at the same time.
 
 | | Windows | Linux |
 |---|---|---|
-| Instalação | Instalador, sem privilégios de administrador | Pacote `.deb` (Debian, Ubuntu, Linux Mint e derivadas), 64 bits: PC ou ARM (Raspberry Pi) |
-| Programas de log | N1MM+, WSJT-X, JTDX, Log4OM | Os mesmos (o N1MM+ e o Log4OM pelo Wine) e o Not1MM |
-| API keys e passwords | Cifradas com o DPAPI do Windows | Cifradas com AES-256-GCM, com uma chave só legível pelo utilizador |
-| Arranque automático | Com o Windows | Com a sessão do utilizador |
-| Aviso de versão nova | Sim | Não: instala-se o pacote novo |
+| Installation | Installer, no administrator rights | `.deb` package (Debian, Ubuntu, Linux Mint and derivatives), 64-bit: PC or ARM (Raspberry Pi) |
+| Logging programs | N1MM+, WSJT-X, JTDX, Log4OM | The same (N1MM+ and Log4OM through Wine) and Not1MM |
+| API keys and passwords | Encrypted with Windows DPAPI | Encrypted with AES-256-GCM, with a key readable only by the user |
+| Automatic start | With Windows | With the user session |
+| New version notice | Yes | No: install the new package |
 
-## Funcionalidades
+## Features
 
-### Programas de log
+### Logging programs
 
-| Programa | Como liga ao Uplink | Manual |
+| Program | How it connects to Uplink | Manual |
 |---|---|---|
-| **N1MM+** | Configuração automática com um clique. É feita uma cópia de segurança da configuração do N1MM+ e os destinos que já lá estavam mantêm-se | [N1MM+](docs/MANUAL.pt.md#n1mm) |
-| **WSJT-X** e **JTDX** | Pelo UDP Server do próprio programa (porta 2237). Partilha a porta com o JTAlert e o GridTracker através de multicast | [WSJT-X / JTDX](docs/MANUAL.pt.md#wsjt-x--jtdx) |
-| **Log4OM** | Por uma ligação UDP OUTBOUND com a mensagem ADIF_MESSAGE (porta 2333) | [Log4OM](docs/MANUAL.pt.md#log4om) |
-| **Not1MM** (Linux) | Envia no formato do N1MM+, para a mesma porta (12060). Configuração automática com um clique, no separador Not1MM | [Not1MM](docs/MANUAL.pt.md#not1mm) |
+| **N1MM+** | One-click automatic configuration. A backup copy of the N1MM+ configuration is made, and any destinations already there are kept | [N1MM+](docs/MANUAL.en.md#n1mm) |
+| **WSJT-X** and **JTDX** | Through the program's own UDP Server (port 2237). Shares the port with JTAlert and GridTracker through multicast | [WSJT-X / JTDX](docs/MANUAL.en.md#wsjt-x--jtdx) |
+| **Log4OM** | Through a UDP OUTBOUND connection with the ADIF_MESSAGE message (port 2333) | [Log4OM](docs/MANUAL.en.md#log4om) |
+| **Not1MM** (Linux) | Sends in the N1MM+ format, to the same port (12060). One-click automatic configuration, in the Not1MM tab | [Not1MM](docs/MANUAL.en.md#not1mm) |
 
-### Destinos
+### Destinations
 
-| Funcionalidade | Descrição | Manual |
+| Feature | Description | Manual |
 |---|---|---|
-| Vários logbooks LogBeam | Cada QSO é enviado para todos os logbooks activos, por exemplo o de uma expedição e o pessoal. Cada logbook liga-se e desliga-se com um clique no menu do ícone | [API LogBeam](docs/MANUAL.pt.md#api-logbeam) |
-| Testar ligação | Confirma a API key e mostra de quem é o logbook | [API LogBeam](docs/MANUAL.pt.md#api-logbeam) |
-| ClubLog em tempo real | Envio com uma Application Password do ClubLog. Se o ClubLog recusar as credenciais, o Uplink avisa e pára o envio até serem corrigidas, para o IP não ser bloqueado; os QSOs ficam na fila | [ClubLog](docs/MANUAL.pt.md#clublog) |
+| Several LogBeam logbooks | Each QSO is sent to every active logbook, for example an expedition's logbook and your own. Each logbook is turned on or off with one click in the icon menu | [LogBeam API](docs/MANUAL.en.md#logbeam-api) |
+| Test Connection | Checks the API key and shows whose logbook it is | [LogBeam API](docs/MANUAL.en.md#logbeam-api) |
+| Real-time ClubLog | Upload with a ClubLog Application Password. If ClubLog rejects the credentials, Uplink warns you and stops uploading until they are fixed, so that the IP address is not blocked; QSOs stay in the queue | [ClubLog](docs/MANUAL.en.md#clublog) |
 
-### Fiabilidade
+### Reliability
 
-| Funcionalidade | Descrição | Manual |
+| Feature | Description | Manual |
 |---|---|---|
-| Fila sem internet | Os QSOs que não puderem ser enviados ficam numa fila, que sobrevive a reinícios do Uplink e do Windows. Nova tentativa a cada minuto, pela ordem de chegada | [Sem internet](docs/MANUAL.pt.md#5-sem-internet) |
-| Duplicados | O servidor detecta os QSOs repetidos ao minuto e o Uplink avisa que o QSO já existia | [Avisos](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
-| Porta ocupada | Aviso quando outro programa ocupa a porta de um programa de log | [Resolução de problemas](docs/MANUAL.pt.md#8-resolução-de-problemas) |
-| Exportar a sessão | Grava num ficheiro ADIF os QSOs enviados desde que o serviço arrancou | [Exportar a sessão](docs/MANUAL.pt.md#6-exportar-a-sessão) |
-| Logs diários | Um ficheiro de log por dia, guardado 30 dias, com nível de detalhe ajustável | [Avançado](docs/MANUAL.pt.md#avançado) |
+| Offline queue | QSOs that cannot be sent are queued, and the queue survives restarting Uplink and Windows. Retried every minute, in order of arrival | [Without internet](docs/MANUAL.en.md#5-without-internet) |
+| Duplicates | The server detects repeated QSOs to the minute and Uplink tells you the QSO was already there | [Notifications](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
+| Port in use | Notification when another program is using a logging program's port | [Troubleshooting](docs/MANUAL.en.md#8-troubleshooting) |
+| Export the session | Saves to an ADIF file the QSOs sent since the service started | [Exporting the session](docs/MANUAL.en.md#6-exporting-the-session) |
+| Daily logs | One log file per day, kept for 30 days, with an adjustable level of detail | [Advanced](docs/MANUAL.en.md#advanced) |
 
-### No dia-a-dia
+### Day to day
 
-| Funcionalidade | Descrição | Manual |
+| Feature | Description | Manual |
 |---|---|---|
-| Área de notificação | Fechar a janela não termina o programa. O menu do ícone liga e desliga o serviço e cada logbook | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
-| Avisos | Falhas de envio, QSOs enviados (opcional), duplicados, portas ocupadas e credenciais do ClubLog recusadas | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
-| ✓ Confirmado por outro LogBeam | Aviso quando o correspondente também tem o QSO num logbook LogBeam | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
-| Iniciar com o sistema | O Uplink arranca com o Windows, ou com a sessão no Linux, sem abrir a janela | [Avançado](docs/MANUAL.pt.md#avançado) |
-| Uma só instância | Abrir o Uplink outra vez traz para a frente a janela que já está aberta | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
-| Actualizações | No Windows, o Uplink verifica no arranque se há uma versão nova e avisa | [Actualizações](docs/MANUAL.pt.md#7-actualizações) |
-| Quatro línguas | Interface em português, inglês, espanhol e francês, escolhida nos botões do topo da janela | [A janela e a área de notificação](docs/MANUAL.pt.md#3-a-janela-e-a-área-de-notificação) |
+| Notification area | Closing the window does not end the program. The icon menu turns the service and each logbook on or off | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
+| Notifications | Send failures, QSOs sent (optional), duplicates, ports in use and rejected ClubLog credentials | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
+| ✓ Confirmed by another LogBeam | Notification when the other station also has the QSO in a LogBeam logbook | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
+| Start with the system | Uplink starts with Windows, or with the session on Linux, without opening the window | [Advanced](docs/MANUAL.en.md#advanced) |
+| Single instance | Starting Uplink again brings the window that is already open to the front | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
+| Updates | On Windows, Uplink checks at start-up whether a new version is available and tells you | [Updates](docs/MANUAL.en.md#7-updates) |
+| Four languages | Interface in Portuguese, English, Spanish and French, chosen with the buttons at the top of the window | [The window and the notification area](docs/MANUAL.en.md#3-the-window-and-the-notification-area) |
 
-### Segurança e privacidade
+### Security and privacy
 
-| Funcionalidade | Descrição | Manual |
+| Feature | Description | Manual |
 |---|---|---|
-| Chaves cifradas | As API keys e as passwords ficam cifradas, só legíveis pelo utilizador que as gravou (no Windows, com o DPAPI; no Linux, com AES-256-GCM e uma chave só dele). Na grelha aparecem mascaradas | [Resolução de problemas](docs/MANUAL.pt.md#8-resolução-de-problemas) |
-| Só este computador | Por omissão, o Uplink só aceita pacotes deste computador. Receber da rede local tem de ser pedido | [N1MM+](docs/MANUAL.pt.md#n1mm) |
-| Dados só com autorização | Os dados da instalação e os relatórios de erros só são enviados com autorização, e são apagados do servidor quando ela é retirada | [Primeiro arranque](docs/MANUAL.pt.md#2-primeiro-arranque) |
-| Instalação simples | Sem instalar o .NET. No Windows, sem privilégios de administrador | [Instalar](docs/MANUAL.pt.md#1-instalar) |
+| Encrypted keys | API keys and passwords are encrypted, readable only by the user who saved them (on Windows, with DPAPI; on Linux, with AES-256-GCM and a key of their own). They are masked in the grid | [Troubleshooting](docs/MANUAL.en.md#8-troubleshooting) |
+| This computer only | By default, Uplink only accepts packets from this computer. Receiving from the local network has to be requested | [N1MM+](docs/MANUAL.en.md#n1mm) |
+| Data only with permission | Installation data and error reports are only sent with permission, and are deleted from the server when it is withdrawn | [First start](docs/MANUAL.en.md#2-first-start) |
+| Simple installation | No .NET to install. On Windows, no administrator rights | [Installing](docs/MANUAL.en.md#1-installing) |
 
-## Capturas de ecrã
+## Screenshots
 
 <table>
   <tr>
-    <td align="center"><a href="docs/images/pt-api.png"><img src="docs/images/pt-api.png" width="380" alt="Separador API LogBeam"></a><br><sub>Logbooks de destino</sub></td>
-    <td align="center"><a href="docs/images/pt-n1mm.png"><img src="docs/images/pt-n1mm.png" width="380" alt="Separador N1MM+"></a><br><sub>N1MM+</sub></td>
+    <td align="center"><a href="docs/images/en-api.png"><img src="docs/images/en-api.png" width="380" alt="LogBeam API tab"></a><br><sub>Destination logbooks</sub></td>
+    <td align="center"><a href="docs/images/en-n1mm.png"><img src="docs/images/en-n1mm.png" width="380" alt="N1MM+ tab"></a><br><sub>N1MM+</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/images/pt-wsjtx.png"><img src="docs/images/pt-wsjtx.png" width="380" alt="Separador WSJT-X / JTDX"></a><br><sub>WSJT-X / JTDX</sub></td>
-    <td align="center"><a href="docs/images/pt-log4om.png"><img src="docs/images/pt-log4om.png" width="380" alt="Separador Log4OM"></a><br><sub>Log4OM</sub></td>
+    <td align="center"><a href="docs/images/en-wsjtx.png"><img src="docs/images/en-wsjtx.png" width="380" alt="WSJT-X / JTDX tab"></a><br><sub>WSJT-X / JTDX</sub></td>
+    <td align="center"><a href="docs/images/en-log4om.png"><img src="docs/images/en-log4om.png" width="380" alt="Log4OM tab"></a><br><sub>Log4OM</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/images/pt-avancado.png"><img src="docs/images/pt-avancado.png" width="380" alt="Separador Avançado"></a><br><sub>Avançado</sub></td>
-    <td align="center"><a href="docs/images/pt-consentimento.png"><img src="docs/images/pt-consentimento.png" width="300" alt="Pedido de autorização"></a><br><sub>Pedido de autorização no primeiro arranque</sub></td>
+    <td align="center"><a href="docs/images/en-avancado.png"><img src="docs/images/en-avancado.png" width="380" alt="Advanced tab"></a><br><sub>Advanced</sub></td>
+    <td align="center"><a href="docs/images/en-consentimento.png"><img src="docs/images/en-consentimento.png" width="300" alt="Permission request"></a><br><sub>Permission request at first start</sub></td>
   </tr>
 </table>
 
-## Descarregar e instalar
+## Download and install
 
-A versão oficial está em **https://logbeam.org/uplink/**, com a impressão digital SHA-256 de cada ficheiro.
+The official release is at **https://logbeam.org/uplink/**, with the SHA-256 fingerprint of each file.
 
 ### Windows
 
-- **Requisitos:** Windows 10 ou 11, 64 bits.
-- **Instalação:** sem privilégios de administrador e sem precisar do .NET.
-- **Confirmar o instalador:** no PowerShell, `Get-FileHash .\LogBeamUplink-Setup-X.Y.Z.exe`. O resultado tem de ser igual ao SHA-256 publicado na página.
+- **Requirements:** Windows 10 or 11, 64-bit.
+- **Installation:** no administrator rights, and .NET is not needed.
+- **Checking the installer:** in PowerShell, `Get-FileHash .\LogBeamUplink-Setup-X.Y.Z.exe`. The result must match the SHA-256 published on the page.
 
-> ⚠️ O programa é gratuito e de código aberto, e é distribuído **sem assinatura digital**:
-> - **SmartScreen:** o Windows pode mostrar «O Windows protegeu o seu PC». Para continuar: «Mais informações» → «Executar mesmo assim».
-> - **Controlo Inteligente de Aplicações (Windows 11):** pode bloquear o instalador sem opção de continuar. Nesse caso é preciso desligá-lo em Segurança do Windows → Controlo de aplicações e do browser → Controlo Inteligente de Aplicações.
+> ⚠️ The program is free and open source, and is distributed **without a digital signature**:
+> - **SmartScreen:** Windows may show "Windows protected your PC". To continue: "More info" → "Run anyway".
+> - **Smart App Control (Windows 11):** may block the installer with no option to continue. In that case it has to be turned off in Windows Security → App & browser control → Smart App Control.
 
 ### Linux
 
-- **Requisitos:** distribuição com pacotes `.deb`, de 64 bits: `amd64` (PC) ou `arm64` (por exemplo, o Raspberry Pi OS de 64 bits). Ensaiado no Linux Mint 22 (amd64) e no Debian 12 (arm64, em máquina virtual).
-- **Instalação:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb` (no ARM, `_arm64.deb`). O pacote traz tudo o que precisa, sem instalar o .NET.
-- **Confirmar o pacote:** `sha256sum logbeam-uplink_X.Y.Z_amd64.deb`. O resultado tem de ser igual ao SHA-256 publicado na página.
-- **Remover:** `sudo apt remove logbeam-uplink`. As definições ficam em `~/.config/logbeam-uplink`.
+- **Requirements:** a 64-bit distribution with `.deb` packages: `amd64` (PC) or `arm64` (for example, 64-bit Raspberry Pi OS). Tested on Linux Mint 22 (amd64) and Debian 12 (arm64, in a virtual machine).
+- **Installation:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb` (on ARM, `_arm64.deb`). The package brings everything it needs, with no .NET to install.
+- **Checking the package:** `sha256sum logbeam-uplink_X.Y.Z_amd64.deb`. The result must match the SHA-256 published on the page.
+- **Removing:** `sudo apt remove logbeam-uplink`. The settings stay in `~/.config/logbeam-uplink`.
 
-## Começar
+## Getting started
 
-1. No [LogBeam](https://app.logbeam.org), abrir o logbook → "Gerir Logbook" → separador "API Keys" e gerar uma chave.
-2. No Uplink, separador **API LogBeam** → "Adicionar logbook": colar o link do logbook (ou o Instance ID) e a API key → "Testar ligação" → "Guardar".
-3. Ligar o programa de log ao Uplink:
-   - **N1MM+:** separador N1MM+ → "Configurar automaticamente", com o N1MM+ fechado.
-   - **WSJT-X / JTDX:** File → Settings → Reporting → UDP Server 127.0.0.1, porta 2237. No JTDX, marcar também "Enable sending logged QSO ADIF data".
-   - **Log4OM:** ligação UDP OUTBOUND com a mensagem ADIF_MESSAGE, destino 127.0.0.1, porta 2333 e "Broadcast" desligado.
-   - **Not1MM (Linux):** separador Not1MM → "Configurar automaticamente", com o Not1MM fechado.
+1. On [LogBeam](https://app.logbeam.org), open your logbook → "Manage Logbook" → "API Keys" tab and generate a key.
+2. In Uplink, **LogBeam API** tab → "Add Logbook": paste the logbook link (or the Instance ID) and the API key → "Test Connection" → "Save".
+3. Connect your logging program to Uplink:
+   - **N1MM+:** N1MM+ tab → "Configure automatically", with N1MM+ closed.
+   - **WSJT-X / JTDX:** File → Settings → Reporting → UDP Server 127.0.0.1, port 2237. In JTDX, also tick "Enable sending logged QSO ADIF data".
+   - **Log4OM:** a UDP OUTBOUND connection with the ADIF_MESSAGE message, destination 127.0.0.1, port 2333 and "Broadcast" turned off.
+   - **Not1MM (Linux):** Not1MM tab → "Configure automatically", with Not1MM closed.
 
-> 💡 Com o JTAlert ou o GridTracker a usar a porta do WSJT-X, ver a [partilha da porta por multicast](docs/MANUAL.pt.md#wsjt-x--jtdx).
+> 💡 If JTAlert or GridTracker use the WSJT-X port, see [sharing the port through multicast](docs/MANUAL.en.md#wsjt-x--jtdx).
 >
-> 💡 No Linux, o N1MM+ e o Log4OM correm no Wine e configuram-se da mesma forma, com o destino 127.0.0.1.
+> 💡 On Linux, N1MM+ and Log4OM run in Wine and are set up the same way, with destination 127.0.0.1.
 
 ## Manual
 
-O manual explica cada separador, os avisos, a fila sem internet e a resolução de problemas.
+The manual covers each tab, the notifications, the offline queue and troubleshooting.
 
-| Língua | Manual |
+| Language | Manual |
 |---|---|
 | Português | [docs/MANUAL.pt.md](docs/MANUAL.pt.md) |
 | English | [docs/MANUAL.en.md](docs/MANUAL.en.md) |
 | Español | [docs/MANUAL.es.md](docs/MANUAL.es.md) |
 | Français | [docs/MANUAL.fr.md](docs/MANUAL.fr.md) |
 
-## Limitações da versão 2.6
+## Limitations of version 2.6
 
-- Um QSO editado ou apagado no programa de log depois de enviado continua no LogBeam e no ClubLog tal como foi enviado. A propagação de edições e eliminações está prevista para a versão 2.7.
-- No Linux, só há pacote `.deb` e o Uplink não avisa quando há uma versão nova.
+- A QSO edited or deleted in the logging program after it was sent stays in LogBeam and ClubLog as it was sent. Propagating edits and deletions is planned for version 2.7.
+- On Linux there is only a `.deb` package, and Uplink does not tell you when a new version is available.
 
-## Privacidade
+## Privacy
 
-Os dados da instalação e os relatórios de erros só são enviados com autorização do operador, pedida no primeiro arranque e alterável no separador "Avançado". Nunca são enviados QSOs, o nome do computador nem o nome do utilizador. Ver a [política de privacidade](https://logbeam.org/#privacy).
+Installation data and error reports are only sent with the operator's permission, asked at first start and changeable in the "Advanced" tab. QSOs, the computer name and the user name are never sent. See the [privacy policy](https://logbeam.org/#privacy).
 
-## Compilar
+## Building
 
 <details>
-<summary>Instruções para compilar o Uplink e o instalador</summary>
+<summary>How to build Uplink and the installer</summary>
 
 <br>
 
-Requisitos: Windows 10 ou superior e o [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (x64).
+Requirements: Windows 10 or later and the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (x64).
 
 ```
 dotnet build LogBeam.sln -c Release
 dotnet test LogBeam.sln -c Release
 ```
 
-Instalador ([Inno Setup 6](https://jrsoftware.org/isinfo.php)): publicar primeiro o executável e depois compilar o `LogBeam.iss`, que lê a versão do executável publicado:
+Installer ([Inno Setup 6](https://jrsoftware.org/isinfo.php)): publish the executable first, then compile `LogBeam.iss`, which reads the version from the published executable:
 
 ```
 dotnet publish src/LogBeam.UI/LogBeam.UI.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 ISCC.exe LogBeam.iss
 ```
 
-Linux (pacote `.deb`), num sistema Linux com o .NET 8 SDK: os testes do núcleo e do serviço estão no projecto `tests/LogBeam.Portable.Tests`.
+Linux (`.deb` package), on a Linux system with the .NET 8 SDK: the core and service tests are in the `tests/LogBeam.Portable.Tests` project.
 
 ```
 dotnet test tests/LogBeam.Portable.Tests -c Release
@@ -184,29 +184,29 @@ dotnet publish src/LogBeam.Linux/LogBeam.Linux.csproj -c Release -r linux-x64 --
 packaging/linux/build-deb.sh publish-linux dist
 ```
 
-Para ARM (arm64): `-r linux-arm64` e `packaging/linux/build-deb.sh publish-linux dist arm64`.
+For ARM (arm64): `-r linux-arm64` and `packaging/linux/build-deb.sh publish-linux dist arm64`.
 
-A versão está num único sítio, o `Directory.Build.props`. As versões oficiais são compiladas pelo `.github/workflows/release.yml` ao criar uma etiqueta `vX.Y.Z`.
+The version lives in a single place, `Directory.Build.props`. Official releases are built by `.github/workflows/release.yml` when a `vX.Y.Z` tag is created.
 
-**ClubLog:** o envio para o ClubLog precisa de uma chave de aplicação do ClubLog, que não está no repositório. Sem ela, a aplicação compila e funciona, mas o envio para o ClubLog fica desactivado. Para a incluir numa compilação própria, definir a variável de ambiente `CLUBLOG_API_KEY` ou criar o ficheiro `clublog.key` na raiz do repositório (não versionado). A chave é pedida ao ClubLog por quem distribui a aplicação.
+**ClubLog:** uploading to ClubLog requires a ClubLog application key, which is not in the repository. Without it the application builds and works, but ClubLog upload is disabled. To include one in your own build, set the `CLUBLOG_API_KEY` environment variable or create a `clublog.key` file at the repository root (not versioned). The key must be requested from ClubLog by whoever distributes the application.
 
 </details>
 
-## Contribuir e segurança
+## Contributing and security
 
-- Contribuições: ver [CONTRIBUTING.md](CONTRIBUTING.md).
-- Falhas de segurança: comunicar em privado, como indicado em [SECURITY.md](SECURITY.md).
+- Contributions: see [CONTRIBUTING.md](CONTRIBUTING.md).
+- Security issues: report them privately, as described in [SECURITY.md](SECURITY.md).
 
-## Licença
+## Licence
 
-O LogBeam Uplink é software livre, distribuído com a [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html). O texto completo está no ficheiro [LICENSE](LICENSE).
+LogBeam Uplink is free software, distributed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html). The full text is in the [LICENSE](LICENSE) file.
 
-## Aviso
+## Disclaimer
 
-- O software é distribuído sem qualquer garantia.
-- As versões alteradas são da responsabilidade de quem as altera e distribui; o autor não responde por elas.
-- As versões oficiais são apenas as publicadas em https://logbeam.org/uplink/, com o SHA-256 indicado na página.
-- O nome LogBeam e o ícone identificam a versão oficial; as versões alteradas devem usar outro nome (GPL v3, secção 7, alínea e).
+- The software is distributed without any warranty.
+- Modified versions are the responsibility of whoever modifies and distributes them; the author is not liable for them.
+- Official releases are only those published at https://logbeam.org/uplink/, with the SHA-256 shown on that page.
+- The LogBeam name and icon identify the official release; modified versions must use a different name (GPL v3, section 7, paragraph e).
 
 ---
 
