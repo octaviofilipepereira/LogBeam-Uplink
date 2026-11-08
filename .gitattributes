@@ -2,3 +2,6 @@
 tests/LogBeam.Tests/Fixtures/N1MM/* -text
 tests/LogBeam.Tests/Fixtures/Wsjtx/* -text
 tests/LogBeam.Tests/Fixtures/Log4OM/* -text
+
+# Scripts de shell com LF também no Windows (o bash do Linux não aceita CRLF)
+*.sh text eol=lf
