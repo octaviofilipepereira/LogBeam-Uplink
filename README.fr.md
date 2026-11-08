@@ -203,8 +203,8 @@ LogBeam Uplink est un logiciel libre, distribué sous la [GNU General Public Lic
 
 ## Avertissement
 
-- Le logiciel est distribué sans aucune garantie.
-- Les versions modifiées relèvent de la responsabilité de ceux qui les modifient et les distribuent ; l'auteur n'en répond pas.
+- LogBeam Uplink est distribué sans aucune garantie, selon les termes de la GPL v3 (sections 15 et 16). L'auteur ne répond d'aucun dommage ni d'aucune perte résultant de son utilisation, qu'il s'agisse de la version officielle ou d'une version modifiée.
+- Quiconque modifie et distribue une version du logiciel en est seul responsable.
 - Les versions officielles sont uniquement celles publiées sur https://logbeam.org/uplink/, avec le SHA-256 indiqué sur la page.
 - Le nom LogBeam et l'icône identifient la version officielle ; les versions modifiées doivent utiliser un autre nom (GPL v3, section 7, alinéa e).
 
