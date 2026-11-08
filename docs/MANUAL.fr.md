@@ -1,17 +1,19 @@
 <p align="center"><img src="images/logo.png" width="72" alt="LogBeam Uplink"></p>
 
-<h1 align="center">Manuel de LogBeam Uplink 2.5</h1>
+<h1 align="center">Manuel de LogBeam Uplink 2.6</h1>
 
 <p align="center"><a href="MANUAL.pt.md">Português</a> · <a href="MANUAL.en.md">English</a> · <a href="MANUAL.es.md">Español</a> · <b>Français</b></p>
 
-LogBeam Uplink est une application pour Windows qui reçoit les QSO de **N1MM+**, **WSJT-X**, **JTDX** et **Log4OM** dès qu'ils sont enregistrés et les envoie vers un ou plusieurs logbooks [LogBeam](https://logbeam.org) et, si vous l'activez, vers **ClubLog**.
+LogBeam Uplink est une application pour Windows et Linux qui reçoit les QSO de **N1MM+**, **Not1MM** (Linux), **WSJT-X**, **JTDX** et **Log4OM** dès qu'ils sont enregistrés et les envoie vers un ou plusieurs logbooks [LogBeam](https://logbeam.org) et, si vous l'activez, vers **ClubLog**.
 
-**Sommaire :** [1. Installer](#1-installer) · [2. Premier démarrage](#2-premier-démarrage) · [3. La fenêtre et la zone de notification](#3-la-fenêtre-et-la-zone-de-notification) · [4. Onglets](#4-onglets) · [5. Sans internet](#5-sans-internet) · [6. Exporter la session](#6-exporter-la-session) · [7. Mises à jour](#7-mises-à-jour) · [8. Dépannage](#8-dépannage) · [9. Désinstaller](#9-désinstaller)
+**Sommaire :** [1. Installer](#1-installer) · [2. Premier démarrage](#2-premier-démarrage) · [3. La fenêtre et la zone de notification](#3-la-fenêtre-et-la-zone-de-notification) · [4. Onglets](#4-onglets) · [5. Sans internet](#5-sans-internet) · [6. Exporter la session](#6-exporter-la-session) · [7. Mises à jour](#7-mises-à-jour) · [8. Dépannage](#8-dépannage) · [9. Désinstaller](#9-désinstaller) · [10. Linux](#10-linux)
 
 ## 1. Installer
 
 1. Téléchargez l'installateur sur **https://logbeam.org/uplink/** et vérifiez l'empreinte SHA-256 publiée sur la page. Dans PowerShell, dans le dossier du fichier : `Get-FileHash .\LogBeamUplink-Setup-X.Y.Z.exe`.
 2. Lancez l'installateur. Il ne demande ni droits d'administrateur ni .NET : il s'installe dans `%LOCALAPPDATA%\Programs\LogBeam Uplink` et crée un raccourci dans le menu Démarrer.
+
+Sous Linux, voir la [section 10](#10-linux).
 
 > ⚠️ Le programme est gratuit et open source, et il est distribué **sans signature numérique**. C'est pourquoi :
 > - **SmartScreen :** si « Windows a protégé votre ordinateur » apparaît, cliquez sur « Informations complémentaires » → « Exécuter quand même ».
@@ -87,6 +89,15 @@ Si un autre logiciel (p. ex. Log4OM) reçoit déjà N1MM+ sur le port 12060, uti
 
 Pour le configurer manuellement, voir le menu **Aide → Configurer N1MM+...**
 
+### Not1MM
+
+Version Linux uniquement. Not1MM envoie les QSO au format de N1MM+, vers le port de l'onglet N1MM+ (12060 par défaut) : le même récepteur reçoit les deux logiciels, qui peuvent être ouverts en même temps.
+
+- **Configurer automatiquement :** avec Not1MM fermé, active l'envoi des contacts dans les préférences de Not1MM (`~/.config/not1mm/not1mm.json`), vers 127.0.0.1 et le port de l'onglet N1MM+. Une copie de sauvegarde du fichier est faite avant de le modifier.
+- **Détecter Not1MM :** indique si Not1MM est déjà configuré. Si les préférences n'existent pas encore, ouvrez Not1MM une fois.
+
+Pour le configurer manuellement, dans les réglages de Not1MM : activez l'envoi des paquets N1MM et des contacts, avec la destination **127.0.0.1:12060**.
+
 ### WSJT-X / JTDX
 
 <p align="center"><img src="images/fr-wsjtx.png" width="520" alt="Onglet WSJT-X / JTDX"></p>
@@ -110,7 +121,7 @@ Pour le configurer manuellement, voir le menu **Aide → Configurer N1MM+...**
 2. **E-mail ClubLog** et **App Password** : un « Application Password » créé sur ClubLog, pas le mot de passe de connexion au site.
 3. **Indicatif (facultatif) :** vide, c'est celui de l'onglet Station qui est utilisé ; s'il est vide lui aussi, celui du logiciel de log.
 
-ClubLog reçoit les QSO de tous les logiciels (N1MM+, WSJT-X, JTDX et Log4OM) et utilise la même file d'attente hors ligne que les logbooks. Si ClubLog refuse l'e-mail, l'App Password ou l'indicatif, Uplink vous prévient une fois (notification Windows et message en rouge dans cet onglet) et arrête l'envoi vers ClubLog, car ClubLog bloque l'adresse IP de quiconque insiste avec des identifiants erronés. Les QSO restent en file d'attente et sont envoyés une fois les données corrigées et enregistrées.
+ClubLog reçoit les QSO de tous les logiciels (N1MM+, Not1MM, WSJT-X, JTDX et Log4OM) et utilise la même file d'attente hors ligne que les logbooks. Si ClubLog refuse l'e-mail, l'App Password ou l'indicatif, Uplink vous prévient une fois (notification du système et message en rouge dans cet onglet) et arrête l'envoi vers ClubLog, car ClubLog bloque l'adresse IP de quiconque insiste avec des identifiants erronés. Les QSO restent en file d'attente et sont envoyés une fois les données corrigées et enregistrées.
 
 ### Avancé
 
@@ -121,7 +132,7 @@ ClubLog reçoit les QSO de tous les logiciels (N1MM+, WSJT-X, JTDX et Log4OM) et
 | Niveau de journal | Quantité d'informations dans le fichier journal. « Information » suffit au quotidien ; « Debug » pour étudier un problème |
 | Fichier journal | Emplacement du journal (par défaut, le dossier `logs` d'Uplink) |
 | Notifier chaque QSO envoyé | Notification aussi pour les QSO envoyés avec succès |
-| Démarrer avec Windows, sans ouvrir la fenêtre | Uplink démarre avec Windows, avec seulement son icône dans la zone de notification |
+| Démarrer avec Windows (sous Linux, avec le système), sans ouvrir la fenêtre | Uplink démarre avec Windows, ou avec la session sous Linux, avec seulement son icône dans la zone de notification |
 | Envoyer les données d'installation et les rapports d'erreurs | L'autorisation du premier démarrage ; « Qu'est-ce qui est envoyé ? » affiche la liste |
 
 ## 5. Sans internet
@@ -136,7 +147,7 @@ Les erreurs qu'un nouvel envoi ne résout pas, comme une API Key révoquée ou u
 
 ## 7. Mises à jour
 
-Uplink vérifie au démarrage si une nouvelle version est disponible et vous prévient. Vous pouvez aussi vérifier dans **Aide → Rechercher des mises à jour...** Les nouvelles versions sont sur https://logbeam.org/uplink/.
+Sous Windows, Uplink vérifie au démarrage si une nouvelle version est disponible et vous prévient. Vous pouvez aussi vérifier dans **Aide → Rechercher des mises à jour...** Sous Linux, cette vérification n'existe pas : on installe le nouveau paquet par-dessus l'ancien. Les nouvelles versions sont sur https://logbeam.org/uplink/.
 
 ## 8. Dépannage
 
@@ -145,10 +156,10 @@ Uplink vérifie au démarrage si une nouvelle version est disponible et vous pr�
 | « Port occupé » | Un autre logiciel utilise le même port. WSJT-X/JTDX : utilisez le multicast ([section 4](#wsjt-x--jtdx)). N1MM+ : utilisez un autre port et « Configurer automatiquement » |
 | « API Key invalide » ou « Instance ID invalide » à l'enregistrement | Vérifiez la clé (64 caractères) et le lien du logbook ; utilisez « Tester la connexion » |
 | Les QSO n'arrivent pas | Vérifiez les réglages du logiciel de log ([section 4](#4-onglets)) et que le service est démarré (menu de l'icône). Réglez le niveau de journal sur « Debug », faites un QSO et consultez le fichier journal |
-| Un QSO a été corrigé ou supprimé dans le logiciel de log | Dans la version 2.5, les modifications et suppressions n'arrivent ni à LogBeam ni à ClubLog. C'est prévu pour la 2.6 |
+| Un QSO a été corrigé ou supprimé dans le logiciel de log | Dans la version 2.6, les modifications et suppressions n'arrivent ni à LogBeam ni à ClubLog. C'est prévu pour la 2.7 |
 | Windows bloque l'installateur ou le programme | Voir les avertissements sur SmartScreen et le Contrôle intelligent des applications ([section 1](#1-installer)) |
 
-**Fichiers**, dans le dossier d'installation (`%LOCALAPPDATA%\Programs\LogBeam Uplink`) :
+**Fichiers**, dans le dossier d'installation (`%LOCALAPPDATA%\Programs\LogBeam Uplink`) ; sous Linux, voir la [section 10](#10-linux) :
 
 | Fichier | Contenu |
 |---|---|
@@ -160,6 +171,29 @@ Uplink vérifie au démarrage si une nouvelle version est disponible et vous pr�
 ## 9. Désinstaller
 
 Paramètres Windows → Applications → LogBeam Uplink → Désinstaller. Le programme de désinstallation supprime le programme, les journaux et le démarrage avec Windows. Les réglages (`settings.json`) et la file d'attente (`queue.json`) restent dans le dossier pour qu'une réinstallation les reprenne ; pour les supprimer, effacez le dossier `%LOCALAPPDATA%\Programs\LogBeam Uplink`.
+
+Sous Linux : `sudo apt remove logbeam-uplink`. Les réglages et la file d'attente restent dans `~/.config/logbeam-uplink` ; pour les supprimer, effacez ce dossier.
+
+## 10. Linux
+
+La version Linux a les mêmes onglets, les mêmes quatre langues et le même cœur que la version Windows. Les différences :
+
+- **Installer :** téléchargez le paquet `.deb` sur **https://logbeam.org/uplink/**, vérifiez le SHA-256 (`sha256sum logbeam-uplink_X.Y.Z_amd64.deb`) et installez-le avec `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb`. Le paquet apporte tout ce dont il a besoin, sans installer .NET. Il apparaît dans le menu des applications sous le nom « LogBeam Uplink » et s'ouvre aussi avec la commande `logbeam-uplink`.
+- **Logiciels de log :** WSJT-X, JTDX et Not1MM sont natifs. N1MM+ et Log4OM fonctionnent dans Wine et se configurent comme sous Windows, avec la destination 127.0.0.1. Uplink cherche N1MM+ dans le dossier Documents de l'utilisateur (`N1MM Logger+`) ; si le dossier Documents de Wine est un autre, utilisez **Aide → Configurer N1MM+...**
+- **Zone de notification :** l'icône d'Uplink apparaît dans la zone de notification du bureau (testé sous Cinnamon). Les avertissements sont des notifications du système.
+- **Démarrer avec le système :** crée `~/.config/autostart/logbeam-uplink.desktop`, et Uplink démarre avec la session, avec seulement son icône.
+- **API Keys et mots de passe :** chiffrés avec AES-256-GCM, avec une clé aléatoire conservée dans `credentials.key`, lisible uniquement par l'utilisateur.
+- **Mises à jour :** Uplink ne prévient pas ; on installe le nouveau paquet par-dessus l'ancien.
+
+**Fichiers**, dans `~/.config/logbeam-uplink` :
+
+| Fichier | Contenu |
+|---|---|
+| `settings.json` | Réglages, avec les API Keys et les mots de passe chiffrés |
+| `credentials.key` | La clé qui chiffre les API Keys et les mots de passe. Sans elle, ils ne peuvent pas être lus : copiez le dossier entier pour changer d'ordinateur |
+| `queue.json` | QSO en attente d'envoi |
+| `logs/` | Un fichier journal par jour, conservés 30 jours |
+| `telemetry.json` | Rapports d'erreurs en attente d'envoi (seulement avec autorisation) |
 
 ---
 

@@ -1,17 +1,19 @@
 <p align="center"><img src="images/logo.png" width="72" alt="LogBeam Uplink"></p>
 
-<h1 align="center">LogBeam Uplink 2.5 manual</h1>
+<h1 align="center">LogBeam Uplink 2.6 manual</h1>
 
 <p align="center"><a href="MANUAL.pt.md">Português</a> · <b>English</b> · <a href="MANUAL.es.md">Español</a> · <a href="MANUAL.fr.md">Français</a></p>
 
-LogBeam Uplink is a Windows application that receives QSOs from **N1MM+**, **WSJT-X**, **JTDX** and **Log4OM** as soon as they are logged and sends them to one or several [LogBeam](https://logbeam.org) logbooks and, if you turn it on, to **ClubLog**.
+LogBeam Uplink is a Windows and Linux application that receives QSOs from **N1MM+**, **Not1MM** (Linux), **WSJT-X**, **JTDX** and **Log4OM** as soon as they are logged and sends them to one or several [LogBeam](https://logbeam.org) logbooks and, if you turn it on, to **ClubLog**.
 
-**Contents:** [1. Installing](#1-installing) · [2. First start](#2-first-start) · [3. The window and the notification area](#3-the-window-and-the-notification-area) · [4. Tabs](#4-tabs) · [5. Without internet](#5-without-internet) · [6. Exporting the session](#6-exporting-the-session) · [7. Updates](#7-updates) · [8. Troubleshooting](#8-troubleshooting) · [9. Uninstalling](#9-uninstalling)
+**Contents:** [1. Installing](#1-installing) · [2. First start](#2-first-start) · [3. The window and the notification area](#3-the-window-and-the-notification-area) · [4. Tabs](#4-tabs) · [5. Without internet](#5-without-internet) · [6. Exporting the session](#6-exporting-the-session) · [7. Updates](#7-updates) · [8. Troubleshooting](#8-troubleshooting) · [9. Uninstalling](#9-uninstalling) · [10. Linux](#10-linux)
 
 ## 1. Installing
 
 1. Download the installer from **https://logbeam.org/uplink/** and check the SHA-256 fingerprint published on that page. In PowerShell, in the file's folder: `Get-FileHash .\LogBeamUplink-Setup-X.Y.Z.exe`.
 2. Run the installer. It needs neither administrator rights nor .NET: it installs to `%LOCALAPPDATA%\Programs\LogBeam Uplink` and adds a Start menu shortcut.
+
+On Linux, see [section 10](#10-linux).
 
 > ⚠️ The program is free and open source, and is distributed **without a digital signature**. Because of this:
 > - **SmartScreen:** if "Windows protected your PC" appears, click "More info" → "Run anyway".
@@ -87,6 +89,15 @@ If another program (e.g. Log4OM) already receives N1MM+ on port 12060, use anoth
 
 To configure it by hand, see **Help → Configure N1MM+...**
 
+### Not1MM
+
+Linux version only. Not1MM sends QSOs in the N1MM+ format, to the port of the N1MM+ tab (12060 by default): the same receiver takes both programs, and they can be open at the same time.
+
+- **Configure automatically:** with Not1MM closed, turns on contact sending in the Not1MM preferences (`~/.config/not1mm/not1mm.json`), to 127.0.0.1 and the port of the N1MM+ tab. A backup copy of the file is made before changing it.
+- **Detect Not1MM:** shows whether Not1MM is already configured. If the preferences do not exist yet, open Not1MM once.
+
+To configure it by hand, in the Not1MM settings: turn on sending N1MM packets and contacts, with destination **127.0.0.1:12060**.
+
 ### WSJT-X / JTDX
 
 <p align="center"><img src="images/en-wsjtx.png" width="520" alt="WSJT-X / JTDX tab"></p>
@@ -110,7 +121,7 @@ To configure it by hand, see **Help → Configure N1MM+...**
 2. **ClubLog Email** and **App Password**: an "Application Password" created on ClubLog, not your website login password.
 3. **Callsign (optional):** if blank, the one in the Station tab is used; if that is blank too, the logging program's.
 
-It receives QSOs from every program (N1MM+, WSJT-X, JTDX and Log4OM) and uses the same offline queue as the logbooks. If ClubLog rejects the email, App Password or callsign, Uplink warns you once (a Windows notification and a red message in this tab) and stops uploading to ClubLog, because ClubLog blocks the IP address of anyone who keeps trying with wrong credentials. QSOs stay in the queue and are sent once the details are corrected and saved.
+It receives QSOs from every program (N1MM+, Not1MM, WSJT-X, JTDX and Log4OM) and uses the same offline queue as the logbooks. If ClubLog rejects the email, App Password or callsign, Uplink warns you once (a system notification and a red message in this tab) and stops uploading to ClubLog, because ClubLog blocks the IP address of anyone who keeps trying with wrong credentials. QSOs stay in the queue and are sent once the details are corrected and saved.
 
 ### Advanced
 
@@ -121,7 +132,7 @@ It receives QSOs from every program (N1MM+, WSJT-X, JTDX and Log4OM) and uses th
 | Log Level | How much information goes into the log file. "Information" is enough day to day; "Debug" to investigate a problem |
 | Log File | Where the log is kept (by default, Uplink's `logs` folder) |
 | Notify for every QSO sent | Notification also for QSOs sent successfully |
-| Start with Windows, without opening the window | Uplink starts with Windows, with only its icon in the notification area |
+| Start with Windows (on Linux, with the system), without opening the window | Uplink starts with Windows, or with the session on Linux, with only its icon in the notification area |
 | Send installation data and error reports | The permission asked at first start; "What is sent?" shows the list |
 
 ## 5. Without internet
@@ -136,7 +147,7 @@ Errors that retrying will not fix, such as a revoked API key or a deleted logboo
 
 ## 7. Updates
 
-Uplink checks at start-up whether a new version is available and tells you. You can also check in **Help → Check for Updates...** New versions are at https://logbeam.org/uplink/.
+On Windows, Uplink checks at start-up whether a new version is available and tells you. You can also check in **Help → Check for Updates...** On Linux there is no such check: install the new package over the old one. New versions are at https://logbeam.org/uplink/.
 
 ## 8. Troubleshooting
 
@@ -145,10 +156,10 @@ Uplink checks at start-up whether a new version is available and tells you. You 
 | "Port in use" | Another program uses the same port. WSJT-X/JTDX: use multicast ([section 4](#wsjt-x--jtdx)). N1MM+: use another port and "Configure automatically" |
 | "Invalid API Key" or "Invalid Instance ID" when saving | Check the key (64 characters) and the logbook link; use "Test Connection" |
 | QSOs do not arrive | Check the logging program's settings ([section 4](#4-tabs)) and that the service is started (icon menu). Set the log level to "Debug", make a QSO and look at the log file |
-| A QSO was corrected or deleted in the logging program | In version 2.5, edits and deletions do not reach LogBeam or ClubLog. This is planned for 2.6 |
+| A QSO was corrected or deleted in the logging program | In version 2.6, edits and deletions do not reach LogBeam or ClubLog. This is planned for 2.7 |
 | Windows blocks the installer or the program | See the notes on SmartScreen and Smart App Control ([section 1](#1-installing)) |
 
-**Files**, in the installation folder (`%LOCALAPPDATA%\Programs\LogBeam Uplink`):
+**Files**, in the installation folder (`%LOCALAPPDATA%\Programs\LogBeam Uplink`); on Linux, see [section 10](#10-linux):
 
 | File | Contents |
 |---|---|
@@ -160,6 +171,29 @@ Uplink checks at start-up whether a new version is available and tells you. You 
 ## 9. Uninstalling
 
 Windows Settings → Apps → LogBeam Uplink → Uninstall. The uninstaller removes the program, the logs and the start-with-Windows entry. The settings (`settings.json`) and the queue (`queue.json`) stay in the folder so that a reinstall can reuse them; to remove them, delete the `%LOCALAPPDATA%\Programs\LogBeam Uplink` folder.
+
+On Linux: `sudo apt remove logbeam-uplink`. The settings and the queue stay in `~/.config/logbeam-uplink`; to remove them, delete that folder.
+
+## 10. Linux
+
+The Linux version has the same tabs, the same four languages and the same core as the Windows version. The differences:
+
+- **Installing:** download the `.deb` package from **https://logbeam.org/uplink/**, check the SHA-256 (`sha256sum logbeam-uplink_X.Y.Z_amd64.deb`) and install it with `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb`. The package brings everything it needs, with no .NET to install. It appears in the applications menu as "LogBeam Uplink" and also opens with the `logbeam-uplink` command.
+- **Logging programs:** WSJT-X, JTDX and Not1MM are native. N1MM+ and Log4OM run in Wine and are set up as on Windows, with destination 127.0.0.1. Uplink looks for N1MM+ in the user's Documents folder (`N1MM Logger+`); if Wine's Documents folder is a different one, use **Help → Configure N1MM+...**
+- **Notification area:** the Uplink icon appears in the desktop's notification area (tested on Cinnamon). Notifications are system notifications.
+- **Start with the system:** creates `~/.config/autostart/logbeam-uplink.desktop`, and Uplink starts with the session, with only its icon.
+- **API keys and passwords:** encrypted with AES-256-GCM, with a random key kept in `credentials.key`, readable only by the user.
+- **Updates:** Uplink does not tell you; install the new package over the old one.
+
+**Files**, in `~/.config/logbeam-uplink`:
+
+| File | Contents |
+|---|---|
+| `settings.json` | Settings, with API keys and passwords encrypted |
+| `credentials.key` | The key that encrypts the API keys and passwords. Without it they cannot be read: copy the whole folder when moving to another computer |
+| `queue.json` | QSOs waiting to be sent |
+| `logs/` | One log file per day, kept for 30 days |
+| `telemetry.json` | Error reports waiting to be sent (only with permission) |
 
 ---
 

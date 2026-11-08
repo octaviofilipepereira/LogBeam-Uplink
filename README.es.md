@@ -2,11 +2,12 @@
 
 <h1 align="center">LogBeam Uplink</h1>
 
-<p align="center"><b>Cada QSO de N1MM+, WSJT-X, JTDX y Log4OM en su logbook de LogBeam, en el momento en que se registra.</b></p>
+<p align="center"><b>Cada QSO de N1MM+, Not1MM, WSJT-X, JTDX y Log4OM en su logbook de LogBeam, en el momento en que se registra.</b></p>
 
 <p align="center">
   <a href="https://logbeam.org/uplink/"><img alt="Descargar" src="https://img.shields.io/badge/descargar-logbeam.org%2Fuplink-2f81f7"></a>
   <img alt="Windows 10 y 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4">
+  <img alt="Linux (.deb)" src="https://img.shields.io/badge/Linux-.deb-e95420">
   <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img alt="Licencia GPL v3" src="https://img.shields.io/badge/licencia-GPL%20v3-blue"></a>
 </p>
 
@@ -14,11 +15,23 @@
 
 ---
 
-LogBeam Uplink es una aplicación para Windows que recibe cada QSO en el momento en que se registra en el programa de log y lo envía a su logbook en [LogBeam](https://logbeam.org) y, si lo activa, a ClubLog. El globo 3D de LogBeam se actualiza solo, sin exportar ni importar archivos ADIF.
+LogBeam Uplink es una aplicación para Windows y Linux que recibe cada QSO en el momento en que se registra en el programa de log y lo envía a su logbook en [LogBeam](https://logbeam.org) y, si lo activa, a ClubLog. El globo 3D de LogBeam se actualiza solo, sin exportar ni importar archivos ADIF.
 
 <p align="center"><a href="https://logbeam.org"><img src="https://logbeam.org/assets/og-image-en.png" width="720" alt="Globo 3D de LogBeam con los QSOs"></a></p>
 
-**Índice:** [Funcionalidades](#funcionalidades) · [Capturas de pantalla](#capturas-de-pantalla) · [Descargar e instalar](#descargar-e-instalar) · [Primeros pasos](#primeros-pasos) · [Manual](#manual) · [Limitaciones](#limitaciones-de-la-versión-25) · [Privacidad](#privacidad) · [Compilar](#compilar) · [Contribuir](#contribuir-y-seguridad) · [Licencia](#licencia)
+**Índice:** [Windows y Linux](#windows-y-linux) · [Funcionalidades](#funcionalidades) · [Capturas de pantalla](#capturas-de-pantalla) · [Descargar e instalar](#descargar-e-instalar) · [Primeros pasos](#primeros-pasos) · [Manual](#manual) · [Limitaciones](#limitaciones-de-la-versión-26) · [Privacidad](#privacidad) · [Compilar](#compilar) · [Contribuir](#contribuir-y-seguridad) · [Licencia](#licencia)
+
+## Windows y Linux
+
+Uplink nació para Windows, escrito en C# con .NET. La versión para Linux usa el mismo núcleo: la recepción de los QSOs, la cola sin internet y el envío a LogBeam y a ClubLog son el mismo código en los dos sistemas. Solo la ventana es propia, hecha con [Avalonia](https://avaloniaui.net), con las mismas pestañas y los mismos cuatro idiomas. Así Uplink se comporta igual en Windows y en Linux, y cada corrección llega a los dos al mismo tiempo.
+
+| | Windows | Linux |
+|---|---|---|
+| Instalación | Instalador, sin privilegios de administrador | Paquete `.deb` (Debian, Ubuntu, Linux Mint y derivadas), 64 bits |
+| Programas de log | N1MM+, WSJT-X, JTDX, Log4OM | Los mismos (N1MM+ y Log4OM a través de Wine) y Not1MM |
+| API keys y contraseñas | Cifradas con el DPAPI de Windows | Cifradas con AES-256-GCM, con una clave legible solo por el usuario |
+| Arranque automático | Con Windows | Con la sesión del usuario |
+| Aviso de versión nueva | Sí | No: se instala el paquete nuevo |
 
 ## Funcionalidades
 
@@ -29,6 +42,7 @@ LogBeam Uplink es una aplicación para Windows que recibe cada QSO en el momento
 | **N1MM+** | Configuración automática con un clic. Se hace una copia de seguridad de la configuración de N1MM+ y los destinos que ya existían se mantienen | [N1MM+](docs/MANUAL.es.md#n1mm) |
 | **WSJT-X** y **JTDX** | Por el UDP Server del propio programa (puerto 2237). Comparte el puerto con JTAlert y GridTracker mediante multicast | [WSJT-X / JTDX](docs/MANUAL.es.md#wsjt-x--jtdx) |
 | **Log4OM** | Por una conexión UDP OUTBOUND con el mensaje ADIF_MESSAGE (puerto 2333) | [Log4OM](docs/MANUAL.es.md#log4om) |
+| **Not1MM** (Linux) | Envía en el formato de N1MM+, al mismo puerto (12060). Configuración automática con un clic, en la pestaña Not1MM | [Not1MM](docs/MANUAL.es.md#not1mm) |
 
 ### Destinos
 
@@ -55,19 +69,19 @@ LogBeam Uplink es una aplicación para Windows que recibe cada QSO en el momento
 | Área de notificación | Cerrar la ventana no cierra el programa. El menú del icono activa y desactiva el servicio y cada logbook | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
 | Avisos | Errores de envío, QSOs enviados (opcional), duplicados, puertos ocupados y credenciales de ClubLog rechazadas | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
 | ✓ Confirmado por otro LogBeam | Aviso cuando el corresponsal también tiene el QSO en un logbook de LogBeam | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
-| Iniciar con Windows | Uplink arranca con Windows, sin abrir la ventana | [Avanzado](docs/MANUAL.es.md#avanzado) |
+| Iniciar con el sistema | Uplink arranca con Windows, o con la sesión en Linux, sin abrir la ventana | [Avanzado](docs/MANUAL.es.md#avanzado) |
 | Una sola instancia | Abrir Uplink de nuevo trae al frente la ventana que ya estaba abierta | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
-| Actualizaciones | Uplink comprueba al arrancar si hay una versión nueva y avisa | [Actualizaciones](docs/MANUAL.es.md#7-actualizaciones) |
+| Actualizaciones | En Windows, Uplink comprueba al arrancar si hay una versión nueva y avisa | [Actualizaciones](docs/MANUAL.es.md#7-actualizaciones) |
 | Cuatro idiomas | Interfaz en portugués, inglés, español y francés, elegido con los botones de la parte superior de la ventana | [La ventana y el área de notificación](docs/MANUAL.es.md#3-la-ventana-y-el-área-de-notificación) |
 
 ### Seguridad y privacidad
 
 | Funcionalidad | Descripción | Manual |
 |---|---|---|
-| Claves cifradas | Las API keys y las contraseñas se guardan cifradas, legibles solo por el usuario de Windows que las guardó. En la tabla aparecen enmascaradas | [Solución de problemas](docs/MANUAL.es.md#8-solución-de-problemas) |
+| Claves cifradas | Las API keys y las contraseñas se guardan cifradas, legibles solo por el usuario que las guardó (en Windows, con el DPAPI; en Linux, con AES-256-GCM y una clave propia). En la tabla aparecen enmascaradas | [Solución de problemas](docs/MANUAL.es.md#8-solución-de-problemas) |
 | Solo este ordenador | Por defecto, Uplink solo acepta paquetes de este ordenador. Recibir de la red local hay que pedirlo | [N1MM+](docs/MANUAL.es.md#n1mm) |
 | Datos solo con autorización | Los datos de la instalación y los informes de errores solo se envían con autorización, y se borran del servidor cuando se retira | [Primer arranque](docs/MANUAL.es.md#2-primer-arranque) |
-| Instalación sencilla | Sin privilegios de administrador y sin instalar .NET | [Instalar](docs/MANUAL.es.md#1-instalar) |
+| Instalación sencilla | Sin instalar .NET. En Windows, sin privilegios de administrador | [Instalar](docs/MANUAL.es.md#1-instalar) |
 
 ## Capturas de pantalla
 
@@ -88,7 +102,9 @@ LogBeam Uplink es una aplicación para Windows que recibe cada QSO en el momento
 
 ## Descargar e instalar
 
-La versión oficial está en **https://logbeam.org/uplink/**, con la huella digital SHA-256 del instalador.
+La versión oficial está en **https://logbeam.org/uplink/**, con la huella digital SHA-256 de cada archivo.
+
+### Windows
 
 - **Requisitos:** Windows 10 u 11, 64 bits.
 - **Instalación:** sin privilegios de administrador y sin necesidad de .NET.
@@ -98,6 +114,13 @@ La versión oficial está en **https://logbeam.org/uplink/**, con la huella digi
 > - **SmartScreen:** Windows puede mostrar «Windows protegió su PC». Para continuar: «Más información» → «Ejecutar de todas formas».
 > - **Control inteligente de aplicaciones (Windows 11):** puede bloquear el instalador sin opción de continuar. En ese caso hay que desactivarlo en Seguridad de Windows → Control de aplicaciones y navegador → Control inteligente de aplicaciones.
 
+### Linux
+
+- **Requisitos:** distribución con paquetes `.deb`, 64 bits (PC). Probado en Linux Mint 22, basado en Ubuntu 24.04.
+- **Instalación:** `sudo apt install ./logbeam-uplink_X.Y.Z_amd64.deb`. El paquete trae todo lo que necesita, sin instalar .NET.
+- **Comprobar el paquete:** `sha256sum logbeam-uplink_X.Y.Z_amd64.deb`. El resultado tiene que ser igual al SHA-256 publicado en la página.
+- **Desinstalar:** `sudo apt remove logbeam-uplink`. La configuración se queda en `~/.config/logbeam-uplink`.
+
 ## Primeros pasos
 
 1. En [LogBeam](https://app.logbeam.org), abra el logbook → «Gestionar Logbook» → pestaña «API Keys» y genere una clave.
@@ -106,8 +129,11 @@ La versión oficial está en **https://logbeam.org/uplink/**, con la huella digi
    - **N1MM+:** pestaña N1MM+ → «Configurar automáticamente», con N1MM+ cerrado.
    - **WSJT-X / JTDX:** File → Settings → Reporting → UDP Server 127.0.0.1, puerto 2237. En JTDX, marque también «Enable sending logged QSO ADIF data».
    - **Log4OM:** conexión UDP OUTBOUND con el mensaje ADIF_MESSAGE, destino 127.0.0.1, puerto 2333 y «Broadcast» desactivado.
+   - **Not1MM (Linux):** pestaña Not1MM → «Configurar automáticamente», con Not1MM cerrado.
 
 > 💡 Si JTAlert o GridTracker usan el puerto de WSJT-X, vea cómo [compartir el puerto mediante multicast](docs/MANUAL.es.md#wsjt-x--jtdx).
+>
+> 💡 En Linux, N1MM+ y Log4OM funcionan en Wine y se configuran de la misma forma, con el destino 127.0.0.1.
 
 ## Manual
 
@@ -120,10 +146,10 @@ El manual explica cada pestaña, los avisos, la cola sin internet y la solución
 | Español | [docs/MANUAL.es.md](docs/MANUAL.es.md) |
 | Français | [docs/MANUAL.fr.md](docs/MANUAL.fr.md) |
 
-## Limitaciones de la versión 2.5
+## Limitaciones de la versión 2.6
 
-- Un QSO editado o borrado en el programa de log después de enviado sigue en LogBeam y en ClubLog tal como se envió. La propagación de ediciones y borrados está prevista para la versión 2.6.
-- Solo para Windows.
+- Un QSO editado o borrado en el programa de log después de enviado sigue en LogBeam y en ClubLog tal como se envió. La propagación de ediciones y borrados está prevista para la versión 2.7.
+- En Linux solo hay paquete `.deb` y Uplink no avisa cuando hay una versión nueva.
 
 ## Privacidad
 
@@ -148,6 +174,14 @@ Instalador ([Inno Setup 6](https://jrsoftware.org/isinfo.php)): publique primero
 ```
 dotnet publish src/LogBeam.UI/LogBeam.UI.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 ISCC.exe LogBeam.iss
+```
+
+Linux (paquete `.deb`), en un sistema Linux con el .NET 8 SDK: las pruebas del núcleo y del servicio están en el proyecto `tests/LogBeam.Portable.Tests`.
+
+```
+dotnet test tests/LogBeam.Portable.Tests -c Release
+dotnet publish src/LogBeam.Linux/LogBeam.Linux.csproj -c Release -r linux-x64 --self-contained true -p:DebugType=none -p:PublishReadyToRun=true -o publish-linux
+packaging/linux/build-deb.sh publish-linux dist
 ```
 
 La versión está en un único sitio, `Directory.Build.props`. Las versiones oficiales las compila `.github/workflows/release.yml` al crear una etiqueta `vX.Y.Z`.
