@@ -6,7 +6,7 @@
 
 ## Português
 
-### Versões suportadas
+### Versões com suporte
 
 Só a versão mais recente publicada em https://logbeam.org/uplink/ recebe correcções de segurança.
 
@@ -16,21 +16,21 @@ Só a versão mais recente publicada em https://logbeam.org/uplink/ recebe corre
 
 Inclua, se possível:
 
-- a versão do LogBeam Uplink e do Windows;
+- a versão do LogBeam Uplink e do sistema (Windows ou Linux);
 - os passos para reproduzir a falha;
 - o efeito (por exemplo, QSOs falsos num logbook, exposição de uma API key ou de uma password);
 - uma proposta de correcção, se a tiver.
 
-A recepção é confirmada em até 7 dias. A correcção é publicada numa versão nova, e a falha só é descrita publicamente depois disso. Se quiser, o seu indicativo ou nome aparece nas notas da versão.
+A recepção é confirmada no prazo de 7 dias. A correcção é publicada numa versão nova, e a falha só é descrita publicamente depois disso. Se quiser, o seu indicativo ou nome aparece nas notas da versão.
 
 ### O que está no âmbito
 
 - A aplicação LogBeam Uplink e o seu instalador (este repositório).
 - Falhas no servidor do LogBeam (logbeam.org, app.logbeam.org, api.logbeam.org) podem ser comunicadas pelo mesmo canal.
 
-### Boas práticas já seguidas
+### Medidas de segurança já em vigor
 
-- As API keys e as passwords ficam cifradas no `settings.json`, só legíveis pelo utilizador do Windows que as gravou.
+- As API keys e as passwords ficam cifradas no `settings.json`: no Windows, só o utilizador que as gravou as pode ler; no Linux, a chave fica em `credentials.key`, só legível pelo utilizador.
 - Os receptores UDP escutam por omissão só neste computador (127.0.0.1). Escutar na rede local tem de ser pedido expressamente.
 - A chave de aplicação do ClubLog não está no código.
 
@@ -48,7 +48,7 @@ Only the latest release published at https://logbeam.org/uplink/ receives securi
 
 If possible, include:
 
-- the LogBeam Uplink and Windows versions;
+- the LogBeam Uplink version and the system (Windows or Linux);
 - the steps to reproduce it;
 - the impact (for example, fake QSOs in a logbook, exposure of an API key or a password);
 - a suggested fix, if you have one.
@@ -62,7 +62,7 @@ Receipt is acknowledged within 7 days. The fix is published in a new release, an
 
 ### Practices already in place
 
-- API keys and passwords are encrypted in `settings.json`, readable only by the Windows user who saved them.
+- API keys and passwords are encrypted in `settings.json`: on Windows, only the user who saved them can read them; on Linux, the key is kept in `credentials.key`, readable only by the user.
 - UDP receivers listen only on this computer (127.0.0.1) by default. Listening on the local network has to be requested explicitly.
 - The ClubLog application key is not in the code.
 
@@ -80,7 +80,7 @@ Solo la versión más reciente publicada en https://logbeam.org/uplink/ recibe c
 
 Incluya, si es posible:
 
-- la versión de LogBeam Uplink y de Windows;
+- la versión de LogBeam Uplink y del sistema (Windows o Linux);
 - los pasos para reproducir el fallo;
 - el efecto (por ejemplo, QSOs falsos en un logbook, exposición de una API key o de una contraseña);
 - una propuesta de corrección, si la tiene.
@@ -94,7 +94,7 @@ La recepción se confirma en un plazo de 7 días. La corrección se publica en u
 
 ### Buenas prácticas ya aplicadas
 
-- Las API keys y las contraseñas se guardan cifradas en `settings.json`, legibles solo por el usuario de Windows que las guardó.
+- Las API keys y las contraseñas se guardan cifradas en `settings.json`: en Windows, solo el usuario que las guardó puede leerlas; en Linux, la clave se guarda en `credentials.key`, legible solo por el usuario.
 - Los receptores UDP escuchan por defecto solo en este ordenador (127.0.0.1). Escuchar en la red local hay que pedirlo expresamente.
 - La clave de aplicación de ClubLog no está en el código.
 
@@ -112,7 +112,7 @@ Seule la dernière version publiée sur https://logbeam.org/uplink/ reçoit des 
 
 Indiquez, si possible :
 
-- la version de LogBeam Uplink et de Windows ;
+- la version de LogBeam Uplink et du système (Windows ou Linux) ;
 - les étapes pour reproduire la faille ;
 - l'impact (par exemple, de faux QSO dans un logbook, l'exposition d'une API Key ou d'un mot de passe) ;
 - une proposition de correction, si vous en avez une.
@@ -126,6 +126,6 @@ La réception est confirmée sous 7 jours. Le correctif est publié dans une nou
 
 ### Bonnes pratiques déjà en place
 
-- Les API Keys et les mots de passe sont chiffrés dans `settings.json`, lisibles uniquement par l'utilisateur Windows qui les a enregistrés.
+- Les API Keys et les mots de passe sont chiffrés dans `settings.json` : sous Windows, seul l'utilisateur qui les a enregistrés peut les lire ; sous Linux, la clé est conservée dans `credentials.key`, lisible uniquement par l'utilisateur.
 - Les récepteurs UDP n'écoutent par défaut que sur cet ordinateur (127.0.0.1). L'écoute sur le réseau local doit être demandée explicitement.
 - La clé d'application ClubLog n'est pas dans le code.
